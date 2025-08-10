@@ -109,8 +109,14 @@ export const WeightTracker: React.FC<WeightTrackerProps> = ({ user, onClose, onU
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center">
-      <div className="bg-white rounded-t-3xl lg:rounded-2xl max-w-4xl w-full max-h-[95vh] overflow-y-auto">
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center"
+      onClick={onClose}
+    >
+      <div 
+        className="bg-white rounded-t-3xl lg:rounded-2xl max-w-4xl w-full max-h-[95vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div className="flex items-center space-x-3">

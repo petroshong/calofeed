@@ -394,8 +394,14 @@ export const Settings: React.FC<SettingsProps> = ({ user, onLogout, onUpdateUser
 
       {/* Notification Settings Modal */}
       {showNotificationSettings && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center">
-          <div className="bg-white rounded-t-3xl lg:rounded-2xl max-w-md w-full max-h-[80vh] overflow-y-auto">
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center"
+          onClick={() => setShowNotificationSettings(false)}
+        >
+          <div 
+            className="bg-white rounded-t-3xl lg:rounded-2xl max-w-md w-full max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
               <h2 className="text-xl font-bold text-gray-900">Notification Settings</h2>
               <button
@@ -440,8 +446,14 @@ export const Settings: React.FC<SettingsProps> = ({ user, onLogout, onUpdateUser
 
       {/* Privacy Settings Modal */}
       {showPrivacySettings && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center">
-          <div className="bg-white rounded-t-3xl lg:rounded-2xl max-w-md w-full max-h-[80vh] overflow-y-auto">
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center"
+          onClick={() => setShowPrivacySettings(false)}
+        >
+          <div 
+            className="bg-white rounded-t-3xl lg:rounded-2xl max-w-md w-full max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
               <h2 className="text-xl font-bold text-gray-900">Privacy Settings</h2>
               <button
@@ -534,8 +546,14 @@ export const Settings: React.FC<SettingsProps> = ({ user, onLogout, onUpdateUser
 
       {/* Language Settings Modal */}
       {showLanguageSettings && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center">
-          <div className="bg-white rounded-t-3xl lg:rounded-2xl max-w-md w-full">
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center"
+          onClick={() => setShowLanguageSettings(false)}
+        >
+          <div 
+            className="bg-white rounded-t-3xl lg:rounded-2xl max-w-md w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
               <h2 className="text-xl font-bold text-gray-900">Language</h2>
               <button
@@ -572,8 +590,14 @@ export const Settings: React.FC<SettingsProps> = ({ user, onLogout, onUpdateUser
 
       {/* Change Password Modal */}
       {showChangePassword && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center">
-          <div className="bg-white rounded-t-3xl lg:rounded-2xl max-w-md w-full">
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center"
+          onClick={() => setShowChangePassword(false)}
+        >
+          <div 
+            className="bg-white rounded-t-3xl lg:rounded-2xl max-w-md w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
               <h2 className="text-xl font-bold text-gray-900">Change Password</h2>
               <button
@@ -632,8 +656,14 @@ export const Settings: React.FC<SettingsProps> = ({ user, onLogout, onUpdateUser
 
       {/* Connected Apps Modal */}
       {showConnectedApps && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center">
-          <div className="bg-white rounded-t-3xl lg:rounded-2xl max-w-md w-full">
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center"
+          onClick={() => setShowConnectedApps(false)}
+        >
+          <div 
+            className="bg-white rounded-t-3xl lg:rounded-2xl max-w-md w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
               <h2 className="text-xl font-bold text-gray-900">Connected Apps</h2>
               <button
@@ -673,8 +703,14 @@ export const Settings: React.FC<SettingsProps> = ({ user, onLogout, onUpdateUser
 
       {/* Data Export Modal */}
       {showDataExport && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center">
-          <div className="bg-white rounded-t-3xl lg:rounded-2xl max-w-md w-full">
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center"
+          onClick={() => setShowDataExport(false)}
+        >
+          <div 
+            className="bg-white rounded-t-3xl lg:rounded-2xl max-w-md w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
               <h2 className="text-xl font-bold text-gray-900">Export Data</h2>
               <button
@@ -724,8 +760,14 @@ export const Settings: React.FC<SettingsProps> = ({ user, onLogout, onUpdateUser
 
       {/* Delete Account Modal */}
       {showDeleteAccount && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center">
-          <div className="bg-white rounded-t-3xl lg:rounded-2xl max-w-md w-full">
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center"
+          onClick={() => setShowDeleteAccount(false)}
+        >
+          <div 
+            className="bg-white rounded-t-3xl lg:rounded-2xl max-w-md w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
               <h2 className="text-xl font-bold text-red-900">Delete Account</h2>
               <button
@@ -775,8 +817,14 @@ export const Settings: React.FC<SettingsProps> = ({ user, onLogout, onUpdateUser
 
       {/* Help & Support Modal */}
       {showHelpSupport && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center">
-          <div className="bg-white rounded-t-3xl lg:rounded-2xl max-w-md w-full max-h-[80vh] overflow-y-auto">
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center"
+          onClick={() => setShowHelpSupport(false)}
+        >
+          <div 
+            className="bg-white rounded-t-3xl lg:rounded-2xl max-w-md w-full max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
               <h2 className="text-xl font-bold text-gray-900">Help & Support</h2>
               <button
@@ -841,8 +889,14 @@ export const Settings: React.FC<SettingsProps> = ({ user, onLogout, onUpdateUser
 
       {/* Dietary Preferences Modal */}
       {showDietaryPreferences && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center">
-          <div className="bg-white rounded-t-3xl lg:rounded-2xl max-w-md w-full max-h-[80vh] overflow-y-auto">
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center"
+          onClick={() => setShowDietaryPreferences(false)}
+        >
+          <div 
+            className="bg-white rounded-t-3xl lg:rounded-2xl max-w-md w-full max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
               <h2 className="text-xl font-bold text-gray-900">Dietary Preferences</h2>
               <button
