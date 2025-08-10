@@ -22,7 +22,7 @@ export const useMeals = (currentUser: User) => {
       userId: currentUser.id,
       user: currentUser,
       ...mealData,
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toLocaleString(),
       likes: 0,
       comments: [],
       isLiked: false,
@@ -32,6 +32,7 @@ export const useMeals = (currentUser: User) => {
     };
 
     setMeals(prev => [newMeal, ...prev]);
+    console.log('Meal added to profile and feed:', newMeal);
     return newMeal;
   };
 

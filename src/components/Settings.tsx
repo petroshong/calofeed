@@ -21,6 +21,7 @@ import {
   Heart
 } from 'lucide-react';
 import { PremiumUpgrade } from './PremiumUpgrade';
+import { WeightTracker } from './WeightTracker';
 import type { User as UserType } from '../types';
 
 interface SettingsProps {
@@ -31,12 +32,13 @@ interface SettingsProps {
 
 export const Settings: React.FC<SettingsProps> = ({ user, onLogout, onUpdateUser }) => {
   const [showPremiumUpgrade, setShowPremiumUpgrade] = useState(false);
+  const [showWeightTracker, setShowWeightTracker] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [notifications, setNotifications] = useState(user.notificationSettings);
 
   const toggleNotification = (key: keyof typeof notifications) => {
     const updatedNotifications = {
-      ...prev,
+      ...notifications,
       [key]: !prev[key]
     };
     setNotifications(updatedNotifications);
@@ -70,7 +72,7 @@ export const Settings: React.FC<SettingsProps> = ({ user, onLogout, onUpdateUser
           icon: <Scale className="w-5 h-5" />,
           label: 'Weight Tracking',
           description: 'Manage weight goals and history',
-          action: () => console.log('Weight tracking')
+          action: () => setShowWeightTracker(true)
         }
       ]
     },
@@ -302,6 +304,15 @@ export const Settings: React.FC<SettingsProps> = ({ user, onLogout, onUpdateUser
       {/* Premium Upgrade Modal */}
       {showPremiumUpgrade && (
         <PremiumUpgrade onClose={() => setShowPremiumUpgrade(false)} />
+      )}
+
+      {/* Weight Tracker Modal */}
+      {showWeightTracker && (
+        <WeightTracker 
+          user={user}
+          onClose={() => setShowWeightTracker(false)}
+          onUpdateUser={onUpdateUser}
+        />
       )}
     </div>
   );

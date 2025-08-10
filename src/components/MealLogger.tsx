@@ -89,7 +89,7 @@ export const MealLogger: React.FC<MealLoggerProps> = ({ user, onClose, onUpdateU
     });
 
     // Show success message
-    alert(`Meal logged successfully! Added ${calories} calories to your daily total and posted to your profile.`);
+    console.log(`Meal logged successfully! Added ${calories} calories to your daily total and posted to your profile.`);
     onClose();
   };
 

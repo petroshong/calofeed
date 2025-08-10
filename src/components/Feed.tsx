@@ -12,6 +12,67 @@ import { MealActions } from './MealActions';
 import { useMeals } from '../hooks/useMeals';
 import type { Meal, User } from '../types';
 
+// Mock meals for demonstration
+const mockFeedMeals: Meal[] = [
+  {
+    id: 'mock-1',
+    userId: 'mock-user-1',
+    user: {
+      id: 'mock-user-1',
+      username: 'healthyeats',
+      displayName: 'Sarah Johnson',
+      avatar: 'https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&w=150',
+      isVerified: true,
+      isPremium: false,
+      isInfluencer: false
+    } as User,
+    image: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=800',
+    description: 'Perfect post-workout meal! Grilled salmon with quinoa and roasted vegetables 🐟🥗 #postworkout #protein #healthyeating',
+    calories: 520,
+    protein: 42,
+    carbs: 35,
+    fat: 22,
+    timestamp: '2 hours ago',
+    mealType: 'lunch',
+    likes: 156,
+    comments: [],
+    isLiked: false,
+    isBookmarked: false,
+    shares: 23,
+    views: 892,
+    tags: ['postworkout', 'protein', 'healthyeating'],
+    visibility: 'public'
+  },
+  {
+    id: 'mock-2',
+    userId: 'mock-user-2',
+    user: {
+      id: 'mock-user-2',
+      username: 'fitnessguru',
+      displayName: 'Mike Rodriguez',
+      avatar: 'https://images.pexels.com/photos/1212984/pexels-photo-1212984.jpeg?auto=compress&cs=tinysrgb&w=150',
+      isVerified: false,
+      isPremium: true,
+      isInfluencer: false
+    } as User,
+    image: 'https://images.pexels.com/photos/1211887/pexels-photo-1211887.jpeg?auto=compress&cs=tinysrgb&w=800',
+    description: 'Meal prep Sunday! Buddha bowl with chickpeas, avocado, and tahini dressing 🌱 #mealprep #plantbased #vegan',
+    calories: 420,
+    protein: 18,
+    carbs: 52,
+    fat: 16,
+    timestamp: '4 hours ago',
+    mealType: 'lunch',
+    likes: 234,
+    comments: [],
+    isLiked: true,
+    isBookmarked: true,
+    shares: 45,
+    views: 1247,
+    tags: ['mealprep', 'plantbased', 'vegan'],
+    visibility: 'public'
+  }
+];
 
 interface FeedProps {
   onViewProfile?: (user: User) => void;
@@ -20,7 +81,7 @@ interface FeedProps {
 }
 
 export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdateCurrentUser }) => {
-  const { meals, toggleLike, toggleBookmark, deleteMeal } = useMeals(currentUser);
+  const { meals: userMeals, toggleLike, toggleBookmark, deleteMeal } = useMeals(currentUser);
   const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
   const [shareModal, setShareModal] = useState<Meal | null>(null);
   const [feedFilter, setFeedFilter] = useState<'all' | 'following' | 'trending'>('all');
@@ -29,8 +90,9 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [showAllSuggestions, setShowAllSuggestions] = useState(false);
 
-  // Get all public meals for the feed
-  const allMeals = meals.filter(meal => meal.visibility === 'public');
+  // Combine user meals with mock feed meals
+  const publicUserMeals = userMeals.filter(meal => meal.visibility === 'public');
+  const allMeals = [...publicUserMeals, ...mockFeedMeals];
 
   // Filter meals by selected categories
   const filteredMeals = selectedCategories.length === 0 

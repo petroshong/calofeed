@@ -5,6 +5,7 @@ import { SocialShare } from './SocialShare';
 import { EditProfile } from './EditProfile';
 import { MealActions } from './MealActions';
 import { CalorieTracker } from './CalorieTracker';
+import { WeightTracker } from './WeightTracker';
 import { useMeals } from '../hooks/useMeals';
 import type { User, Meal, WeightEntry } from '../types';
 
@@ -44,6 +45,7 @@ export const Profile: React.FC<ProfileProps> = ({ user, onUpdateUser }) => {
   const [showFollowersModal, setShowFollowersModal] = useState<'followers' | 'following' | null>(null);
   const [showShareProfile, setShowShareProfile] = useState(false);
   const [showCalorieTracker, setShowCalorieTracker] = useState(false);
+  const [showWeightTracker, setShowWeightTracker] = useState(false);
 
   const userMeals = getUserMeals(user.id);
 
@@ -208,6 +210,13 @@ export const Profile: React.FC<ProfileProps> = ({ user, onUpdateUser }) => {
                 >
                   <Target className="w-4 h-4" />
                   <span>Track Calories</span>
+                </button>
+                <button
+                  onClick={() => setShowWeightTracker(true)}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center space-x-2"
+                >
+                  <Scale className="w-4 h-4" />
+                  <span>Weight</span>
                 </button>
                 <button
                   onClick={() => setShowEditProfile(true)}
@@ -540,6 +549,15 @@ export const Profile: React.FC<ProfileProps> = ({ user, onUpdateUser }) => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Weight Tracker Modal */}
+      {showWeightTracker && (
+        <WeightTracker 
+          user={user}
+          onClose={() => setShowWeightTracker(false)}
+          onUpdateUser={onUpdateUser}
+        />
       )}
     </div>
   );
