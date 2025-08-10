@@ -26,18 +26,21 @@ import type { User as UserType } from '../types';
 interface SettingsProps {
   user: UserType;
   onLogout: () => void;
+  onUpdateUser: (updates: Partial<UserType>) => void;
 }
 
-export const Settings: React.FC<SettingsProps> = ({ user, onLogout }) => {
+export const Settings: React.FC<SettingsProps> = ({ user, onLogout, onUpdateUser }) => {
   const [showPremiumUpgrade, setShowPremiumUpgrade] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [notifications, setNotifications] = useState(user.notificationSettings);
 
   const toggleNotification = (key: keyof typeof notifications) => {
-    setNotifications(prev => ({
+    const updatedNotifications = {
       ...prev,
       [key]: !prev[key]
-    }));
+    };
+    setNotifications(updatedNotifications);
+    onUpdateUser({ notificationSettings: updatedNotifications });
   };
 
   const settingSections = [

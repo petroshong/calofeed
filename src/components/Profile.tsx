@@ -6,6 +6,7 @@ import type { User, Meal, WeightEntry } from '../types';
 
 interface ProfileProps {
   user: User;
+  onUpdateUser: (updates: Partial<User>) => void;
 }
 
 const userMeals: Meal[] = [
@@ -74,12 +75,13 @@ const userMeals: Meal[] = [
   }
 ];
 
-export const Profile: React.FC<ProfileProps> = ({ user }) => {
+export const Profile: React.FC<ProfileProps> = ({ user, onUpdateUser }) => {
   const [activeTab, setActiveTab] = useState<'grid' | 'list'>('grid');
   const [isFollowing, setIsFollowing] = useState(user.isFollowing);
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showFollowersModal, setShowFollowersModal] = useState<'followers' | 'following' | null>(null);
   const [showShareProfile, setShowShareProfile] = useState(false);
+  const [showCalorieTracker, setShowCalorieTracker] = useState(false);
 
   const toggleFollow = () => {
     setIsFollowing(!isFollowing);
@@ -237,6 +239,13 @@ export const Profile: React.FC<ProfileProps> = ({ user }) => {
                   <span>Share</span>
                 </button>
                 <button
+                  onClick={() => setShowCalorieTracker(true)}
+                  className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors flex items-center space-x-2"
+                >
+                  <Target className="w-4 h-4" />
+                  <span>Track Calories</span>
+                </button>
+                <button
                   onClick={() => setShowEditProfile(true)}
                   className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center space-x-2"
                 >
@@ -297,7 +306,9 @@ export const Profile: React.FC<ProfileProps> = ({ user }) => {
 
         <div className="bg-gradient-to-br from-yellow-50 to-amber-50 p-4 rounded-xl border border-yellow-100">
           <div className="flex items-center justify-between mb-2">
-            <Heart className="w-8 h-8 text-pink-600" />
+            <div className="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center">
+              <Heart className="w-5 h-5 text-pink-600" />
+            </div>
             <span className="text-2xl font-bold text-pink-700">{user.totalLikes}</span>
           </div>
           <p className="text-sm font-medium text-pink-800">Total Likes</p>
@@ -483,6 +494,26 @@ export const Profile: React.FC<ProfileProps> = ({ user }) => {
                 <Copy className="w-5 h-5 text-gray-600" />
                 <span className="text-gray-700">Copy Profile Link</span>
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Calorie Tracker Modal */}
+      {showCalorieTracker && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center">
+          <div className="bg-white rounded-t-3xl lg:rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h2 className="text-xl font-bold text-gray-900">Calorie Tracker</h2>
+              <button
+                onClick={() => setShowCalorieTracker(false)}
+                className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="p-6">
+              <CalorieTracker user={user} onUpdateUser={onUpdateUser} />
             </div>
           </div>
         </div>

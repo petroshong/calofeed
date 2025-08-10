@@ -3,8 +3,8 @@ import { Home, Trophy, Plus, Target, User, Search, Users } from 'lucide-react';
 import type { User as UserType } from '../types';
 
 interface NavigationProps {
-  currentView: 'feed' | 'profile' | 'log' | 'challenges' | 'leaderboard' | 'notifications' | 'settings' | 'groups' | 'discover';
-  onViewChange: (view: 'feed' | 'profile' | 'log' | 'challenges' | 'leaderboard' | 'notifications' | 'settings' | 'groups' | 'discover') => void;
+  currentView: 'feed' | 'profile' | 'log' | 'challenges' | 'leaderboard' | 'notifications' | 'settings' | 'groups' | 'discover' | 'calories';
+  onViewChange: (view: 'feed' | 'profile' | 'log' | 'challenges' | 'leaderboard' | 'notifications' | 'settings' | 'groups' | 'discover' | 'calories') => void;
   currentUser: UserType;
 }
 
