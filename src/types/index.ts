@@ -287,4 +287,52 @@ export interface FoodItem {
   lastUsed?: string;
   userRating?: number;
   category?: string;
+  confidence?: number;
+  aiGenerated?: boolean;
+}
+
+export interface FoodAnalysis {
+  id: string;
+  imageUrl: string;
+  detectedFoods: DetectedFood[];
+  totalCalories: number;
+  totalProtein: number;
+  totalCarbs: number;
+  totalFat: number;
+  confidence: number;
+  processingTime: number;
+  timestamp: string;
+  isManuallyEdited: boolean;
+}
+
+export interface DetectedFood {
+  name: string;
+  confidence: number;
+  boundingBox?: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+  nutrition: {
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  };
+  servingSize: string;
+  quantity: number;
+}
+
+export interface CalorieEntry {
+  id: string;
+  userId: string;
+  date: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack';
+  source: 'manual' | 'ai_analysis' | 'barcode' | 'recipe';
+  confidence?: number;
 }

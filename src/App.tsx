@@ -12,14 +12,15 @@ import { Settings as SettingsComponent } from './components/Settings';
 import { SearchModal } from './components/SearchModal';
 import { Groups } from './components/Groups';
 import { Discover } from './components/Discover';
+import { CalorieTracker } from './components/CalorieTracker';
 import { useAuth } from './hooks/useAuth';
 import { useNotifications } from './hooks/useNotifications';
 import type { User } from './types';
 
 function App() {
-  const { currentUser, isAuthenticated, login, logout } = useAuth();
+  const { currentUser, isAuthenticated, login, logout, updateUser } = useAuth();
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
-  const [currentView, setCurrentView] = useState<'feed' | 'profile' | 'log' | 'challenges' | 'leaderboard' | 'notifications' | 'settings' | 'groups' | 'discover'>('feed');
+  const [currentView, setCurrentView] = useState<'feed' | 'profile' | 'log' | 'challenges' | 'leaderboard' | 'notifications' | 'settings' | 'groups' | 'discover' | 'calories'>('feed');
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
 
@@ -99,6 +100,15 @@ function App() {
                 <span>Groups</span>
               </button>
               <button
+                onClick={() => { setCurrentView('calories'); setShowMobileMenu(false); }}
+                className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
+                  currentView === 'calories' ? 'bg-green-50 text-green-700' : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                <Target className="w-5 h-5" />
+                <span>Calorie Tracker</span>
+              </button>
+              <button
                 onClick={() => { setCurrentView('settings'); setShowMobileMenu(false); }}
                 className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
                   currentView === 'settings' ? 'bg-green-50 text-green-700' : 'text-gray-700 hover:bg-gray-50'
@@ -172,6 +182,16 @@ function App() {
                 }`}
               >
                 Leaderboard
+              </button>
+              <button
+                onClick={() => setCurrentView('calories')}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  currentView === 'calories' 
+                    ? 'bg-green-50 text-green-700' 
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                Calories
               </button>
             </div>
           </div>
@@ -287,12 +307,13 @@ function App() {
           {currentView === 'feed' && <Feed />}
           {currentView === 'discover' && <Discover />}
           {currentView === 'groups' && <Groups />}
-          {currentView === 'profile' && <Profile user={currentUser} />}
-          {currentView === 'log' && <MealLogger onClose={() => setCurrentView('feed')} />}
+          {currentView === 'profile' && <Profile user={currentUser} onUpdateUser={updateUser} />}
+          {currentView === 'log' && <MealLogger user={currentUser} onClose={() => setCurrentView('feed')} onUpdateUser={updateUser} />}
           {currentView === 'challenges' && <Challenges />}
           {currentView === 'leaderboard' && <Leaderboard />}
+          {currentView === 'calories' && <CalorieTracker user={currentUser} onUpdateUser={updateUser} />}
           {currentView === 'notifications' && <Notifications notifications={notifications} onMarkAsRead={markAsRead} onMarkAllAsRead={markAllAsRead} />}
-          {currentView === 'settings' && <SettingsComponent user={currentUser} onLogout={logout} />}
+          {currentView === 'settings' && <SettingsComponent user={currentUser} onLogout={logout} onUpdateUser={updateUser} />}
         </main>
       </div>
 

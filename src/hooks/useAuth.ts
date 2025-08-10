@@ -103,10 +103,17 @@ export const useAuth = () => {
     setIsAuthenticated(false);
   };
 
+  const updateUser = (updates: Partial<User>) => {
+    if (currentUser) {
+      setCurrentUser({ ...currentUser, ...updates });
+    }
+  };
+
   return {
     currentUser,
     isAuthenticated,
     login,
-    logout
+    logout,
+    updateUser
   };
 };

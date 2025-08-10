@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
-import { Camera, X, Upload, MapPin, Clock, Plus, Minus, Search, Scan, Hash, Users } from 'lucide-react';
+import { Camera, X, Upload, MapPin, Clock, Plus, Minus, Search, Scan, Hash, Users, Zap, Brain, Sparkles } from 'lucide-react';
+import { AIFoodAnalysis } from './AIFoodAnalysis';
+import { useCalorieTracking } from '../hooks/useCalorieTracking';
+import type { FoodAnalysis, User } from '../types';
 
 interface MealLoggerProps {
+  user: User;
   onClose: () => void;
+  onUpdateUser: (updates: Partial<User>) => void;
 }
 
-export const MealLogger: React.FC<MealLoggerProps> = ({ onClose }) => {
+export const MealLogger: React.FC<MealLoggerProps> = ({ user, onClose, onUpdateUser }) => {
+  const { addCalorieEntry } = useCalorieTracking(user);
   const [formData, setFormData] = useState({
     image: '',
     description: '',
@@ -16,12 +22,15 @@ export const MealLogger: React.FC<MealLoggerProps> = ({ onClose }) => {
     location: '',
     mealType: 'lunch' as 'breakfast' | 'lunch' | 'dinner' | 'snack',
     tags: [] as string[],
-    visibility: 'public' as 'public' | 'friends' | 'private'
+    visibility: 'public' as 'public' | 'friends' | 'private',
+    aiAnalyzed: false,
+    confidence: 0
   });
   
   const [imagePreview, setImagePreview] = useState<string>('');
-  const [showFoodSearch, setShowFoodSearch] = useState(false);
+  const [showAIAnalysis, setShowAIAnalysis] = useState(false);
   const [currentTag, setCurrentTag] = useState('');
+  const [isManualEntry, setIsManualEntry] = useState(false);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -36,7 +45,26 @@ export const MealLogger: React.FC<MealLoggerProps> = ({ onClose }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle meal logging logic here
+    
+    // Add to calorie tracking
+    addCalorieEntry({
+      calories: parseInt(formData.calories) || 0,
+      protein: parseInt(formData.protein) || 0,
+      carbs: parseInt(formData.carbs) || 0,
+      fat: parseInt(formData.fat) || 0,
+      mealType: formData.mealType,
+      source: formData.aiAnalyzed ? 'ai_analysis' : 'manual',
+      confidence: formData.confidence
+    });
+
+    // Update user's daily totals
+    onUpdateUser({
+      caloriesConsumed: user.caloriesConsumed + (parseInt(formData.calories) || 0),
+      proteinConsumed: user.proteinConsumed + (parseInt(formData.protein) || 0),
+      carbsConsumed: user.carbsConsumed + (parseInt(formData.carbs) || 0),
+      fatConsumed: user.fatConsumed + (parseInt(formData.fat) || 0)
+    });
+
     console.log('Logging meal:', formData);
     onClose();
   };
@@ -65,8 +93,23 @@ export const MealLogger: React.FC<MealLoggerProps> = ({ onClose }) => {
     }));
   };
 
+  const handleAIAnalysis = (analysis: FoodAnalysis) => {
+    setFormData(prev => ({
+      ...prev,
+      calories: Math.round(analysis.totalCalories).toString(),
+      protein: Math.round(analysis.totalProtein).toString(),
+      carbs: Math.round(analysis.totalCarbs).toString(),
+      fat: Math.round(analysis.totalFat).toString(),
+      aiAnalyzed: true,
+      confidence: analysis.confidence,
+      description: prev.description || `AI detected: ${analysis.detectedFoods.map(f => f.name).join(', ')}`
+    }));
+    setShowAIAnalysis(false);
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center">
+    <>
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center">
       <div className="bg-white rounded-t-3xl lg:rounded-2xl max-w-2xl w-full max-h-[95vh] lg:max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
@@ -146,6 +189,14 @@ export const MealLogger: React.FC<MealLoggerProps> = ({ onClose }) => {
                     <Scan className="w-5 h-5" />
                     <span>Scan Barcode</span>
                   </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowAIAnalysis(true)}
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center space-x-2"
+                  >
+                    <Brain className="w-5 h-5" />
+                    <span>AI Analysis</span>
+                  </button>
                 </div>
               </div>
             )}
@@ -170,14 +221,22 @@ export const MealLogger: React.FC<MealLoggerProps> = ({ onClose }) => {
           <div>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">Nutrition Information</h3>
-              <button
-                type="button"
-                onClick={() => setShowFoodSearch(true)}
-                className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center space-x-1"
-              >
-                <Search className="w-4 h-4" />
-                <span>Search Foods</span>
-              </button>
+              <div className="flex items-center space-x-2">
+                {formData.aiAnalyzed && (
+                  <div className="flex items-center space-x-1 text-purple-600 text-sm">
+                    <Sparkles className="w-4 h-4" />
+                    <span>{Math.round(formData.confidence * 100)}% AI</span>
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setIsManualEntry(!isManualEntry)}
+                  className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center space-x-1"
+                >
+                  <Edit3 className="w-4 h-4" />
+                  <span>Manual Entry</span>
+                </button>
+              </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Calories */}
@@ -392,5 +451,14 @@ export const MealLogger: React.FC<MealLoggerProps> = ({ onClose }) => {
         </form>
       </div>
     </div>
+
+      {/* AI Analysis Modal */}
+      {showAIAnalysis && (
+        <AIFoodAnalysis 
+          onAnalysisComplete={handleAIAnalysis}
+          onClose={() => setShowAIAnalysis(false)}
+        />
+      )}
+    </>
   );
 };
