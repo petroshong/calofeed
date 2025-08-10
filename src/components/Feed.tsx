@@ -192,6 +192,8 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                   onDelete={deleteMeal}
                   onShare={setShareModal}
                 />
+                
+                <div className="p-4">
                   {/* Nutrition Info */}
                   <div className="flex justify-between items-center mb-3 p-3 bg-gray-50 rounded-lg">
                     <div className="text-center">

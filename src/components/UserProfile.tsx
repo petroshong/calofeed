@@ -27,6 +27,15 @@ const mockMeals: Meal[] = [
     comments: [],
     isLiked: false,
     isBookmarked: false,
+    user: {
+      id: 'user1',
+      username: 'foodie123',
+      displayName: 'Food Lover',
+      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150',
+      isVerified: false,
+      isInfluencer: false,
+      isPremium: false
+    },
     shares: 12,
     views: 456,
     tags: ['preworkout', 'protein'],

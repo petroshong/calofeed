@@ -29,6 +29,7 @@ const mockMeals: Meal[] = [
     sodium: 320,
     likes: 24,
     comments: [],
+    shares: 12,
     views: 156,
     tags: [],
     visibility: 'public'
