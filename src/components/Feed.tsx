@@ -298,37 +298,6 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile }) => {
                 <button className="text-gray-400 hover:text-gray-600 p-2">
                   <MoreHorizontal className="w-5 h-5" />
                 </button>
-                  <button onClick={() => onViewProfile && onViewProfile(meal.user)}>
-                    <img 
-                      src={meal.user.avatar} 
-                      alt={meal.user.displayName}
-                      className="w-10 h-10 rounded-full object-cover hover:ring-2 hover:ring-blue-500 transition-all"
-                    />
-                  </button>
-                  <div>
-                    <button 
-                      onClick={() => onViewProfile && onViewProfile(meal.user)}
-                      className="flex items-center space-x-2 hover:text-blue-600 transition-colors"
-                    >
-                      <h3 className="font-semibold text-gray-900">{meal.user.displayName}</h3>
-                      {meal.user.isVerified && <Star className="w-4 h-4 text-blue-500 fill-current" />}
-                    </button>
-                    <div className="flex items-center text-sm text-gray-500 space-x-2">
-                      <Clock className="w-4 h-4" />
-                      <span>{meal.timestamp}</span>
-                      {meal.location && (
-                        <>
-                          <span>•</span>
-                          <MapPin className="w-4 h-4" />
-                          <span>{meal.location}</span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <button className="text-gray-400 hover:text-gray-600 p-2">
-                  <MoreHorizontal className="w-5 h-5" />
-                </button>
               </div>
 
               {/* Food Image */}

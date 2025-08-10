@@ -188,16 +188,20 @@ export const SearchModal: React.FC<SearchModalProps> = ({ onClose, onViewProfile
                 {mockPlaces.map((place) => (
                   <div key={place.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <div>
-                        <button 
-                          onClick={() => onViewProfile(user)}
-                          className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
-                        >
-                          View Profile
-                        <span>{place.rating}</span>
+                            <div className="font-semibold text-gray-900">{place.name}</div>
+                            <div className="text-sm text-gray-600">{place.location}</div>
+                            <div className="flex items-center space-x-3 text-xs text-gray-500 mt-1">
+                              <div className="flex items-center space-x-1">
+                                <Star className="w-3 h-3 text-yellow-500 fill-current" />
+                                <span>{place.rating}</span>
+                              </div>
+                              <div className="text-gray-500">{place.meals} meals</div>
+                            </div>
+                          </div>
+                          <button className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+                            View
+                          </button>
                       </div>
-                      <div className="text-gray-500">{place.meals} meals</div>
-                    </div>
-                  </div>
                 ))}
               </div>
             </div>
