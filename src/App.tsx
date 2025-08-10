@@ -13,6 +13,8 @@ import { SearchModal } from './components/SearchModal';
 import { Groups } from './components/Groups';
 import { Discover } from './components/Discover';
 import { CalorieTracker } from './components/CalorieTracker';
+import { UserProfile } from './components/UserProfile';
+import { FindFriends } from './components/FindFriends';
 import { useAuth } from './hooks/useAuth';
 import { useNotifications } from './hooks/useNotifications';
 import type { User } from './types';
