@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Settings, Bell, Search, Plus, Heart, MessageCircle, Trophy, Target, Flame, Users, Map, Calendar, Star, Menu, X } from 'lucide-react';
+import { Settings, Bell, Search, Plus, Heart, MessageCircle, Trophy, Target, Flame, Users, Map, Calendar, Star, Menu, X } from 'lucide-react';
 import { AuthScreen } from './components/AuthScreen';
 import { Feed } from './components/Feed';
 import { Profile } from './components/Profile';
