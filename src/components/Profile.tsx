@@ -1,12 +1,34 @@
 import React, { useState } from 'react';
-import { Settings, UserPlus, UserCheck, MapPin, Calendar, Target, Flame, Trophy, Star, Grid, List, Link, Shield, Crown, MessageCircle, MoreHorizontal, Edit3, Instagram, Twitter, Youtube, ExternalLink, Share2, Copy, Heart, X } from 'lucide-react';
+import { Settings, UserPlus, UserCheck, MapPin, Calendar, Target, Flame, Trophy, Star, Grid, List, Link, Shield, Crown, MessageCircle, MoreHorizontal, Edit3, Instagram, Twitter, Youtube, ExternalLink, Share2, Copy, Heart, X, Camera, Eye } from 'lucide-react';
 import { FollowersModal } from './FollowersModal';
 import { SocialShare } from './SocialShare';
 import { EditProfile } from './EditProfile';
 import { MealActions } from './MealActions';
+import { CalorieTracker } from './CalorieTracker';
 import { useMeals } from '../hooks/useMeals';
 import type { User, Meal, WeightEntry } from '../types';
 
+interface ProfileProps {
+  user: User;
+  onUpdateUser: (user: User) => void;
+}
+
+const mockMeals: Meal[] = [
+  {
+    id: '1',
+    userId: 'user1',
+    description: 'Healthy breakfast bowl',
+    image: 'https://images.unsplash.com/photo-1511690743698-d9d85f2fbf38?w=400',
+    timestamp: new Date().toISOString(),
+    calories: 450,
+    protein: 25,
+    carbs: 35,
+    fat: 18,
+    fiber: 8,
+    sugar: 12,
+    sodium: 320,
+    likes: 24,
+    comments: [],
     views: 156,
     tags: [],
     visibility: 'public'
