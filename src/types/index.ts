@@ -5,12 +5,19 @@ export interface User {
   email: string;
   avatar: string;
   bio: string;
+  coverImage?: string;
   isFollowing: boolean;
   followers: number;
   following: number;
   mealsLogged: number;
   streak: number;
   badges: Badge[];
+  totalLikes: number;
+  totalComments: number;
+  rank: number;
+  level: number;
+  xp: number;
+  socialScore: number;
   dailyCalorieGoal: number;
   dailyProteinGoal: number;
   dailyCarbGoal: number;
@@ -29,10 +36,20 @@ export interface User {
   joinedDate: string;
   location?: string;
   website?: string;
+  socialLinks?: SocialLinks;
   isVerified: boolean;
   isPremium: boolean;
+  isInfluencer: boolean;
   privacySettings: PrivacySettings;
   notificationSettings: NotificationSettings;
+}
+
+export interface SocialLinks {
+  instagram?: string;
+  tiktok?: string;
+  youtube?: string;
+  twitter?: string;
+  website?: string;
 }
 
 export interface Badge {
@@ -42,6 +59,7 @@ export interface Badge {
   description: string;
   earnedDate: string;
   category: 'streak' | 'nutrition' | 'social' | 'challenge' | 'milestone';
+  rarity: 'common' | 'rare' | 'epic' | 'legendary';
 }
 
 export interface Meal {
@@ -49,6 +67,7 @@ export interface Meal {
   userId: string;
   user: User;
   image: string;
+  images?: string[];
   description: string;
   calories: number;
   protein: number;
@@ -65,9 +84,18 @@ export interface Meal {
   comments: Comment[];
   isLiked: boolean;
   isBookmarked: boolean;
+  shares: number;
+  views: number;
   tags: string[];
   recipe?: Recipe;
   visibility: 'public' | 'friends' | 'private';
+  isSponsored?: boolean;
+  sponsorBrand?: string;
+  isFeatured?: boolean;
+  mood?: string;
+  difficulty?: 'easy' | 'medium' | 'hard';
+  prepTime?: number;
+  rating?: number;
 }
 
 export interface Comment {
@@ -78,6 +106,38 @@ export interface Comment {
   timestamp: string;
   likes: number;
   isLiked: boolean;
+  replies?: Comment[];
+  mentions?: string[];
+  isEdited?: boolean;
+}
+
+export interface Story {
+  id: string;
+  userId: string;
+  user: User;
+  image: string;
+  text?: string;
+  timestamp: string;
+  expiresAt: string;
+  views: number;
+  isViewed: boolean;
+  type: 'meal' | 'progress' | 'achievement' | 'workout';
+}
+
+export interface Follow {
+  id: string;
+  followerId: string;
+  followingId: string;
+  timestamp: string;
+  isClose?: boolean;
+}
+
+export interface Share {
+  id: string;
+  userId: string;
+  mealId: string;
+  platform: 'instagram' | 'tiktok' | 'twitter' | 'facebook' | 'whatsapp' | 'copy';
+  timestamp: string;
 }
 
 export interface Recipe {
@@ -90,6 +150,10 @@ export interface Recipe {
   servings: number;
   difficulty: 'easy' | 'medium' | 'hard';
   tags: string[];
+  rating?: number;
+  reviews?: number;
+  author?: User;
+  isVerified?: boolean;
 }
 
 export interface Ingredient {
@@ -118,6 +182,18 @@ export interface Challenge {
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   rules: string[];
   prize?: string;
+  leaderboard?: ChallengeParticipant[];
+  isSponsored?: boolean;
+  sponsor?: string;
+  hashtag?: string;
+}
+
+export interface ChallengeParticipant {
+  userId: string;
+  user: User;
+  progress: number;
+  rank: number;
+  joinedDate: string;
 }
 
 export interface Group {
@@ -125,6 +201,7 @@ export interface Group {
   name: string;
   description: string;
   avatar: string;
+  coverImage?: string;
   memberCount: number;
   isJoined: boolean;
   isPrivate: boolean;
@@ -132,6 +209,11 @@ export interface Group {
   tags: string[];
   createdBy: string;
   createdDate: string;
+  admins: string[];
+  moderators: string[];
+  rules: string[];
+  recentActivity: string;
+  weeklyPosts: number;
 }
 
 export interface Notification {
@@ -144,6 +226,8 @@ export interface Notification {
   actionUrl?: string;
   avatar?: string;
   data?: any;
+  priority: 'low' | 'medium' | 'high';
+  category: 'social' | 'system' | 'achievement' | 'reminder';
 }
 
 export interface PrivacySettings {
@@ -153,6 +237,10 @@ export interface PrivacySettings {
   showGoals: boolean;
   allowMessages: boolean;
   showOnLeaderboard: boolean;
+  allowTagging: boolean;
+  allowSharing: boolean;
+  showActivity: boolean;
+  allowStoryViews: boolean;
 }
 
 export interface NotificationSettings {
@@ -163,6 +251,9 @@ export interface NotificationSettings {
   achievements: boolean;
   reminders: boolean;
   groups: boolean;
+  mentions: boolean;
+  shares: boolean;
+  stories: boolean;
   email: boolean;
   push: boolean;
 }
@@ -172,6 +263,9 @@ export interface WeightEntry {
   weight: number;
   date: string;
   note?: string;
+  bodyFat?: number;
+  muscleMass?: number;
+  mood?: string;
 }
 
 export interface FoodItem {
@@ -189,4 +283,8 @@ export interface FoodItem {
   servingUnit: string;
   barcode?: string;
   verified: boolean;
+  popularity?: number;
+  lastUsed?: string;
+  userRating?: number;
+  category?: string;
 }

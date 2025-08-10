@@ -24,7 +24,14 @@ export const useAuth = () => {
         { id: '2', name: 'Protein Pro', emoji: '💪', description: 'Hit protein goal 30 days', earnedDate: '2024-01-10', category: 'nutrition' },
         { id: '3', name: 'Veggie Lover', emoji: '🥗', description: 'Logged 100 vegetable servings', earnedDate: '2024-01-05', category: 'nutrition' },
         { id: '4', name: 'Community Star', emoji: '⭐', description: '100 likes received', earnedDate: '2024-01-01', category: 'social' }
-      ],
+      ].map(badge => ({ ...badge, rarity: 'common' as const })),
+      totalLikes: 2847,
+      totalComments: 456,
+      rank: 15,
+      level: 12,
+      xp: 8450,
+      socialScore: 92,
+      coverImage: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=800',
       dailyCalorieGoal: 2200,
       dailyProteinGoal: 150,
       dailyCarbGoal: 275,
@@ -43,15 +50,25 @@ export const useAuth = () => {
       joinedDate: '2023-06-15',
       location: 'San Francisco, CA',
       website: 'alexfitness.com',
+      socialLinks: {
+        instagram: 'alexfitness',
+        youtube: 'alexfitnesschannel',
+        website: 'alexfitness.com'
+      },
       isVerified: true,
       isPremium: true,
+      isInfluencer: false,
       privacySettings: {
         profileVisibility: 'public',
         mealVisibility: 'public',
         showWeight: true,
         showGoals: true,
         allowMessages: true,
-        showOnLeaderboard: true
+        showOnLeaderboard: true,
+        allowTagging: true,
+        allowSharing: true,
+        showActivity: true,
+        allowStoryViews: true
       },
       notificationSettings: {
         likes: true,
@@ -61,6 +78,9 @@ export const useAuth = () => {
         achievements: true,
         reminders: true,
         groups: true,
+        mentions: true,
+        shares: true,
+        stories: true,
         email: true,
         push: true
       }

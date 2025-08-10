@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Settings, UserPlus, UserCheck, MapPin, Calendar, Target, Flame, Trophy, Star, Grid, List, Link, Shield, Crown, MessageCircle, MoreHorizontal, Edit3 } from 'lucide-react';
+import { Settings, UserPlus, UserCheck, MapPin, Calendar, Target, Flame, Trophy, Star, Grid, List, Link, Shield, Crown, MessageCircle, MoreHorizontal, Edit3, Instagram, Twitter, Youtube, ExternalLink, Share2, Copy } from 'lucide-react';
+import { FollowersModal } from './FollowersModal';
+import { SocialShare } from './SocialShare';
 import type { User, Meal, WeightEntry } from '../types';
 
 interface ProfileProps {
@@ -23,6 +25,8 @@ const userMeals: Meal[] = [
     comments: [],
     isLiked: false,
     isBookmarked: false,
+    shares: 3,
+    views: 89,
     tags: [],
     visibility: 'public'
   },
@@ -37,9 +41,15 @@ const userMeals: Meal[] = [
     carbs: 45,
     fat: 8,
     timestamp: '1 day ago',
+    mealType: 'snack',
     likes: 18,
-    comments: 3,
-    isLiked: true
+    comments: [],
+    isLiked: true,
+    isBookmarked: false,
+    shares: 1,
+    views: 45,
+    tags: [],
+    visibility: 'public'
   },
   {
     id: '3',
@@ -52,9 +62,15 @@ const userMeals: Meal[] = [
     carbs: 52,
     fat: 16,
     timestamp: '2 days ago',
+    mealType: 'lunch',
     likes: 31,
-    comments: 12,
-    isLiked: false
+    comments: [],
+    isLiked: false,
+    isBookmarked: false,
+    shares: 7,
+    views: 156,
+    tags: [],
+    visibility: 'public'
   }
 ];
 
@@ -62,9 +78,24 @@ export const Profile: React.FC<ProfileProps> = ({ user }) => {
   const [activeTab, setActiveTab] = useState<'grid' | 'list'>('grid');
   const [isFollowing, setIsFollowing] = useState(user.isFollowing);
   const [showEditProfile, setShowEditProfile] = useState(false);
+  const [showFollowersModal, setShowFollowersModal] = useState<'followers' | 'following' | null>(null);
+  const [showShareProfile, setShowShareProfile] = useState(false);
 
   const toggleFollow = () => {
     setIsFollowing(!isFollowing);
+  };
+
+  const getSocialIcon = (platform: string) => {
+    switch (platform) {
+      case 'instagram':
+        return <Instagram className="w-4 h-4" />;
+      case 'twitter':
+        return <Twitter className="w-4 h-4" />;
+      case 'youtube':
+        return <Youtube className="w-4 h-4" />;
+      default:
+        return <ExternalLink className="w-4 h-4" />;
+    }
   };
 
   return (
@@ -73,11 +104,25 @@ export const Profile: React.FC<ProfileProps> = ({ user }) => {
       <div className="bg-white border-b border-gray-200">
         <div className="relative">
           {/* Cover Image */}
-          <div className="h-32 lg:h-48 bg-gradient-to-r from-green-400 to-emerald-500 relative">
+          <div 
+            className="h-32 lg:h-48 relative bg-cover bg-center"
+            style={{ 
+              backgroundImage: user.coverImage 
+                ? `url(${user.coverImage})` 
+                : 'linear-gradient(to right, #10b981, #059669)'
+            }}
+          >
+            <div className="absolute inset-0 bg-black bg-opacity-20" />
             {user.isPremium && (
               <div className="absolute top-4 right-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center space-x-1">
                 <Crown className="w-4 h-4" />
                 <span>PRO</span>
+              </div>
+            )}
+            {user.isInfluencer && (
+              <div className="absolute top-4 left-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center space-x-1">
+                <Crown className="w-4 h-4" />
+                <span>CREATOR</span>
               </div>
             )}
           </div>
@@ -88,7 +133,7 @@ export const Profile: React.FC<ProfileProps> = ({ user }) => {
               <img 
                 src={user.avatar} 
                 alt={user.displayName}
-                className="w-24 h-24 lg:w-32 lg:h-32 rounded-full border-4 border-white object-cover mx-auto lg:mx-0"
+                className="w-24 h-24 lg:w-32 lg:h-32 rounded-full border-4 border-white object-cover mx-auto lg:mx-0 shadow-lg"
               />
             </div>
             
@@ -97,22 +142,48 @@ export const Profile: React.FC<ProfileProps> = ({ user }) => {
                 <div className="flex items-center justify-center lg:justify-start space-x-2 mb-2">
                   <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">{user.displayName}</h1>
                   {user.isVerified && <Star className="w-6 h-6 text-blue-500 fill-current" />}
+                  {user.isInfluencer && <Crown className="w-6 h-6 text-yellow-500 fill-current" />}
                 </div>
                 <p className="text-gray-600 text-lg">@{user.username}</p>
+                
+                {/* Level and XP */}
+                <div className="flex items-center justify-center lg:justify-start space-x-4 mt-2 mb-3">
+                  <div className="flex items-center space-x-2">
+                    <Trophy className="w-4 h-4 text-yellow-500" />
+                    <span className="text-sm font-medium text-gray-700">Level {user.level}</span>
+                  </div>
+                  <div className="text-sm text-gray-600">{user.xp.toLocaleString()} XP</div>
+                  <div className="flex items-center space-x-1">
+                    <Star className="w-4 h-4 text-purple-500" />
+                    <span className="text-sm font-medium text-gray-700">{user.socialScore}/100</span>
+                  </div>
+                </div>
+
                 {user.location && (
                   <div className="flex items-center justify-center lg:justify-start space-x-1 text-gray-600 mt-1">
                     <MapPin className="w-4 h-4" />
                     <span>{user.location}</span>
                   </div>
                 )}
-                {user.website && (
-                  <div className="flex items-center justify-center lg:justify-start space-x-1 text-blue-600 mt-1">
-                    <Link className="w-4 h-4" />
-                    <a href={`https://${user.website}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                      {user.website}
-                    </a>
+                
+                {/* Social Links */}
+                {user.socialLinks && Object.keys(user.socialLinks).length > 0 && (
+                  <div className="flex items-center justify-center lg:justify-start space-x-3 mt-2">
+                    {Object.entries(user.socialLinks).map(([platform, handle]) => (
+                      <a
+                        key={platform}
+                        href={platform === 'website' ? `https://${handle}` : `https://${platform}.com/${handle}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center space-x-1 text-blue-600 hover:text-blue-700 text-sm"
+                      >
+                        {getSocialIcon(platform)}
+                        <span>{handle}</span>
+                      </a>
+                    ))}
                   </div>
                 )}
+                
                 <p className="text-gray-700 mt-2 max-w-md mx-auto lg:mx-0">{user.bio}</p>
                 
                 {/* Dietary Preferences */}
@@ -132,14 +203,20 @@ export const Profile: React.FC<ProfileProps> = ({ user }) => {
                     <div className="text-xl font-bold text-gray-900">{user.mealsLogged}</div>
                     <div className="text-sm text-gray-600">Meals</div>
                   </div>
-                  <div className="text-center">
+                  <button 
+                    onClick={() => setShowFollowersModal('followers')}
+                    className="text-center hover:bg-gray-50 rounded-lg px-2 py-1 transition-colors"
+                  >
                     <div className="text-xl font-bold text-gray-900">{user.followers}</div>
                     <div className="text-sm text-gray-600">Followers</div>
-                  </div>
-                  <div className="text-center">
+                  </button>
+                  <button 
+                    onClick={() => setShowFollowersModal('following')}
+                    className="text-center hover:bg-gray-50 rounded-lg px-2 py-1 transition-colors"
+                  >
                     <div className="text-xl font-bold text-gray-900">{user.following}</div>
                     <div className="text-sm text-gray-600">Following</div>
-                  </div>
+                  </button>
                   <div className="text-center">
                     <div className="text-xl font-bold text-orange-600 flex items-center">
                       <Flame className="w-5 h-5 mr-1" />
@@ -152,6 +229,13 @@ export const Profile: React.FC<ProfileProps> = ({ user }) => {
               
               {/* Action Buttons */}
               <div className="flex justify-center lg:justify-end space-x-3 mt-4 lg:mt-0">
+                <button
+                  onClick={() => setShowShareProfile(true)}
+                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center space-x-2"
+                >
+                  <Share2 className="w-4 h-4" />
+                  <span>Share</span>
+                </button>
                 <button
                   onClick={() => setShowEditProfile(true)}
                   className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center space-x-2"
@@ -211,13 +295,13 @@ export const Profile: React.FC<ProfileProps> = ({ user }) => {
           <p className="text-xs text-purple-600">Achievements</p>
         </div>
 
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-100">
+        <div className="bg-gradient-to-br from-yellow-50 to-amber-50 p-4 rounded-xl border border-yellow-100">
           <div className="flex items-center justify-between mb-2">
-            <Star className="w-8 h-8 text-blue-600" />
-            <span className="text-2xl font-bold text-blue-700">4.8</span>
+            <Heart className="w-8 h-8 text-pink-600" />
+            <span className="text-2xl font-bold text-pink-700">{user.totalLikes}</span>
           </div>
-          <p className="text-sm font-medium text-blue-800">Nutrition Score</p>
-          <p className="text-xs text-blue-600">This week</p>
+          <p className="text-sm font-medium text-pink-800">Total Likes</p>
+          <p className="text-xs text-pink-600">All time</p>
         </div>
       </div>
 
@@ -226,10 +310,24 @@ export const Profile: React.FC<ProfileProps> = ({ user }) => {
         <h2 className="text-lg font-semibold text-gray-900 mb-3">Recent Badges</h2>
         <div className="flex space-x-3 overflow-x-auto">
           {user.badges.map((badge, index) => (
-            <div key={badge.id} className="bg-white border border-gray-200 rounded-lg p-3 text-center min-w-[100px] flex-shrink-0">
+            <div key={badge.id} className={`bg-white border rounded-lg p-3 text-center min-w-[100px] flex-shrink-0 ${
+              badge.rarity === 'legendary' ? 'border-yellow-300 bg-gradient-to-br from-yellow-50 to-amber-50' :
+              badge.rarity === 'epic' ? 'border-purple-300 bg-gradient-to-br from-purple-50 to-pink-50' :
+              badge.rarity === 'rare' ? 'border-blue-300 bg-gradient-to-br from-blue-50 to-indigo-50' :
+              'border-gray-200'
+            }`}>
               <div className="text-2xl mb-1">{badge.emoji}</div>
               <p className="text-xs font-medium text-gray-900">{badge.name}</p>
               <p className="text-xs text-gray-600">{badge.description}</p>
+              {badge.rarity !== 'common' && (
+                <div className={`text-xs font-bold mt-1 ${
+                  badge.rarity === 'legendary' ? 'text-yellow-600' :
+                  badge.rarity === 'epic' ? 'text-purple-600' :
+                  'text-blue-600'
+                }`}>
+                  {badge.rarity.toUpperCase()}
+                </div>
+              )}
             </div>
           ))}
           {user.badges.length === 0 && (
@@ -309,7 +407,10 @@ export const Profile: React.FC<ProfileProps> = ({ user }) => {
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 rounded-lg flex items-center justify-center">
                   <div className="text-white opacity-0 group-hover:opacity-100 text-center">
                     <div className="font-bold">{meal.calories} cal</div>
-                    <div className="text-sm">{meal.likes} likes</div>
+                    <div className="text-sm flex items-center justify-center space-x-3">
+                      <span>{meal.likes} ❤️</span>
+                      <span>{meal.views} 👁️</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -330,7 +431,9 @@ export const Profile: React.FC<ProfileProps> = ({ user }) => {
                   <div className="flex space-x-4 mt-2 text-sm text-gray-600">
                     <span>{meal.calories} cal</span>
                     <span>{meal.protein}g protein</span>
-                    <span>{meal.likes} likes</span>
+                    <span>{meal.likes} ❤️</span>
+                    <span>{meal.views} views</span>
+                    <span>{meal.shares} shares</span>
                   </div>
                 </div>
               </div>
@@ -338,6 +441,52 @@ export const Profile: React.FC<ProfileProps> = ({ user }) => {
           </div>
         )}
       </div>
+
+      {/* Modals */}
+      {showFollowersModal && (
+        <FollowersModal 
+          user={user} 
+          type={showFollowersModal} 
+          onClose={() => setShowFollowersModal(null)} 
+        />
+      )}
+      
+      {showShareProfile && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center">
+          <div className="bg-white rounded-t-3xl lg:rounded-2xl max-w-md w-full p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-gray-900">Share Profile</h2>
+              <button
+                onClick={() => setShowShareProfile(false)}
+                className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="bg-gray-50 rounded-lg p-4 text-center">
+                <img 
+                  src={user.avatar} 
+                  alt={user.displayName}
+                  className="w-16 h-16 rounded-full object-cover mx-auto mb-3"
+                />
+                <h3 className="font-semibold text-gray-900">{user.displayName}</h3>
+                <p className="text-sm text-gray-600">@{user.username}</p>
+                <p className="text-xs text-gray-500 mt-2">{user.followers.toLocaleString()} followers • {user.streak} day streak</p>
+              </div>
+              
+              <button
+                onClick={() => navigator.clipboard.writeText(`Check out ${user.displayName}'s profile on EatSocial! https://eatsocial.app/profile/${user.username}`)}
+                className="w-full flex items-center justify-center space-x-2 p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                <Copy className="w-5 h-5 text-gray-600" />
+                <span className="text-gray-700">Copy Profile Link</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
