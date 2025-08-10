@@ -22,6 +22,9 @@ import {
 } from 'lucide-react';
 import { PremiumUpgrade } from './PremiumUpgrade';
 import { WeightTracker } from './WeightTracker';
+import { EditProfile } from './EditProfile';
+import { GoalsTargets } from './GoalsTargets';
+import { ActivityLevelSelector } from './ActivityLevelSelector';
 import type { User as UserType } from '../types';
 
 interface SettingsProps {

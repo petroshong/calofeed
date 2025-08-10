@@ -150,13 +150,16 @@ export const WeightTracker: React.FC<WeightTrackerProps> = ({ user, onClose, onU
             <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4">
               <div className="flex items-center justify-between mb-2">
                 <Target className="w-6 h-6 text-green-600" />
-                <div className={`flex items-center space-x-1 text-sm ${
-                  weightTrend.trend === 'losing' ? 'text-green-600' : 
-                  weightTrend.trend === 'gaining' ? 'text-red-600' : 'text-gray-600'
-                }`}>
-                  {weightTrend.trend === 'losing' && <TrendingDown className="w-4 h-4" />}
-                  {weightTrend.trend === 'gaining' && <TrendingUp className="w-4 h-4" />}
-                  <span>{weightTrend.change.toFixed(1)} lbs</span>
+                <div className="text-right">
+                  <div className="text-sm font-medium text-green-700">
+                    {user.goalWeight && user.currentWeight ? (
+                      user.goalWeight < user.currentWeight ? 
+                        `${(user.currentWeight - user.goalWeight).toFixed(1)} lbs to lose` :
+                        `${(user.goalWeight - user.currentWeight).toFixed(1)} lbs to gain`
+                    ) : (
+                      'Set goal weight'
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="text-2xl font-bold text-green-700">{user.goalWeight || 0} lbs</div>
@@ -169,11 +172,52 @@ export const WeightTracker: React.FC<WeightTrackerProps> = ({ user, onClose, onU
                 <span className="text-sm text-purple-600">{progressToGoal.toFixed(0)}%</span>
               </div>
               <div className="text-2xl font-bold text-purple-700">
-                {Math.abs((user.currentWeight || 0) - (user.goalWeight || 0)).toFixed(1)} lbs
+                {user.currentWeight && user.goalWeight ? 
+                  Math.abs(user.currentWeight - user.goalWeight).toFixed(1) : '0'
+                } lbs
               </div>
-              <div className="text-sm text-purple-600">To Goal</div>
+              <div className="text-sm text-purple-600">
+                {user.currentWeight && user.goalWeight && user.goalWeight < user.currentWeight ? 'To Lose' : 'To Goal'}
+              </div>
             </div>
           </div>
+
+          {/* Weight Loss/Gain Calculator */}
+          {user.currentWeight && user.goalWeight && user.currentWeight !== user.goalWeight && (
+            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Weight Goal Calculator</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-indigo-600">
+                    {Math.abs(user.currentWeight - user.goalWeight).toFixed(1)}
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    lbs to {user.goalWeight < user.currentWeight ? 'lose' : 'gain'}
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-purple-600">
+                    {Math.ceil(Math.abs(user.currentWeight - user.goalWeight) / 1.5)}
+                  </div>
+                  <div className="text-sm text-gray-600">weeks at 1.5 lbs/week</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-pink-600">
+                    {user.goalWeight < user.currentWeight ? '-500' : '+500'}
+                  </div>
+                  <div className="text-sm text-gray-600">cal/day needed</div>
+                </div>
+              </div>
+              <div className="mt-4 p-3 bg-white rounded-lg">
+                <p className="text-sm text-gray-700">
+                  <strong>Recommendation:</strong> {user.goalWeight < user.currentWeight ? 
+                    `Create a daily deficit of 500 calories to lose ${Math.abs(user.currentWeight - user.goalWeight).toFixed(1)} lbs in ${Math.ceil(Math.abs(user.currentWeight - user.goalWeight) / 1.5)} weeks` :
+                    `Create a daily surplus of 500 calories to gain ${Math.abs(user.currentWeight - user.goalWeight).toFixed(1)} lbs in ${Math.ceil(Math.abs(user.currentWeight - user.goalWeight) / 1.5)} weeks`
+                  }
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Progress Chart */}
           {weightEntries.length > 1 && (
@@ -416,6 +460,21 @@ export const WeightTracker: React.FC<WeightTrackerProps> = ({ user, onClose, onU
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
+                
+                {/* Weight Difference Display */}
+                {tempGoals.currentWeight && tempGoals.goalWeight && tempGoals.currentWeight !== tempGoals.goalWeight && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <div className="text-center">
+                      <div className="text-lg font-bold text-blue-700">
+                        {Math.abs(tempGoals.currentWeight - tempGoals.goalWeight).toFixed(1)} lbs
+                      </div>
+                      <div className="text-sm text-blue-600">
+                        to {tempGoals.goalWeight < tempGoals.currentWeight ? 'lose' : 'gain'}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
                 <div className="flex space-x-3 pt-4">
                   <button
                     onClick={() => setEditingGoals(false)}
