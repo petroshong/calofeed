@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Settings, UserPlus, UserCheck, MapPin, Calendar, Target, Flame, Trophy, Star, Grid, List, Link, Shield, Crown, MessageCircle, MoreHorizontal, Edit3, Instagram, Twitter, Youtube, ExternalLink, Share2, Copy } from 'lucide-react';
+import { Settings, UserPlus, UserCheck, MapPin, Calendar, Target, Flame, Trophy, Star, Grid, List, Link, Shield, Crown, MessageCircle, MoreHorizontal, Edit3, Instagram, Twitter, Youtube, ExternalLink, Share2, Copy, Heart, X } from 'lucide-react';
 import { FollowersModal } from './FollowersModal';
 import { SocialShare } from './SocialShare';
 import type { User, Meal, WeightEntry } from '../types';
