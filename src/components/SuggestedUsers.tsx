@@ -56,7 +56,11 @@ const suggestedUsers: User[] = [
   } as User
 ];
 
-export const SuggestedUsers: React.FC = () => {
+interface SuggestedUsersProps {
+  onViewProfile?: (user: User) => void;
+}
+
+export const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ onViewProfile }) => {
   const [users, setUsers] = useState<User[]>(suggestedUsers);
   const [dismissedUsers, setDismissedUsers] = useState<string[]>([]);
 
@@ -84,14 +88,21 @@ export const SuggestedUsers: React.FC = () => {
       <div className="space-y-4">
         {visibleUsers.slice(0, 3).map((user) => (
           <div key={user.id} className="flex items-center space-x-3">
-            <img 
-              src={user.avatar} 
-              alt={user.displayName}
-              className="w-12 h-12 rounded-full object-cover"
-            />
+            <button onClick={() => onViewProfile && onViewProfile(user)}>
+              <img 
+                src={user.avatar} 
+                alt={user.displayName}
+                className="w-12 h-12 rounded-full object-cover hover:ring-2 hover:ring-blue-500 transition-all"
+              />
+            </button>
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-2">
-                <h3 className="font-semibold text-gray-900 truncate">{user.displayName}</h3>
+                <button 
+                  onClick={() => onViewProfile && onViewProfile(user)}
+                  className="font-semibold text-gray-900 truncate hover:text-blue-600 transition-colors"
+                >
+                  {user.displayName}
+                </button>
                 {user.isVerified && <Star className="w-4 h-4 text-blue-500 fill-current" />}
                 {user.isInfluencer && <Crown className="w-4 h-4 text-yellow-500 fill-current" />}
               </div>

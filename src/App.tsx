@@ -20,9 +20,15 @@ import type { User } from './types';
 function App() {
   const { currentUser, isAuthenticated, login, logout, updateUser } = useAuth();
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
-  const [currentView, setCurrentView] = useState<'feed' | 'profile' | 'log' | 'challenges' | 'leaderboard' | 'notifications' | 'settings' | 'groups' | 'discover' | 'calories'>('feed');
+  const [currentView, setCurrentView] = useState<'feed' | 'profile' | 'log' | 'challenges' | 'leaderboard' | 'notifications' | 'settings' | 'groups' | 'discover' | 'calories' | 'find-friends' | 'user-profile'>('feed');
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+  const handleViewProfile = (user: User) => {
+    setSelectedUser(user);
+    setCurrentView('user-profile');
+  };
 
   if (!isAuthenticated || !currentUser) {
     return <AuthScreen onLogin={login} />;
@@ -193,6 +199,16 @@ function App() {
               >
                 Calories
               </button>
+              <button
+                onClick={() => setCurrentView('find-friends')}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  currentView === 'find-friends' 
+                    ? 'bg-green-50 text-green-700' 
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                Find Friends
+              </button>
             </div>
           </div>
 
@@ -272,6 +288,15 @@ function App() {
                     ></div>
                   </div>
                 </div>
+                <button
+                  onClick={() => { setCurrentView('find-friends'); setShowMobileMenu(false); }}
+                  className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
+                    currentView === 'find-friends' ? 'bg-green-50 text-green-700' : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  <Users className="w-5 h-5" />
+                  <span>Find Friends</span>
+                </button>
               </div>
             </div>
 
@@ -290,11 +315,17 @@ function App() {
                 <Map className="w-5 h-5" />
                 <span>Eating Map</span>
               </button>
-              <button className="w-full flex items-center space-x-3 p-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+              <button 
+                onClick={() => setCurrentView('find-friends')}
+                className="w-full flex items-center space-x-3 p-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+              >
                 <Users className="w-5 h-5" />
                 <span>Find Friends</span>
               </button>
-              <button className="w-full flex items-center space-x-3 p-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+              <button 
+                onClick={() => setCurrentView('settings')}
+                className="w-full flex items-center space-x-3 p-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+              >
                 <Settings className="w-5 h-5" />
                 <span>Settings</span>
               </button>
@@ -304,10 +335,25 @@ function App() {
 
         {/* Main Content */}
         <main className="flex-1 lg:max-w-4xl lg:mx-auto">
-          {currentView === 'feed' && <Feed />}
+          {currentView === 'feed' && <Feed onViewProfile={handleViewProfile} />}
           {currentView === 'discover' && <Discover />}
           {currentView === 'groups' && <Groups />}
           {currentView === 'profile' && <Profile user={currentUser} onUpdateUser={updateUser} />}
+          {currentView === 'user-profile' && selectedUser && (
+            <UserProfile 
+              user={selectedUser} 
+              currentUser={currentUser}
+              onBack={() => setCurrentView('feed')}
+              onUpdateCurrentUser={updateUser}
+            />
+          )}
+          {currentView === 'find-friends' && (
+            <FindFriends 
+              currentUser={currentUser}
+              onViewProfile={handleViewProfile}
+              onUpdateCurrentUser={updateUser}
+            />
+          )}
           {currentView === 'log' && <MealLogger user={currentUser} onClose={() => setCurrentView('feed')} onUpdateUser={updateUser} />}
           {currentView === 'challenges' && <Challenges />}
           {currentView === 'leaderboard' && <Leaderboard />}
@@ -318,7 +364,7 @@ function App() {
       </div>
 
       {/* Search Modal */}
-      {showSearch && <SearchModal onClose={() => setShowSearch(false)} />}
+      {showSearch && <SearchModal onClose={() => setShowSearch(false)} onViewProfile={handleViewProfile} />}
 
       {/* Mobile Navigation */}
       <Navigation 

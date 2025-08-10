@@ -6,12 +6,14 @@ interface UserCardProps {
   user: User;
   variant?: 'default' | 'compact' | 'detailed';
   showFollowButton?: boolean;
+  onViewProfile?: (user: User) => void;
 }
 
 export const UserCard: React.FC<UserCardProps> = ({ 
   user, 
   variant = 'default', 
-  showFollowButton = true 
+  showFollowButton = true,
+  onViewProfile
 }) => {
   const [isFollowing, setIsFollowing] = useState(user.isFollowing);
 
@@ -22,14 +24,21 @@ export const UserCard: React.FC<UserCardProps> = ({
   if (variant === 'compact') {
     return (
       <div className="flex items-center space-x-3 p-3 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
-        <img 
-          src={user.avatar} 
-          alt={user.displayName}
-          className="w-10 h-10 rounded-full object-cover"
-        />
+        <button onClick={() => onViewProfile && onViewProfile(user)}>
+          <img 
+            src={user.avatar} 
+            alt={user.displayName}
+            className="w-10 h-10 rounded-full object-cover hover:ring-2 hover:ring-blue-500 transition-all"
+          />
+        </button>
         <div className="flex-1 min-w-0">
           <div className="flex items-center space-x-2">
-            <h3 className="font-semibold text-gray-900 truncate">{user.displayName}</h3>
+            <button 
+              onClick={() => onViewProfile && onViewProfile(user)}
+              className="font-semibold text-gray-900 truncate hover:text-blue-600 transition-colors"
+            >
+              {user.displayName}
+            </button>
             {user.isVerified && <Star className="w-4 h-4 text-blue-500 fill-current" />}
           </div>
           <p className="text-sm text-gray-600 truncate">@{user.username}</p>

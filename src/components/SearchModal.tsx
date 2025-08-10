@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Search, X, Hash, TrendingUp, Clock, MapPin, Users, Star } from 'lucide-react';
-import type { User, Meal } from '../types';
+import type { User } from '../types';
 
 interface SearchModalProps {
   onClose: () => void;
+  onViewProfile: (user: User) => void;
 }
 
 const trendingHashtags = [
@@ -54,7 +55,7 @@ const mockPlaces = [
   { id: '3', name: 'Fresh & Fit', location: 'Uptown', meals: 28, rating: 4.9 }
 ];
 
-export const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
+export const SearchModal: React.FC<SearchModalProps> = ({ onClose, onViewProfile }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'all' | 'users' | 'foods' | 'places'>('all');
   const [searchResults, setSearchResults] = useState<{
@@ -187,12 +188,11 @@ export const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
                 {mockPlaces.map((place) => (
                   <div key={place.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <div>
-                      <div className="font-medium text-gray-900">{place.name}</div>
-                      <div className="text-sm text-gray-600">{place.location}</div>
-                    </div>
-                    <div className="text-right text-sm">
-                      <div className="flex items-center space-x-1 text-yellow-600">
-                        <Star className="w-3 h-3 fill-current" />
+                        <button 
+                          onClick={() => onViewProfile(user)}
+                          className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                        >
+                          View Profile
                         <span>{place.rating}</span>
                       </div>
                       <div className="text-gray-500">{place.meals} meals</div>
