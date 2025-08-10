@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Camera, X, Upload, MapPin, Clock, Plus, Minus } from 'lucide-react';
+import { Camera, X, Upload, MapPin, Clock, Plus, Minus, Search, Scan, Hash, Users } from 'lucide-react';
 
 interface MealLoggerProps {
   onClose: () => void;
@@ -13,10 +13,15 @@ export const MealLogger: React.FC<MealLoggerProps> = ({ onClose }) => {
     protein: '',
     carbs: '',
     fat: '',
-    location: ''
+    location: '',
+    mealType: 'lunch' as 'breakfast' | 'lunch' | 'dinner' | 'snack',
+    tags: [] as string[],
+    visibility: 'public' as 'public' | 'friends' | 'private'
   });
   
   const [imagePreview, setImagePreview] = useState<string>('');
+  const [showFoodSearch, setShowFoodSearch] = useState(false);
+  const [currentTag, setCurrentTag] = useState('');
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -43,9 +48,26 @@ export const MealLogger: React.FC<MealLoggerProps> = ({ onClose }) => {
     }));
   };
 
+  const addTag = () => {
+    if (currentTag.trim() && !formData.tags.includes(currentTag.trim())) {
+      setFormData(prev => ({
+        ...prev,
+        tags: [...prev.tags, currentTag.trim()]
+      }));
+      setCurrentTag('');
+    }
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    setFormData(prev => ({
+      ...prev,
+      tags: prev.tags.filter(tag => tag !== tagToRemove)
+    }));
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center">
+      <div className="bg-white rounded-t-3xl lg:rounded-2xl max-w-2xl w-full max-h-[95vh] lg:max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-2xl font-bold text-gray-900">Log Your Meal</h2>
@@ -58,6 +80,27 @@ export const MealLogger: React.FC<MealLoggerProps> = ({ onClose }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          {/* Meal Type Selection */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-3">Meal Type</label>
+            <div className="grid grid-cols-4 gap-2">
+              {(['breakfast', 'lunch', 'dinner', 'snack'] as const).map((type) => (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => setFormData({...formData, mealType: type})}
+                  className={`py-3 px-4 rounded-lg font-medium transition-colors ${
+                    formData.mealType === type 
+                      ? 'bg-green-600 text-white' 
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Image Upload */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-3">Meal Photo</label>
@@ -96,6 +139,13 @@ export const MealLogger: React.FC<MealLoggerProps> = ({ onClose }) => {
                       className="hidden"
                     />
                   </label>
+                  <button
+                    type="button"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center space-x-2"
+                  >
+                    <Scan className="w-5 h-5" />
+                    <span>Scan Barcode</span>
+                  </button>
                 </div>
               </div>
             )}
@@ -118,7 +168,17 @@ export const MealLogger: React.FC<MealLoggerProps> = ({ onClose }) => {
 
           {/* Nutrition Information */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Nutrition Information</h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Nutrition Information</h3>
+              <button
+                type="button"
+                onClick={() => setShowFoodSearch(true)}
+                className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center space-x-1"
+              >
+                <Search className="w-4 h-4" />
+                <span>Search Foods</span>
+              </button>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Calories */}
               <div>
@@ -231,6 +291,67 @@ export const MealLogger: React.FC<MealLoggerProps> = ({ onClose }) => {
                   </button>
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* Tags */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+            <div className="flex flex-wrap gap-2 mb-3">
+              {formData.tags.map((tag) => (
+                <span key={tag} className="inline-flex items-center space-x-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
+                  <Hash className="w-3 h-3" />
+                  <span>{tag}</span>
+                  <button
+                    type="button"
+                    onClick={() => removeTag(tag)}
+                    className="text-blue-500 hover:text-blue-700"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              ))}
+            </div>
+            <div className="flex space-x-2">
+              <input
+                type="text"
+                value={currentTag}
+                onChange={(e) => setCurrentTag(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                placeholder="Add tags (e.g., healthy, protein)"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+              <button
+                type="button"
+                onClick={addTag}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+
+          {/* Privacy Settings */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-3">Who can see this meal?</label>
+            <div className="grid grid-cols-3 gap-2">
+              {(['public', 'friends', 'private'] as const).map((visibility) => (
+                <button
+                  key={visibility}
+                  type="button"
+                  onClick={() => setFormData({...formData, visibility})}
+                  className={`py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2 ${
+                    formData.visibility === visibility 
+                      ? 'bg-green-600 text-white' 
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {visibility === 'public' && <Users className="w-4 h-4" />}
+                  {visibility === 'friends' && <Users className="w-4 h-4" />}
+                  {visibility === 'private' && <User className="w-4 h-4" />}
+                  <span className="capitalize">{visibility}</span>
+                </button>
+              ))}
             </div>
           </div>
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Settings, Bell, Search, Plus, Heart, MessageCircle, Trophy, Target, Flame, Users, Map, Calendar, Star } from 'lucide-react';
+import { User, Settings, Bell, Search, Plus, Heart, MessageCircle, Trophy, Target, Flame, Users, Map, Calendar, Star, Menu, X } from 'lucide-react';
 import { AuthScreen } from './components/AuthScreen';
 import { Feed } from './components/Feed';
 import { Profile } from './components/Profile';
@@ -7,60 +7,21 @@ import { MealLogger } from './components/MealLogger';
 import { Challenges } from './components/Challenges';
 import { Leaderboard } from './components/Leaderboard';
 import { Navigation } from './components/Navigation';
+import { Notifications } from './components/Notifications';
+import { Settings as SettingsComponent } from './components/Settings';
+import { SearchModal } from './components/SearchModal';
+import { Groups } from './components/Groups';
+import { Discover } from './components/Discover';
 import { useAuth } from './hooks/useAuth';
-
-export type User = {
-  id: string;
-  username: string;
-  displayName: string;
-  avatar: string;
-  bio: string;
-  isFollowing: boolean;
-  followers: number;
-  following: number;
-  mealsLogged: number;
-  streak: number;
-  badges: string[];
-  dailyCalorieGoal: number;
-  dailyProteinGoal: number;
-  caloriesConsumed: number;
-  proteinConsumed: number;
-};
-
-export type Meal = {
-  id: string;
-  userId: string;
-  user: User;
-  image: string;
-  description: string;
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  location?: string;
-  timestamp: string;
-  likes: number;
-  comments: number;
-  isLiked: boolean;
-};
-
-export type Challenge = {
-  id: string;
-  title: string;
-  description: string;
-  type: 'streak' | 'total' | 'daily';
-  target: number;
-  participants: number;
-  endDate: string;
-  progress?: number;
-  isJoined: boolean;
-  reward: string;
-};
+import { useNotifications } from './hooks/useNotifications';
+import type { User } from './types';
 
 function App() {
   const { currentUser, isAuthenticated, login, logout } = useAuth();
-  const [currentView, setCurrentView] = useState<'feed' | 'profile' | 'log' | 'challenges' | 'leaderboard'>('feed');
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
+  const [currentView, setCurrentView] = useState<'feed' | 'profile' | 'log' | 'challenges' | 'leaderboard' | 'notifications' | 'settings' | 'groups' | 'discover'>('feed');
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
 
   if (!isAuthenticated || !currentUser) {
     return <AuthScreen onLogin={login} />;
@@ -68,6 +29,88 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Mobile Header */}
+      <header className="lg:hidden bg-white border-b border-gray-200 sticky top-0 z-40">
+        <div className="flex items-center justify-between px-4 h-14">
+          <button
+            onClick={() => setShowMobileMenu(!showMobileMenu)}
+            className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            {showMobileMenu ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+          
+          <div className="flex items-center space-x-2">
+            <div className="w-6 h-6 bg-gradient-to-br from-green-500 to-emerald-600 rounded-md flex items-center justify-center">
+              <Flame className="w-4 h-4 text-white" />
+            </div>
+            <span className="text-lg font-bold text-gray-900">EatSocial</span>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setShowSearch(true)}
+              className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <Search className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => setCurrentView('notifications')}
+              className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <Bell className="w-5 h-5" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+        
+        {/* Mobile Menu Dropdown */}
+        {showMobileMenu && (
+          <div className="absolute top-14 left-0 right-0 bg-white border-b border-gray-200 shadow-lg z-30">
+            <div className="p-4 space-y-2">
+              <button
+                onClick={() => { setCurrentView('feed'); setShowMobileMenu(false); }}
+                className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
+                  currentView === 'feed' ? 'bg-green-50 text-green-700' : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                <Heart className="w-5 h-5" />
+                <span>Feed</span>
+              </button>
+              <button
+                onClick={() => { setCurrentView('discover'); setShowMobileMenu(false); }}
+                className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
+                  currentView === 'discover' ? 'bg-green-50 text-green-700' : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                <Search className="w-5 h-5" />
+                <span>Discover</span>
+              </button>
+              <button
+                onClick={() => { setCurrentView('groups'); setShowMobileMenu(false); }}
+                className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
+                  currentView === 'groups' ? 'bg-green-50 text-green-700' : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                <Users className="w-5 h-5" />
+                <span>Groups</span>
+              </button>
+              <button
+                onClick={() => { setCurrentView('settings'); setShowMobileMenu(false); }}
+                className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
+                  currentView === 'settings' ? 'bg-green-50 text-green-700' : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                <Settings className="w-5 h-5" />
+                <span>Settings</span>
+              </button>
+            </div>
+          </div>
+        )}
+      </header>
       {/* Desktop Header */}
       <header className="hidden lg:block bg-white border-b border-gray-200 sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
@@ -89,6 +132,26 @@ function App() {
                 }`}
               >
                 Feed
+              </button>
+              <button
+                onClick={() => setCurrentView('discover')}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  currentView === 'discover' 
+                    ? 'bg-green-50 text-green-700' 
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                Discover
+              </button>
+              <button
+                onClick={() => setCurrentView('groups')}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  currentView === 'groups' 
+                    ? 'bg-green-50 text-green-700' 
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                Groups
               </button>
               <button
                 onClick={() => setCurrentView('challenges')}
@@ -117,9 +180,11 @@ function App() {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
+                onClick={() => setShowSearch(true)}
                 type="text"
                 placeholder="Search users, meals, or challenges..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent cursor-pointer"
+                readOnly
               />
             </div>
           </div>
@@ -132,8 +197,16 @@ function App() {
               <Plus className="w-4 h-4" />
               <span>Log Meal</span>
             </button>
-            <button className="text-gray-600 hover:text-gray-900 p-2">
+            <button 
+              onClick={() => setCurrentView('notifications')}
+              className="relative text-gray-600 hover:text-gray-900 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            >
               <Bell className="w-6 h-6" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
             </button>
             <button 
               onClick={() => setCurrentView('profile')}
@@ -212,12 +285,19 @@ function App() {
         {/* Main Content */}
         <main className="flex-1 lg:max-w-4xl lg:mx-auto">
           {currentView === 'feed' && <Feed />}
+          {currentView === 'discover' && <Discover />}
+          {currentView === 'groups' && <Groups />}
           {currentView === 'profile' && <Profile user={currentUser} />}
           {currentView === 'log' && <MealLogger onClose={() => setCurrentView('feed')} />}
           {currentView === 'challenges' && <Challenges />}
           {currentView === 'leaderboard' && <Leaderboard />}
+          {currentView === 'notifications' && <Notifications notifications={notifications} onMarkAsRead={markAsRead} onMarkAllAsRead={markAllAsRead} />}
+          {currentView === 'settings' && <SettingsComponent user={currentUser} onLogout={logout} />}
         </main>
       </div>
+
+      {/* Search Modal */}
+      {showSearch && <SearchModal onClose={() => setShowSearch(false)} />}
 
       {/* Mobile Navigation */}
       <Navigation 

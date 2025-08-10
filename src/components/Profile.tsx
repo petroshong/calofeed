@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Settings, UserPlus, UserCheck, MapPin, Calendar, Target, Flame, Trophy, Star, Grid, List } from 'lucide-react';
-import type { User, Meal } from '../App';
+import { Settings, UserPlus, UserCheck, MapPin, Calendar, Target, Flame, Trophy, Star, Grid, List, Link, Shield, Crown, MessageCircle, MoreHorizontal, Edit3 } from 'lucide-react';
+import type { User, Meal, WeightEntry } from '../types';
 
 interface ProfileProps {
   user: User;
@@ -18,9 +18,13 @@ const userMeals: Meal[] = [
     carbs: 35,
     fat: 22,
     timestamp: '2 hours ago',
+    mealType: 'dinner',
     likes: 24,
-    comments: 8,
-    isLiked: false
+    comments: [],
+    isLiked: false,
+    isBookmarked: false,
+    tags: [],
+    visibility: 'public'
   },
   {
     id: '2',
@@ -57,6 +61,7 @@ const userMeals: Meal[] = [
 export const Profile: React.FC<ProfileProps> = ({ user }) => {
   const [activeTab, setActiveTab] = useState<'grid' | 'list'>('grid');
   const [isFollowing, setIsFollowing] = useState(user.isFollowing);
+  const [showEditProfile, setShowEditProfile] = useState(false);
 
   const toggleFollow = () => {
     setIsFollowing(!isFollowing);
@@ -68,7 +73,14 @@ export const Profile: React.FC<ProfileProps> = ({ user }) => {
       <div className="bg-white border-b border-gray-200">
         <div className="relative">
           {/* Cover Image */}
-          <div className="h-32 lg:h-48 bg-gradient-to-r from-green-400 to-emerald-500"></div>
+          <div className="h-32 lg:h-48 bg-gradient-to-r from-green-400 to-emerald-500 relative">
+            {user.isPremium && (
+              <div className="absolute top-4 right-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center space-x-1">
+                <Crown className="w-4 h-4" />
+                <span>PRO</span>
+              </div>
+            )}
+          </div>
           
           {/* Profile Info */}
           <div className="px-4 lg:px-8 pb-6">
@@ -82,9 +94,37 @@ export const Profile: React.FC<ProfileProps> = ({ user }) => {
             
             <div className="text-center lg:text-left lg:flex lg:items-start lg:justify-between mt-4">
               <div className="lg:flex-1">
-                <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">{user.displayName}</h1>
+                <div className="flex items-center justify-center lg:justify-start space-x-2 mb-2">
+                  <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">{user.displayName}</h1>
+                  {user.isVerified && <Star className="w-6 h-6 text-blue-500 fill-current" />}
+                </div>
                 <p className="text-gray-600 text-lg">@{user.username}</p>
+                {user.location && (
+                  <div className="flex items-center justify-center lg:justify-start space-x-1 text-gray-600 mt-1">
+                    <MapPin className="w-4 h-4" />
+                    <span>{user.location}</span>
+                  </div>
+                )}
+                {user.website && (
+                  <div className="flex items-center justify-center lg:justify-start space-x-1 text-blue-600 mt-1">
+                    <Link className="w-4 h-4" />
+                    <a href={`https://${user.website}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                      {user.website}
+                    </a>
+                  </div>
+                )}
                 <p className="text-gray-700 mt-2 max-w-md mx-auto lg:mx-0">{user.bio}</p>
+                
+                {/* Dietary Preferences */}
+                {user.dietaryPreferences.length > 0 && (
+                  <div className="flex flex-wrap justify-center lg:justify-start gap-2 mt-3">
+                    {user.dietaryPreferences.map((pref) => (
+                      <span key={pref} className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">
+                        {pref}
+                      </span>
+                    ))}
+                  </div>
+                )}
                 
                 {/* Stats */}
                 <div className="flex justify-center lg:justify-start space-x-6 mt-4">
@@ -113,6 +153,13 @@ export const Profile: React.FC<ProfileProps> = ({ user }) => {
               {/* Action Buttons */}
               <div className="flex justify-center lg:justify-end space-x-3 mt-4 lg:mt-0">
                 <button
+                  onClick={() => setShowEditProfile(true)}
+                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center space-x-2"
+                >
+                  <Edit3 className="w-4 h-4" />
+                  <span>Edit</span>
+                </button>
+                <button
                   onClick={toggleFollow}
                   className={`px-6 py-2 rounded-lg font-medium flex items-center space-x-2 transition-colors ${
                     isFollowing 
@@ -127,7 +174,7 @@ export const Profile: React.FC<ProfileProps> = ({ user }) => {
                   Message
                 </button>
                 <button className="p-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                  <Settings className="w-5 h-5" />
+                  <MoreHorizontal className="w-5 h-5" />
                 </button>
               </div>
             </div>
@@ -177,13 +224,46 @@ export const Profile: React.FC<ProfileProps> = ({ user }) => {
       {/* Badges Section */}
       <div className="px-4 lg:px-8 mb-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-3">Recent Badges</h2>
-        <div className="flex space-x-3">
+        <div className="flex space-x-3 overflow-x-auto">
           {user.badges.map((badge, index) => (
-            <div key={index} className="bg-white border border-gray-200 rounded-lg p-3 text-center min-w-[80px]">
-              <div className="text-2xl mb-1">{badge}</div>
-              <p className="text-xs text-gray-600">Week Goal</p>
+            <div key={badge.id} className="bg-white border border-gray-200 rounded-lg p-3 text-center min-w-[100px] flex-shrink-0">
+              <div className="text-2xl mb-1">{badge.emoji}</div>
+              <p className="text-xs font-medium text-gray-900">{badge.name}</p>
+              <p className="text-xs text-gray-600">{badge.description}</p>
             </div>
           ))}
+          {user.badges.length === 0 && (
+            <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-6 text-center min-w-[200px]">
+              <Trophy className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+              <p className="text-sm text-gray-600">No badges yet</p>
+              <p className="text-xs text-gray-500">Complete challenges to earn badges!</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Weekly Summary */}
+      <div className="px-4 lg:px-8 mb-6">
+        <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">This Week's Summary</h2>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-indigo-600">6/7</div>
+              <div className="text-sm text-gray-600">Goals Hit</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-600">21</div>
+              <div className="text-sm text-gray-600">Meals Logged</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-orange-600">1,847</div>
+              <div className="text-sm text-gray-600">Avg Calories</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-purple-600">142g</div>
+              <div className="text-sm text-gray-600">Avg Protein</div>
+            </div>
+          </div>
         </div>
       </div>
 

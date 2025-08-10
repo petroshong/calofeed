@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Heart, MessageCircle, Share, MoreHorizontal, MapPin, Clock } from 'lucide-react';
-import type { Meal, User } from '../App';
+import { Heart, MessageCircle, Share, MoreHorizontal, MapPin, Clock, Bookmark, Star, ChevronDown, Filter } from 'lucide-react';
+import type { Meal, User } from '../types';
 
 const mockMeals: Meal[] = [
   {
@@ -10,6 +10,7 @@ const mockMeals: Meal[] = [
       id: '2',
       username: 'healthyeats',
       displayName: 'Sarah Johnson',
+      email: '',
       avatar: 'https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
       bio: '',
       isFollowing: true,
@@ -20,8 +21,20 @@ const mockMeals: Meal[] = [
       badges: [],
       dailyCalorieGoal: 0,
       dailyProteinGoal: 0,
+      dailyCarbGoal: 0,
+      dailyFatGoal: 0,
       caloriesConsumed: 0,
-      proteinConsumed: 0
+      proteinConsumed: 0,
+      carbsConsumed: 0,
+      fatConsumed: 0,
+      activityLevel: 'moderate',
+      dietaryPreferences: [],
+      allergies: [],
+      joinedDate: '',
+      isVerified: false,
+      isPremium: false,
+      privacySettings: {} as any,
+      notificationSettings: {} as any
     },
     image: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=800',
     description: 'Perfectly grilled salmon with quinoa and roasted vegetables 🐟🥗 Hitting my protein goals!',
@@ -31,9 +44,13 @@ const mockMeals: Meal[] = [
     fat: 22,
     location: 'Home Kitchen',
     timestamp: '2 hours ago',
+    mealType: 'dinner',
     likes: 24,
-    comments: 8,
-    isLiked: false
+    comments: [],
+    isLiked: false,
+    isBookmarked: false,
+    tags: ['salmon', 'quinoa', 'healthy'],
+    visibility: 'public'
   },
   {
     id: '2',
@@ -103,6 +120,8 @@ const mockMeals: Meal[] = [
 export const Feed: React.FC = () => {
   const [meals, setMeals] = useState<Meal[]>(mockMeals);
   const [showComments, setShowComments] = useState<string | null>(null);
+  const [feedFilter, setFeedFilter] = useState<'all' | 'following' | 'trending'>('all');
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
 
   const toggleLike = (mealId: string) => {
     setMeals(meals.map(meal => 
@@ -116,8 +135,47 @@ export const Feed: React.FC = () => {
     ));
   };
 
+  const toggleBookmark = (mealId: string) => {
+    setMeals(meals.map(meal => 
+      meal.id === mealId 
+        ? { ...meal, isBookmarked: !meal.isBookmarked }
+        : meal
+    ));
+  };
+
   return (
     <div className="max-w-2xl mx-auto pb-20 lg:pb-0">
+      {/* Feed Filter */}
+      <div className="bg-white border-b border-gray-200 p-4 sticky top-14 lg:top-16 z-30">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-gray-900">Your Feed</h2>
+          <div className="relative">
+            <button
+              onClick={() => setShowFilterMenu(!showFilterMenu)}
+              className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+            >
+              <Filter className="w-4 h-4" />
+              <span className="capitalize">{feedFilter}</span>
+              <ChevronDown className="w-4 h-4" />
+            </button>
+            {showFilterMenu && (
+              <div className="absolute right-0 top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-40 min-w-[120px]">
+                {['all', 'following', 'trending'].map((filter) => (
+                  <button
+                    key={filter}
+                    onClick={() => { setFeedFilter(filter as any); setShowFilterMenu(false); }}
+                    className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors first:rounded-t-lg last:rounded-b-lg ${
+                      feedFilter === filter ? 'text-green-600 bg-green-50' : 'text-gray-700'
+                    }`}
+                  >
+                    {filter.charAt(0).toUpperCase() + filter.slice(1)}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
       {/* Stories Section */}
       <div className="bg-white border-b border-gray-200 p-4 mb-6">
         <div className="flex space-x-4 overflow-x-auto">
@@ -227,12 +285,20 @@ export const Feed: React.FC = () => {
                     className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors"
                   >
                     <MessageCircle className="w-6 h-6" />
-                    <span className="font-medium">{meal.comments}</span>
+                    <span className="font-medium">{meal.comments.length}</span>
                   </button>
                   <button className="flex items-center space-x-2 text-gray-600 hover:text-green-600 transition-colors">
                     <Share className="w-6 h-6" />
                   </button>
                 </div>
+                <button 
+                  onClick={() => toggleBookmark(meal.id)}
+                  className={`${
+                    meal.isBookmarked ? 'text-yellow-600' : 'text-gray-600 hover:text-yellow-600'
+                  } transition-colors`}
+                >
+                  <Bookmark className={`w-6 h-6 ${meal.isBookmarked ? 'fill-current' : ''}`} />
+                </button>
               </div>
 
               {/* Description */}

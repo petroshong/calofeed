@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Trophy, Users, Calendar, Target, Flame, Star, Clock, Medal } from 'lucide-react';
-import type { Challenge } from '../App';
+import { Trophy, Users, Calendar, Target, Flame, Star, Clock, Medal, Gift, Zap, Crown, Filter } from 'lucide-react';
+import type { Challenge } from '../types';
 
 const mockChallenges: Challenge[] = [
   {
@@ -11,9 +11,14 @@ const mockChallenges: Challenge[] = [
     target: 7,
     participants: 1234,
     endDate: '2024-02-15',
+    startDate: '2024-02-08',
     progress: 4,
     isJoined: true,
-    reward: '🏆 Protein Master Badge'
+    reward: '🏆 Protein Master Badge',
+    category: 'nutrition',
+    difficulty: 'intermediate',
+    rules: ['Log meals daily', 'Hit protein goal', 'No cheat days'],
+    prize: '$50 supplement voucher'
   },
   {
     id: '2',
@@ -23,9 +28,14 @@ const mockChallenges: Challenge[] = [
     target: 31,
     participants: 2156,
     endDate: '2024-01-31',
+    startDate: '2024-01-01',
     progress: 12,
     isJoined: false,
-    reward: '⭐ 500 XP + Special Badge'
+    reward: '⭐ 500 XP + Special Badge',
+    category: 'nutrition',
+    difficulty: 'advanced',
+    rules: ['Stay within calorie goals', 'Log all meals', 'Weekly check-ins'],
+    prize: 'Premium subscription (3 months)'
   },
   {
     id: '3',
@@ -35,8 +45,13 @@ const mockChallenges: Challenge[] = [
     target: 7,
     participants: 856,
     endDate: '2024-02-10',
+    startDate: '2024-02-03',
     isJoined: false,
-    reward: '🥬 Veggie Master Title'
+    reward: '🥬 Veggie Master Title',
+    category: 'nutrition',
+    difficulty: 'beginner',
+    rules: ['Include vegetables in every meal', 'Photo proof required'],
+    prize: 'Healthy cookbook'
   },
   {
     id: '4',
@@ -46,15 +61,21 @@ const mockChallenges: Challenge[] = [
     target: 14,
     participants: 3421,
     endDate: '2024-02-20',
+    startDate: '2024-02-06',
     progress: 8,
     isJoined: true,
-    reward: '🏃‍♀️ Fitness Foodie Badge'
+    reward: '🏃‍♀️ Fitness Foodie Badge',
+    category: 'fitness',
+    difficulty: 'advanced',
+    rules: ['10,000+ steps daily', 'Balanced macros', 'Hydration tracking'],
+    prize: 'Fitness tracker'
   }
 ];
 
 export const Challenges: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'active' | 'completed' | 'discover'>('active');
   const [challenges, setChallenges] = useState<Challenge[]>(mockChallenges);
+  const [categoryFilter, setCategoryFilter] = useState<'all' | 'nutrition' | 'fitness' | 'social' | 'lifestyle'>('all');
 
   const joinChallenge = (challengeId: string) => {
     setChallenges(prev => prev.map(challenge => 
@@ -66,6 +87,15 @@ export const Challenges: React.FC = () => {
 
   const activeChallenges = challenges.filter(c => c.isJoined);
   const availableChallenges = challenges.filter(c => !c.isJoined);
+
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty) {
+      case 'beginner': return 'text-green-600 bg-green-50 border-green-200';
+      case 'intermediate': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+      case 'advanced': return 'text-red-600 bg-red-50 border-red-200';
+      default: return 'text-gray-600 bg-gray-50 border-gray-200';
+    }
+  };
 
   const getProgressColor = (progress: number, target: number) => {
     const percentage = (progress / target) * 100;
@@ -92,9 +122,15 @@ export const Challenges: React.FC = () => {
             <h1 className="text-2xl lg:text-3xl font-bold mb-2">Challenges</h1>
             <p className="text-purple-100">Push your limits and earn rewards</p>
           </div>
-          <div className="text-right">
-            <div className="text-2xl font-bold">{activeChallenges.length}</div>
-            <div className="text-sm text-purple-200">Active</div>
+          <div className="text-right space-y-2">
+            <div>
+              <div className="text-2xl font-bold">{activeChallenges.length}</div>
+              <div className="text-sm text-purple-200">Active</div>
+            </div>
+            <div className="flex items-center space-x-1 text-purple-200">
+              <Gift className="w-4 h-4" />
+              <span className="text-sm">Rewards waiting</span>
+            </div>
           </div>
         </div>
       </div>
@@ -210,14 +246,68 @@ export const Challenges: React.FC = () => {
 
         {activeTab === 'discover' && (
           <div className="space-y-6">
+            {/* Category Filter */}
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-gray-900">Browse Challenges</h2>
+                <div className="flex items-center space-x-2">
+                  <Filter className="w-4 h-4 text-gray-500" />
+                  <select
+                    value={categoryFilter}
+                    onChange={(e) => setCategoryFilter(e.target.value as any)}
+                    className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  >
+                    <option value="all">All Categories</option>
+                    <option value="nutrition">Nutrition</option>
+                    <option value="fitness">Fitness</option>
+                    <option value="social">Social</option>
+                    <option value="lifestyle">Lifestyle</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Featured Challenge */}
+            <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-200 rounded-xl p-6">
+              <div className="flex items-center space-x-2 mb-3">
+                <Crown className="w-6 h-6 text-yellow-600" />
+                <span className="text-sm font-bold text-yellow-700 uppercase tracking-wide">Featured Challenge</span>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">New Year Transformation</h3>
+              <p className="text-gray-700 mb-4">Complete 30 days of balanced nutrition and exercise tracking</p>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4 text-sm">
+                  <div className="flex items-center space-x-1 text-yellow-600">
+                    <Gift className="w-4 h-4" />
+                    <span className="font-medium">$500 Prize Pool</span>
+                  </div>
+                  <div className="flex items-center space-x-1 text-gray-600">
+                    <Users className="w-4 h-4" />
+                    <span>5,847 joined</span>
+                  </div>
+                </div>
+                <button className="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                  Join Now
+                </button>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {availableChallenges.map((challenge) => (
                 <div key={challenge.id} className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-2">
+                      <div className="flex items-center space-x-2 mb-3">
                         <h3 className="text-lg font-semibold text-gray-900">{challenge.title}</h3>
                         <span className="text-2xl">{challenge.reward.split(' ')[0]}</span>
+                      </div>
+                      <div className="flex items-center space-x-2 mb-3">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getDifficultyColor(challenge.difficulty)}`}>
+                          {challenge.difficulty}
+                        </span>
+                        <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
+                          {challenge.category}
+                        </span>
                       </div>
                       <p className="text-gray-600 text-sm mb-3">{challenge.description}</p>
                       <div className="flex items-center space-x-4 text-xs text-gray-500">
@@ -233,13 +323,22 @@ export const Challenges: React.FC = () => {
                           <Calendar className="w-3 h-3" />
                           <span>{getDaysRemaining(challenge.endDate)} days</span>
                         </div>
+                        {challenge.prize && (
+                          <div className="flex items-center space-x-1 text-purple-600">
+                            <Gift className="w-3 h-3" />
+                            <span>Prize</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <div className="text-sm text-purple-600 font-medium">
-                      {challenge.reward}
+                    <div>
+                      <div className="text-sm text-purple-600 font-medium">{challenge.reward}</div>
+                      {challenge.prize && (
+                        <div className="text-xs text-gray-600 mt-1">Prize: {challenge.prize}</div>
+                      )}
                     </div>
                     <button
                       onClick={() => joinChallenge(challenge.id)}
