@@ -5,6 +5,27 @@ import { SocialShare } from './SocialShare';
 import { useMeals } from '../hooks/useMeals';
 import type { User, Meal } from '../types';
 
+interface UserProfileProps {
+  user: User;
+  currentUser: User;
+  onBack: () => void;
+  onUpdateCurrentUser: (updates: Partial<User>) => void;
+}
+
+const mockMeals: Meal[] = [
+  {
+    id: '1',
+    userId: 'user1',
+    description: 'Pre-workout fuel! Greek yogurt with berries and granola 💪',
+    image: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400',
+    timestamp: new Date().toISOString(),
+    calories: 320,
+    protein: 15,
+    carbs: 45,
+    fat: 8,
+    likes: 24,
+    comments: [],
+    isLiked: false,
     isBookmarked: false,
     shares: 12,
     views: 456,
