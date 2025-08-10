@@ -8,183 +8,10 @@ import { SocialShare } from './SocialShare';
 import { MealDetail } from './MealDetail';
 import { FoodCategoryFilter } from './FoodCategoryFilter';
 import { AllSuggestions } from './AllSuggestions';
+import { MealActions } from './MealActions';
+import { useMeals } from '../hooks/useMeals';
 import type { Meal, User } from '../types';
 
-const mockMeals: Meal[] = [
-  {
-    id: '1',
-    userId: '2',
-    user: {
-      id: '2',
-      username: 'healthyeats',
-      displayName: 'Sarah Johnson',
-      email: '',
-      avatar: 'https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
-      bio: '',
-      isFollowing: true,
-      followers: 0,
-      following: 0,
-      mealsLogged: 0,
-      streak: 0,
-      badges: [],
-      dailyCalorieGoal: 0,
-      dailyProteinGoal: 0,
-      dailyCarbGoal: 0,
-      dailyFatGoal: 0,
-      caloriesConsumed: 0,
-      proteinConsumed: 0,
-      carbsConsumed: 0,
-      fatConsumed: 0,
-      activityLevel: 'moderate',
-      dietaryPreferences: [],
-      allergies: [],
-      joinedDate: '',
-      isVerified: false,
-      isPremium: false,
-      isInfluencer: false,
-      totalLikes: 0,
-      totalComments: 0,
-      rank: 0,
-      level: 0,
-      xp: 0,
-      socialScore: 0,
-      privacySettings: {} as any,
-      notificationSettings: {} as any
-    },
-    image: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=800',
-    description: 'Perfectly grilled salmon with quinoa and roasted vegetables 🐟🥗 Hitting my protein goals!',
-    calories: 520,
-    protein: 42,
-    carbs: 35,
-    fat: 22,
-    location: 'Home Kitchen',
-    timestamp: '2 hours ago',
-    mealType: 'dinner',
-    likes: 24,
-    comments: [],
-    isLiked: false,
-    isBookmarked: false,
-    shares: 5,
-    views: 127,
-    tags: ['salmon', 'quinoa', 'healthy'],
-    visibility: 'public'
-  },
-  {
-    id: '2',
-    userId: '3',
-    user: {
-      id: '3',
-      username: 'fitnessguru',
-      displayName: 'Mike Rodriguez',
-      email: '',
-      avatar: 'https://images.pexels.com/photos/1212984/pexels-photo-1212984.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
-      bio: '',
-      isFollowing: true,
-      followers: 0,
-      following: 0,
-      mealsLogged: 0,
-      streak: 0,
-      badges: [],
-      dailyCalorieGoal: 0,
-      dailyProteinGoal: 0,
-      dailyCarbGoal: 0,
-      dailyFatGoal: 0,
-      caloriesConsumed: 0,
-      proteinConsumed: 0,
-      carbsConsumed: 0,
-      fatConsumed: 0,
-      activityLevel: 'moderate',
-      dietaryPreferences: [],
-      allergies: [],
-      joinedDate: '',
-      isVerified: false,
-      isPremium: false,
-      isInfluencer: false,
-      totalLikes: 0,
-      totalComments: 0,
-      rank: 0,
-      level: 0,
-      xp: 0,
-      socialScore: 0,
-      privacySettings: {} as any,
-      notificationSettings: {} as any
-    },
-    image: 'https://images.pexels.com/photos/566566/pexels-photo-566566.jpeg?auto=compress&cs=tinysrgb&w=800',
-    description: 'Pre-workout fuel! Greek yogurt with berries and granola 💪',
-    calories: 340,
-    protein: 20,
-    carbs: 45,
-    fat: 8,
-    timestamp: '4 hours ago',
-    mealType: 'snack',
-    likes: 18,
-    comments: [],
-    isLiked: true,
-    isBookmarked: false,
-    shares: 2,
-    views: 89,
-    tags: ['preworkout', 'protein'],
-    visibility: 'public'
-  },
-  {
-    id: '3',
-    userId: '4',
-    user: {
-      id: '4',
-      username: 'plantbased',
-      displayName: 'Emma Green',
-      email: '',
-      avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
-      bio: '',
-      isFollowing: false,
-      followers: 0,
-      following: 0,
-      mealsLogged: 0,
-      streak: 0,
-      badges: [],
-      dailyCalorieGoal: 0,
-      dailyProteinGoal: 0,
-      dailyCarbGoal: 0,
-      dailyFatGoal: 0,
-      caloriesConsumed: 0,
-      proteinConsumed: 0,
-      carbsConsumed: 0,
-      fatConsumed: 0,
-      activityLevel: 'moderate',
-      dietaryPreferences: [],
-      allergies: [],
-      joinedDate: '',
-      isVerified: false,
-      isPremium: false,
-      isInfluencer: false,
-      totalLikes: 0,
-      totalComments: 0,
-      rank: 0,
-      level: 0,
-      xp: 0,
-      socialScore: 0,
-      privacySettings: {} as any,
-      notificationSettings: {} as any
-    },
-    image: 'https://images.pexels.com/photos/1211887/pexels-photo-1211887.jpeg?auto=compress&cs=tinysrgb&w=800',
-    description: 'Colorful Buddha bowl with chickpeas, avocado, and tahini dressing 🌱✨',
-    calories: 420,
-    protein: 18,
-    carbs: 52,
-    fat: 16,
-    location: 'Green Leaf Cafe',
-    timestamp: '6 hours ago',
-    mealType: 'lunch',
-    likes: 31,
-    comments: [],
-    isLiked: false,
-    isBookmarked: false,
-    shares: 8,
-    views: 203,
-    tags: ['plantbased', 'vegan', 'buddhabowl'],
-    visibility: 'public'
-  }
-];
 
 interface FeedProps {
   onViewProfile?: (user: User) => void;
@@ -193,7 +20,7 @@ interface FeedProps {
 }
 
 export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdateCurrentUser }) => {
-  const [meals, setMeals] = useState<Meal[]>(mockMeals);
+  const { meals, toggleLike, toggleBookmark, deleteMeal } = useMeals(currentUser);
   const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
   const [shareModal, setShareModal] = useState<Meal | null>(null);
   const [feedFilter, setFeedFilter] = useState<'all' | 'following' | 'trending'>('all');
@@ -202,30 +29,13 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [showAllSuggestions, setShowAllSuggestions] = useState(false);
 
-  const toggleLike = (mealId: string) => {
-    setMeals(meals.map(meal => 
-      meal.id === mealId 
-        ? { 
-            ...meal, 
-            isLiked: !meal.isLiked,
-            likes: meal.isLiked ? meal.likes - 1 : meal.likes + 1
-          }
-        : meal
-    ));
-  };
-
-  const toggleBookmark = (mealId: string) => {
-    setMeals(meals.map(meal => 
-      meal.id === mealId 
-        ? { ...meal, isBookmarked: !meal.isBookmarked }
-        : meal
-    ));
-  };
+  // Get all public meals for the feed
+  const allMeals = meals.filter(meal => meal.visibility === 'public');
 
   // Filter meals by selected categories
   const filteredMeals = selectedCategories.length === 0 
-    ? meals 
-    : meals.filter(meal => 
+    ? allMeals 
+    : allMeals.filter(meal => 
         selectedCategories.includes(meal.mealType) ||
         meal.tags.some(tag => selectedCategories.includes(tag)) ||
         (selectedCategories.includes('protein') && meal.protein > 25) ||
@@ -376,9 +186,12 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                     <span>{meal.views}</span>
                   </div>
                 </div>
-
-                {/* Post Content */}
-                <div className="p-4">
+                <MealActions
+                  meal={meal}
+                  isOwner={meal.userId === currentUser.id}
+                  onDelete={deleteMeal}
+                  onShare={setShareModal}
+                />
                   {/* Nutrition Info */}
                   <div className="flex justify-between items-center mb-3 p-3 bg-gray-50 rounded-lg">
                     <div className="text-center">

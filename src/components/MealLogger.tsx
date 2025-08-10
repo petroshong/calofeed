@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Camera, X, Upload, MapPin, Clock, Plus, Minus, Search, Scan, Hash, Users, Zap, Brain, Sparkles, User } from 'lucide-react';
 import { AIFoodAnalysis } from './AIFoodAnalysis';
 import { useCalorieTracking } from '../hooks/useCalorieTracking';
+import { useMeals } from '../hooks/useMeals';
 import type { FoodAnalysis, User as UserType } from '../types';
 
 interface MealLoggerProps {
@@ -12,6 +13,7 @@ interface MealLoggerProps {
 
 export const MealLogger: React.FC<MealLoggerProps> = ({ user, onClose, onUpdateUser }) => {
   const { addCalorieEntry } = useCalorieTracking(user);
+  const { addMeal } = useMeals(user);
   const [formData, setFormData] = useState({
     image: '',
     description: '',
@@ -63,6 +65,20 @@ export const MealLogger: React.FC<MealLoggerProps> = ({ user, onClose, onUpdateU
       confidence: formData.confidence
     });
 
+    // Add to meals feed
+    addMeal({
+      image: formData.image || 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description: formData.description || `${formData.mealType.charAt(0).toUpperCase() + formData.mealType.slice(1)} - ${calories} calories`,
+      calories,
+      protein,
+      carbs,
+      fat,
+      mealType: formData.mealType,
+      location: formData.location,
+      tags: formData.tags,
+      visibility: formData.visibility
+    });
+
     // Update user's daily totals
     onUpdateUser({
       caloriesConsumed: user.caloriesConsumed + calories,
@@ -73,7 +89,7 @@ export const MealLogger: React.FC<MealLoggerProps> = ({ user, onClose, onUpdateU
     });
 
     // Show success message
-    alert(`Meal logged successfully! Added ${calories} calories to your daily total.`);
+    alert(`Meal logged successfully! Added ${calories} calories to your daily total and posted to your profile.`);
     onClose();
   };
 

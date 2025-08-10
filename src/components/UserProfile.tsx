@@ -2,52 +2,9 @@ import React, { useState } from 'react';
 import { ArrowLeft, UserPlus, UserCheck, MessageCircle, Share2, MoreHorizontal, MapPin, Calendar, Target, Flame, Trophy, Star, Grid, List, Crown, Copy, X, Heart, Eye } from 'lucide-react';
 import { FollowersModal } from './FollowersModal';
 import { SocialShare } from './SocialShare';
+import { useMeals } from '../hooks/useMeals';
 import type { User, Meal } from '../types';
 
-interface UserProfileProps {
-  user: User;
-  currentUser: User;
-  onBack: () => void;
-  onUpdateCurrentUser: (updates: Partial<User>) => void;
-}
-
-const mockUserMeals: Meal[] = [
-  {
-    id: '1',
-    userId: '2',
-    user: {} as User,
-    image: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=400',
-    description: 'Amazing salmon bowl with quinoa and veggies! 🐟',
-    calories: 520,
-    protein: 42,
-    carbs: 35,
-    fat: 22,
-    timestamp: '2 hours ago',
-    mealType: 'dinner',
-    likes: 156,
-    comments: [],
-    isLiked: false,
-    isBookmarked: false,
-    shares: 23,
-    views: 892,
-    tags: ['salmon', 'healthy', 'protein'],
-    visibility: 'public'
-  },
-  {
-    id: '2',
-    userId: '2',
-    user: {} as User,
-    image: 'https://images.pexels.com/photos/566566/pexels-photo-566566.jpeg?auto=compress&cs=tinysrgb&w=400',
-    description: 'Pre-workout fuel! Greek yogurt parfait 💪',
-    calories: 340,
-    protein: 20,
-    carbs: 45,
-    fat: 8,
-    timestamp: '1 day ago',
-    mealType: 'snack',
-    likes: 89,
-    comments: [],
-    isLiked: true,
     isBookmarked: false,
     shares: 12,
     views: 456,
@@ -57,11 +14,14 @@ const mockUserMeals: Meal[] = [
 ];
 
 export const UserProfile: React.FC<UserProfileProps> = ({ user, currentUser, onBack, onUpdateCurrentUser }) => {
+  const { getUserMeals } = useMeals(currentUser);
   const [activeTab, setActiveTab] = useState<'grid' | 'list'>('grid');
   const [isFollowing, setIsFollowing] = useState(user.isFollowing);
   const [showFollowersModal, setShowFollowersModal] = useState<'followers' | 'following' | null>(null);
   const [showShareProfile, setShowShareProfile] = useState(false);
   const [followerCount, setFollowerCount] = useState(user.followers);
+
+  const userMeals = getUserMeals(user.id);
 
   const toggleFollow = () => {
     const newFollowingState = !isFollowing;
@@ -241,18 +201,66 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, currentUser, onB
       {/* Content */}
       <div className="p-4 lg:p-8">
         {activeTab === 'grid' ? (
-          <div className="grid grid-cols-3 gap-1 lg:gap-4">
-            {mockUserMeals.map((meal) => (
-              <div key={meal.id} className="aspect-square relative group cursor-pointer">
-                <img 
-                  src={meal.image} 
-                  alt="Meal"
-                  className="w-full h-full object-cover rounded-lg"
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 rounded-lg flex items-center justify-center">
-                  <div className="text-white opacity-0 group-hover:opacity-100 text-center">
-                    <div className="font-bold">{meal.calories} cal</div>
-                    <div className="text-sm flex items-center justify-center space-x-3">
+          userMeals.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Grid className="w-8 h-8 text-gray-400" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">No Meals Shared</h3>
+              <p className="text-gray-600">This user hasn't shared any meals yet.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 gap-1 lg:gap-4">
+              {userMeals.map((meal) => (
+                <div key={meal.id} className="aspect-square relative group cursor-pointer">
+                  <img 
+                    src={meal.image} 
+                    alt="Meal"
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 rounded-lg flex items-center justify-center">
+                    <div className="text-white opacity-0 group-hover:opacity-100 text-center">
+                      <div className="font-bold">{meal.calories} cal</div>
+                      <div className="text-sm flex items-center justify-center space-x-3">
+                        <span className="flex items-center space-x-1">
+                          <Heart className="w-3 h-3" />
+                          <span>{meal.likes}</span>
+                        </span>
+                        <span className="flex items-center space-x-1">
+                          <Eye className="w-3 h-3" />
+                          <span>{meal.views}</span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )
+        ) : (
+          userMeals.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <List className="w-8 h-8 text-gray-400" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">No Meals Shared</h3>
+              <p className="text-gray-600">This user hasn't shared any meals yet.</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {userMeals.map((meal) => (
+                <div key={meal.id} className="bg-white border border-gray-200 rounded-lg p-4 flex space-x-4">
+                  <img 
+                    src={meal.image} 
+                    alt="Meal"
+                    className="w-20 h-20 object-cover rounded-lg"
+                  />
+                  <div className="flex-1">
+                    <p className="font-medium text-gray-900">{meal.description}</p>
+                    <p className="text-sm text-gray-600 mt-1">{new Date(meal.timestamp).toLocaleDateString()}</p>
+                    <div className="flex space-x-4 mt-2 text-sm text-gray-600">
+                      <span>{meal.calories} cal</span>
+                      <span>{meal.protein}g protein</span>
                       <span className="flex items-center space-x-1">
                         <Heart className="w-3 h-3" />
                         <span>{meal.likes}</span>
@@ -264,37 +272,9 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, currentUser, onB
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {mockUserMeals.map((meal) => (
-              <div key={meal.id} className="bg-white border border-gray-200 rounded-lg p-4 flex space-x-4">
-                <img 
-                  src={meal.image} 
-                  alt="Meal"
-                  className="w-20 h-20 object-cover rounded-lg"
-                />
-                <div className="flex-1">
-                  <p className="font-medium text-gray-900">{meal.description}</p>
-                  <p className="text-sm text-gray-600 mt-1">{meal.timestamp}</p>
-                  <div className="flex space-x-4 mt-2 text-sm text-gray-600">
-                    <span>{meal.calories} cal</span>
-                    <span>{meal.protein}g protein</span>
-                    <span className="flex items-center space-x-1">
-                      <Heart className="w-3 h-3" />
-                      <span>{meal.likes}</span>
-                    </span>
-                    <span className="flex items-center space-x-1">
-                      <Eye className="w-3 h-3" />
-                      <span>{meal.views}</span>
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )
         )}
       </div>
 
