@@ -58,9 +58,10 @@ const suggestedUsers: User[] = [
 
 interface SuggestedUsersProps {
   onViewProfile?: (user: User) => void;
+  onViewAllSuggestions?: () => void;
 }
 
-export const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ onViewProfile }) => {
+export const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ onViewProfile, onViewAllSuggestions }) => {
   const [users, setUsers] = useState<User[]>(suggestedUsers);
   const [dismissedUsers, setDismissedUsers] = useState<string[]>([]);
 
@@ -138,7 +139,10 @@ export const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ onViewProfile })
         ))}
       </div>
       
-      <button className="w-full mt-4 text-green-600 hover:text-green-700 font-medium text-sm">
+      <button 
+        onClick={() => onViewAllSuggestions && onViewAllSuggestions()}
+        className="w-full mt-4 text-green-600 hover:text-green-700 font-medium text-sm"
+      >
         See All Suggestions
       </button>
     </div>

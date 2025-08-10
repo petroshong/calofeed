@@ -337,7 +337,13 @@ function App() {
 
         {/* Main Content */}
         <main className="flex-1 lg:max-w-4xl lg:mx-auto">
-          {currentView === 'feed' && <Feed onViewProfile={handleViewProfile} />}
+          {currentView === 'feed' && (
+            <Feed 
+              onViewProfile={handleViewProfile} 
+              currentUser={currentUser}
+              onUpdateCurrentUser={updateUser}
+            />
+          )}
           {currentView === 'discover' && <Discover />}
           {currentView === 'groups' && <Groups />}
           {currentView === 'profile' && <Profile user={currentUser} onUpdateUser={updateUser} />}

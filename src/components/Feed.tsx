@@ -6,6 +6,8 @@ import { ActivityFeed } from './ActivityFeed';
 import { TrendingSection } from './TrendingSection';
 import { SocialShare } from './SocialShare';
 import { MealDetail } from './MealDetail';
+import { FoodCategoryFilter } from './FoodCategoryFilter';
+import { AllSuggestions } from './AllSuggestions';
 import type { Meal, User } from '../types';
 
 const mockMeals: Meal[] = [
@@ -184,15 +186,19 @@ const mockMeals: Meal[] = [
 
 interface FeedProps {
   onViewProfile?: (user: User) => void;
+  currentUser: User;
+  onUpdateCurrentUser: (updates: Partial<User>) => void;
 }
 
-export const Feed: React.FC<FeedProps> = ({ onViewProfile }) => {
+export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdateCurrentUser }) => {
   const [meals, setMeals] = useState<Meal[]>(mockMeals);
   const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
   const [shareModal, setShareModal] = useState<Meal | null>(null);
   const [feedFilter, setFeedFilter] = useState<'all' | 'following' | 'trending'>('all');
   const [showFilterMenu, setShowFilterMenu] = useState(false);
-  const [showComments, setShowComments] = useState<string | null>(null);
+  const [showCategoryFilter, setShowCategoryFilter] = useState(false);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [showAllSuggestions, setShowAllSuggestions] = useState(false);
 
   const toggleLike = (mealId: string) => {
     setMeals(meals.map(meal => 
@@ -214,12 +220,17 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile }) => {
     ));
   };
 
-  const currentUser = {
-    id: 'current',
-    username: 'fitnessfoodie',
-    displayName: 'Alex Chen',
-    avatar: 'https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=150'
-  } as any;
+  // Filter meals by selected categories
+  const filteredMeals = selectedCategories.length === 0 
+    ? meals 
+    : meals.filter(meal => 
+        selectedCategories.includes(meal.mealType) ||
+        meal.tags.some(tag => selectedCategories.includes(tag)) ||
+        (selectedCategories.includes('protein') && meal.protein > 25) ||
+        (selectedCategories.includes('healthy') && meal.calories < 500) ||
+        (selectedCategories.includes('vegan') && meal.tags.includes('vegan')) ||
+        (selectedCategories.includes('keto') && meal.tags.includes('keto'))
+      );
 
   return (
     <div className="lg:flex lg:space-x-8 max-w-6xl mx-auto pb-20 lg:pb-0">
@@ -231,13 +242,39 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile }) => {
         {/* Feed Filter */}
         <div className="bg-white border-b border-gray-200 p-4 sticky top-14 lg:top-16 z-30">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Your Feed</h2>
-            <div className="relative">
+            <div className="flex items-center space-x-4">
+              <h2 className="text-lg font-semibold text-gray-900">Your Feed</h2>
+              {selectedCategories.length > 0 && (
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-green-600 font-medium">
+                    {selectedCategories.length} filter{selectedCategories.length !== 1 ? 's' : ''} active
+                  </span>
+                  <button
+                    onClick={() => setSelectedCategories([])}
+                    className="text-xs text-gray-500 hover:text-gray-700 underline"
+                  >
+                    Clear
+                  </button>
+                </div>
+              )}
+            </div>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setShowCategoryFilter(true)}
+                className={`flex items-center space-x-2 px-3 py-2 border rounded-lg text-sm font-medium transition-colors ${
+                  selectedCategories.length > 0
+                    ? 'border-green-500 text-green-600 bg-green-50'
+                    : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                <Filter className="w-4 h-4" />
+                <span>Categories</span>
+              </button>
+              <div className="relative">
               <button
                 onClick={() => setShowFilterMenu(!showFilterMenu)}
                 className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
               >
-                <Filter className="w-4 h-4" />
                 <span className="capitalize">{feedFilter}</span>
                 <ChevronDown className="w-4 h-4" />
               </button>
@@ -256,13 +293,34 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile }) => {
                   ))}
                 </div>
               )}
+              </div>
             </div>
           </div>
         </div>
 
         {/* Feed Posts */}
         <div className="space-y-6 p-4">
-          {meals.map((meal) => (
+          {filteredMeals.length === 0 ? (
+            <div className="text-center py-12">
+              <Filter className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">No Posts Found</h3>
+              <p className="text-gray-600 mb-4">
+                {selectedCategories.length > 0 
+                  ? 'Try adjusting your category filters or follow more people'
+                  : 'Follow some users to see their posts in your feed'
+                }
+              </p>
+              {selectedCategories.length > 0 && (
+                <button
+                  onClick={() => setSelectedCategories([])}
+                  className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                >
+                  Clear Filters
+                </button>
+              )}
+            </div>
+          ) : (
+            filteredMeals.map((meal) => (
             <article key={meal.id} className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
               {/* Post Header */}
               <div className="p-4 flex items-center justify-between">
@@ -405,12 +463,16 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile }) => {
               </div>
             </article>
           ))}
+          )}
         </div>
       </div>
 
       {/* Sidebar */}
       <div className="hidden lg:block lg:w-80 space-y-6 p-4">
-        <SuggestedUsers onViewProfile={onViewProfile} />
+        <SuggestedUsers 
+          onViewProfile={onViewProfile} 
+          onViewAllSuggestions={() => setShowAllSuggestions(true)}
+        />
         <TrendingSection />
         <ActivityFeed />
       </div>
@@ -427,6 +489,25 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile }) => {
         <SocialShare 
           meal={shareModal} 
           onClose={() => setShareModal(null)} 
+        />
+      )}
+      
+      {/* Category Filter Modal */}
+      {showCategoryFilter && (
+        <FoodCategoryFilter
+          selectedCategories={selectedCategories}
+          onCategoryChange={setSelectedCategories}
+          onClose={() => setShowCategoryFilter(false)}
+        />
+      )}
+      
+      {/* All Suggestions Modal */}
+      {showAllSuggestions && (
+        <AllSuggestions
+          onClose={() => setShowAllSuggestions(false)}
+          onViewProfile={onViewProfile}
+          currentUser={currentUser}
+          onUpdateCurrentUser={onUpdateCurrentUser}
         />
       )}
     </div>
