@@ -1,3 +1,5 @@
+import type { FoodAnalysis, DetectedFood } from '../types';
+
 // AI Food Analysis Service
 export class AIFoodAnalysisService {
   private static instance: AIFoodAnalysisService;

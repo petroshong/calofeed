@@ -39,6 +39,9 @@ export const useCalorieTracking = (user: User) => {
       date: new Date().toISOString()
     };
     setCalorieEntries(prev => [...prev, newEntry]);
+    
+    // Show success notification
+    console.log(`Added ${entry.calories} calories to daily total`);
     return newEntry;
   };
 

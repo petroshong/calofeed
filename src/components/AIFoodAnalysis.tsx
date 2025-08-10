@@ -21,11 +21,14 @@ export const AIFoodAnalysis: React.FC<AIFoodAnalysisProps> = ({ onAnalysisComple
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setImagePreview(URL.createObjectURL(file));
+    const preview = URL.createObjectURL(file);
+    setImagePreview(preview);
     setIsAnalyzing(true);
 
     try {
       const result = await aiService.analyzeFoodImage(file);
+      // Update the analysis with the correct image URL
+      result.imageUrl = preview;
       setAnalysis(result);
     } catch (error) {
       console.error('Analysis failed:', error);
