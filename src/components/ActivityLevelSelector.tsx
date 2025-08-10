@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Activity, Save, Zap, User, Dumbbell, Bike, Mountain } from 'lucide-react';
+import { X, Activity, Save, Zap, User as UserIcon, Dumbbell, Bike, Mountain } from 'lucide-react';
 import { calculateBMR, calculateTDEE } from '../utils/helpers';
 import type { User } from '../types';
 
@@ -15,7 +15,7 @@ const activityLevels = [
     name: 'Sedentary',
     description: 'Little to no exercise',
     details: 'Desk job, minimal physical activity',
-    icon: <User className="w-6 h-6" />,
+    icon: <UserIcon className="w-6 h-6" />,
     multiplier: 1.2,
     color: 'bg-gray-50 border-gray-200 text-gray-700'
   },
