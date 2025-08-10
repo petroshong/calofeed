@@ -248,6 +248,7 @@ export const Leaderboard: React.FC = () => {
             </button>
           ))}
         </div>
+        </div>
       </div>
 
       {/* Leaderboard Content */}
@@ -365,9 +366,11 @@ export const Leaderboard: React.FC = () => {
               </div>
             ))}
           </div>
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
-            <TrendingUp className="w-4 h-4" />
-            <span>Live rankings</span>
+          <div className="p-4 bg-gray-50 border-t border-gray-200">
+            <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <TrendingUp className="w-4 h-4" />
+              <span>Live rankings</span>
+            </div>
           </div>
         </div>
 
