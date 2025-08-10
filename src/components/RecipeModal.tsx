@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Clock, Users, ChefHat, Star, Bookmark, Share, Heart, Print } from 'lucide-react';
+import { X, Clock, Users, ChefHat, Star, Bookmark, Share, Heart, Printer as Print } from 'lucide-react';
 import type { Recipe } from '../types';
 
 interface RecipeModalProps {
