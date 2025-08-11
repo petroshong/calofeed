@@ -316,10 +316,6 @@ function App() {
 
             <div className="space-y-2">
               <h3 className="font-medium text-gray-900 mb-3">Quick Actions</h3>
-              <button className="w-full flex items-center space-x-3 p-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
-                <Map className="w-5 h-5" />
-                <span>Eating Map</span>
-              </button>
               <button 
                 onClick={() => setCurrentView('find-friends')}
                 className="w-full flex items-center space-x-3 p-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
