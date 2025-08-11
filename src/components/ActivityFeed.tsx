@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Heart, MessageCircle, UserPlus, Trophy, Target, Flame, Clock, Star } from 'lucide-react';
+import { Heart, MessageCircle, UserPlus, Trophy, Target, Flame, Clock, Star, MapPin, CheckCircle, Award, Zap } from 'lucide-react';
 import type { User } from '../types';
 
 interface Activity {
   id: string;
-  type: 'meal_logged' | 'goal_achieved' | 'badge_earned' | 'challenge_joined' | 'user_followed' | 'streak_milestone';
+  type: 'meal_logged' | 'goal_achieved' | 'badge_earned' | 'challenge_joined' | 'user_followed' | 'streak_milestone' | 'location_checkin' | 'recipe_shared' | 'weight_milestone';
   user: User;
   timestamp: string;
   data: any;
@@ -13,6 +13,7 @@ interface Activity {
 interface ActivityFeedProps {
   onHashtagClick?: (hashtag: string) => void;
   onActivityClick?: (activity: Activity) => void;
+  onLocationClick?: (location: string) => void;
 }
 const mockActivities: Activity[] = [
   {
@@ -52,9 +53,26 @@ const mockActivities: Activity[] = [
   },
   {
     id: '3',
-    type: 'badge_earned',
+    type: 'location_checkin',
     user: {
       id: '4',
+      username: 'foodexplorer',
+      displayName: 'Alex Chen',
+      avatar: 'https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=150',
+    } as User,
+    timestamp: '30 minutes ago',
+    data: {
+      location: 'Green Bowl Cafe',
+      address: 'Downtown',
+      rating: 4.8,
+      description: 'Amazing healthy options here! #greenbowl #healthy'
+    }
+  },
+  {
+    id: '4',
+    type: 'badge_earned',
+    user: {
+      id: '5',
       username: 'plantbased',
       displayName: 'Emma Green',
       avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150',
@@ -70,10 +88,10 @@ const mockActivities: Activity[] = [
     }
   },
   {
-    id: '4',
+    id: '5',
     type: 'streak_milestone',
     user: {
-      id: '5',
+      id: '6',
       username: 'ketowarrior',
       displayName: 'Jessica Kim',
       avatar: 'https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg?auto=compress&cs=tinysrgb&w=150',
@@ -84,10 +102,26 @@ const mockActivities: Activity[] = [
       milestone: '30-day streak',
       description: '30 days of consistent logging! #streak #consistency #keto'
     }
+  },
+  {
+    id: '6',
+    type: 'weight_milestone',
+    user: {
+      id: '7',
+      username: 'transformationtuesday',
+      displayName: 'Maria Santos',
+      avatar: 'https://images.pexels.com/photos/1190297/pexels-photo-1190297.jpeg?auto=compress&cs=tinysrgb&w=150',
+    } as User,
+    timestamp: '5 hours ago',
+    data: {
+      weightLost: 10,
+      timeframe: '2 months',
+      description: 'Down 10 pounds in 2 months! Feeling amazing! #weightloss #transformation'
+    }
   }
 ];
 
-export const ActivityFeed: React.FC<ActivityFeedProps> = ({ onHashtagClick, onActivityClick }) => {
+export const ActivityFeed: React.FC<ActivityFeedProps> = ({ onHashtagClick, onActivityClick, onLocationClick }) => {
   const [activities] = useState<Activity[]>(mockActivities);
 
   const renderTextWithHashtags = (text: string) => {
@@ -120,6 +154,12 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({ onHashtagClick, onAc
         return <UserPlus className="w-5 h-5 text-pink-600" />;
       case 'streak_milestone':
         return <Flame className="w-5 h-5 text-orange-600" />;
+      case 'location_checkin':
+        return <MapPin className="w-5 h-5 text-blue-600" />;
+      case 'recipe_shared':
+        return <Heart className="w-5 h-5 text-purple-600" />;
+      case 'weight_milestone':
+        return <Award className="w-5 h-5 text-green-600" />;
       default:
         return <Heart className="w-5 h-5 text-gray-600" />;
     }
@@ -139,6 +179,12 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({ onHashtagClick, onAc
         return `started following ${activity.data.followedUser}`;
       case 'streak_milestone':
         return `reached a ${activity.data.streak}-day logging streak! 🔥`;
+      case 'location_checkin':
+        return `checked in at ${activity.data.location}`;
+      case 'recipe_shared':
+        return `shared a new recipe: "${activity.data.recipeName}"`;
+      case 'weight_milestone':
+        return `lost ${activity.data.weightLost} lbs in ${activity.data.timeframe}! 🎉`;
       default:
         return 'had some activity';
     }
@@ -182,6 +228,23 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({ onHashtagClick, onAc
                    {renderTextWithHashtags(activity.data.description)}
                  </div>
                 )}
+                {activity.type === 'location_checkin' && activity.data.rating && (
+                  <div className="flex items-center space-x-2 mt-1">
+                    <div className="flex items-center space-x-1 text-yellow-600">
+                      <Star className="w-3 h-3 fill-current" />
+                      <span className="text-xs">{activity.data.rating}</span>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onLocationClick && onLocationClick(activity.data.location);
+                      }}
+                      className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                    >
+                      View Location
+                    </button>
+                  </div>
+                )}
                 <p className="text-xs text-gray-500 mt-1">{activity.timestamp}</p>
               </div>
               
@@ -192,9 +255,24 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({ onHashtagClick, onAc
                   className="w-10 h-10 lg:w-12 lg:h-12 rounded-lg object-cover flex-shrink-0"
                 />
               )}
+              {activity.type === 'badge_earned' && activity.data.badge && (
+                <div className="w-10 h-10 lg:w-12 lg:h-12 bg-yellow-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <span className="text-lg lg:text-xl">{activity.data.badge.emoji}</span>
+                </div>
+              )}
             </div>
           </div>
         ))}
+      </div>
+      
+      <div className="p-3 bg-gray-50 border-t border-gray-100">
+        <div className="flex items-center justify-between text-xs text-gray-600">
+          <div className="flex items-center space-x-2">
+            <Zap className="w-3 h-3 text-green-500" />
+            <span>Live activity feed</span>
+          </div>
+          <span>{activities.length} recent activities</span>
+        </div>
       </div>
     </div>
   );

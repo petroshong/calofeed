@@ -381,14 +381,22 @@ export const Discover: React.FC<DiscoverProps> = ({ onHashtagClick }) => {
               </div>
               <div className="grid gap-4">
                 {[
-                  { name: 'Green Bowl Cafe', meals: 47, rating: 4.8, distance: '0.3 mi' },
-                  { name: 'Protein Palace', meals: 32, rating: 4.6, distance: '0.7 mi' },
-                  { name: 'Fresh & Fit', meals: 28, rating: 4.9, distance: '1.2 mi' }
+                  { name: 'Green Bowl Cafe', meals: 47, rating: 4.8, distance: '0.3 mi', checkins: 156, trending: true },
+                  { name: 'Protein Palace', meals: 32, rating: 4.6, distance: '0.7 mi', checkins: 89, trending: false },
+                  { name: 'Fresh & Fit', meals: 28, rating: 4.9, distance: '1.2 mi', checkins: 67, trending: true }
                 ].map((spot) => (
                   <div key={spot.name} className="bg-white rounded-lg p-4 border border-blue-100">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="font-semibold text-gray-900">{spot.name}</h3>
+                        <div className="flex items-center space-x-2">
+                          <h3 className="font-semibold text-gray-900">{spot.name}</h3>
+                          {spot.trending && (
+                            <span className="px-2 py-1 bg-pink-100 text-pink-700 text-xs rounded-full flex items-center space-x-1">
+                              <TrendingUp className="w-3 h-3" />
+                              <span>Hot</span>
+                            </span>
+                          )}
+                        </div>
                         <div className="flex items-center space-x-3 text-sm text-gray-600 mt-1">
                           <div className="flex items-center space-x-1">
                             <Star className="w-4 h-4 text-yellow-500 fill-current" />
@@ -402,10 +410,14 @@ export const Discover: React.FC<DiscoverProps> = ({ onHashtagClick }) => {
                             <Users className="w-4 h-4" />
                             <span>{spot.meals} meals logged</span>
                           </div>
+                          <div className="flex items-center space-x-1">
+                            <Eye className="w-4 h-4" />
+                            <span>{spot.checkins} check-ins</span>
+                          </div>
                         </div>
                       </div>
                       <button className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
-                        View
+                        Check In
                       </button>
                     </div>
                   </div>

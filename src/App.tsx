@@ -306,12 +306,18 @@ function App() {
 
       <div className="flex">
         {/* Desktop Sidebar */}
-        <aside className="hidden lg:block w-56 xl:w-64 bg-white border-r border-gray-200 min-h-screen">
+        <aside className="hidden lg:block w-56 xl:w-64 2xl:w-72 bg-white border-r border-gray-200 min-h-screen">
           <div className="p-6">
             <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 mb-6">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="font-semibold text-gray-900">Today's Goals</h3>
                 <Target className="w-5 h-5 text-green-600" />
+              </div>
+              <div className="text-center mb-3">
+                <div className="text-2xl font-bold text-green-600">
+                  {Math.round((currentUser.caloriesConsumed / currentUser.dailyCalorieGoal) * 100)}%
+                </div>
+                <div className="text-sm text-green-700">Daily Progress</div>
               </div>
               <div className="space-y-3">
                 <div>
@@ -348,6 +354,9 @@ function App() {
               </div>
               <div className="text-3xl font-bold text-orange-600">{currentUser.streak}</div>
               <p className="text-sm text-gray-600">days in a row</p>
+              <div className="mt-2 text-xs text-orange-700">
+                Keep it up! You're on fire! 🔥
+              </div>
             </div>
 
             <div className="space-y-2">
