@@ -129,6 +129,7 @@ export const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ currentUser, onV
                       ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       : 'bg-green-600 text-white hover:bg-green-700'
                   }`}
+                >
                   <UserPlus className="w-3 h-3" />
                   <span>{isFollowing(user.id) || user.isFollowing ? 'Following' : 'Follow'}</span>
                 </button>
