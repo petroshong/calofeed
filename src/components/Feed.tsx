@@ -12,6 +12,7 @@ import { AllSuggestions } from './AllSuggestions';
 import { MealActions } from './MealActions';
 import { useMeals } from '../hooks/useMeals';
 import { useFriendRequests } from '../hooks/useFriendRequests';
+import { useFollowing } from '../hooks/useFollowing';
 import type { Meal, User } from '../types';
 
 // Mock meals for demonstration
