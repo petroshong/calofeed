@@ -42,7 +42,11 @@ export const HashtagFeed: React.FC<HashtagFeedProps> = ({ hashtag, onClose, allM
   };
 
   return (
-    <div className="fixed inset-0 bg-white z-50 flex flex-col">
+    <div 
+      className="fixed inset-0 bg-white z-50 flex flex-col"
+      onClick={onClose}
+    >
+      <div onClick={(e) => e.stopPropagation()}>
       {/* Header */}
       <div className="bg-gradient-to-r from-pink-500 to-purple-600 text-white p-6">
         <div className="flex items-center justify-between">
