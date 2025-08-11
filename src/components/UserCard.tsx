@@ -31,6 +31,10 @@ export const UserCard: React.FC<UserCardProps> = ({
     }
   };
 
+  const toggleFollow = () => {
+    setIsFollowing(!isFollowing);
+  };
+
   if (variant === 'compact') {
     return (
       <div className="flex items-center space-x-3 p-3 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
@@ -56,8 +60,6 @@ export const UserCard: React.FC<UserCardProps> = ({
         {showFollowButton && (
           <button
             onClick={handleFollowAction}
-            className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors flex items-center space-x-1 ${
-            onClick={handleFollowAction}
             className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2 ${
               isFollowing || areFriends(user.id)
                 ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -66,15 +68,8 @@ export const UserCard: React.FC<UserCardProps> = ({
                 : 'bg-green-600 text-white hover:bg-green-700'
             }`}
             disabled={requestSent || hasPendingRequest(user.id)}
-            disabled={requestSent || hasPendingRequest(user.id)}
           >
             {user.isPrivate && <Lock className="w-4 h-4" />}
-            <span>
-              {areFriends(user.id) ? 'Friends' :
-               isFollowing ? 'Following' :
-               requestSent || hasPendingRequest(user.id) ? 'Requested' :
-               user.isPrivate ? 'Request' : 'Follow'}
-            </span>
             <span>
               {areFriends(user.id) ? 'Friends' :
                isFollowing ? 'Following' :
@@ -195,7 +190,7 @@ export const UserCard: React.FC<UserCardProps> = ({
       {showFollowButton && (
         <button
           onClick={handleFollowAction}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2 ${
+          className={\`px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2 ${
             isFollowing || areFriends(user.id)
               ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               : requestSent || hasPendingRequest(user.id)
