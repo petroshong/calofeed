@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, MessageCircle, Share, MoreHorizontal, MapPin, Clock, User, Flag, Copy, Send, Eye, Star, Grid, List, Lock, Filter, ChevronDown, Bookmark } from 'lucide-react';
+import { Heart, MessageCircle, Share, MoreHorizontal, MapPin, Clock, User as UserIcon, Flag, Copy, Send, Eye, Star, Grid, List, Lock, Filter, ChevronDown, Bookmark } from 'lucide-react';
 import { Stories } from './Stories';
 import { SuggestedUsers } from './SuggestedUsers';
 import { ActivityFeed } from './ActivityFeed';
