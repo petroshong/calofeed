@@ -113,12 +113,16 @@ export const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ currentUser, onV
       <div className="space-y-4">
         {visibleUsers.slice(0, 3).map((user) => (
           <div key={user.id} className="flex items-center space-x-3">
-            <button onClick={() => onViewProfile && onViewProfile(user)}>
-              <img 
-                src={user.avatar} 
-                alt={user.displayName}
-                className="w-12 h-12 rounded-full object-cover hover:ring-2 hover:ring-blue-500 transition-all"
-              />
+            <button
+              onClick={() => toggleFollow(user.id)}
+              className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors flex items-center space-x-1 ${
+                isFollowing(user.id) || user.isFollowing
+                  ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-green-600 text-white hover:bg-green-700'
+              }`}
+            >
+              <UserPlus className="w-3 h-3" />
+              <span>{isFollowing(user.id) || user.isFollowing ? 'Following' : 'Follow'}</span>
             </button>
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-2">
