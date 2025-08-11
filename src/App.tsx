@@ -16,17 +16,22 @@ import { CalorieTracker } from './components/CalorieTracker';
 import { UserProfile } from './components/UserProfile';
 import { FindFriends } from './components/FindFriends';
 import { OfflineIndicator } from './components/OfflineIndicator';
+import { FriendRequests } from './components/FriendRequests';
 import { useAuth } from './hooks/useAuth';
 import { useNotifications } from './hooks/useNotifications';
+import { useFriendRequests } from './hooks/useFriendRequests';
 import type { User } from './types';
 
 function App() {
   const { currentUser, isAuthenticated, login, logout, updateUser } = useAuth();
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
-  const [currentView, setCurrentView] = useState<'feed' | 'profile' | 'log' | 'challenges' | 'leaderboard' | 'notifications' | 'settings' | 'groups' | 'discover' | 'calories' | 'find-friends' | 'user-profile'>('feed');
+  const { getIncomingRequests } = useFriendRequests(currentUser);
+  const [currentView, setCurrentView] = useState<'feed' | 'profile' | 'log' | 'challenges' | 'leaderboard' | 'notifications' | 'settings' | 'groups' | 'discover' | 'calories' | 'find-friends' | 'user-profile' | 'friend-requests'>('feed');
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+  const incomingRequests = getIncomingRequests();
 
   const handleViewProfile = (user: User) => {
     setSelectedUser(user);
@@ -321,7 +326,47 @@ function App() {
                 className="w-full flex items-center space-x-3 p-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
               >
                 <Users className="w-5 h-5" />
-                <span>Find Friends</span>
+                <div className="flex items-center justify-between w-full">
+                  <span>Find Friends</span>
+                  {incomingRequests.length > 0 && (
+                    <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                      {incomingRequests.length}
+                    </span>
+                  )}
+                </div>
+                {incomingRequests.length > 0 && (
+                  <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {incomingRequests.length}
+                  </span>
+                )}
+              </button>
+              <button
+                onClick={() => { setCurrentView('friend-requests'); setShowMobileMenu(false); }}
+                className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
+                  currentView === 'friend-requests' ? 'bg-green-50 text-green-700' : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                <UserPlus className="w-5 h-5" />
+                <span>Friend Requests</span>
+                {incomingRequests.length > 0 && (
+                  <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {incomingRequests.length}
+                  </span>
+                )}
+              </button>
+              <button 
+                onClick={() => setCurrentView('friend-requests')}
+                className="w-full flex items-center space-x-3 p-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+              >
+                <UserPlus className="w-5 h-5" />
+                <div className="flex items-center justify-between w-full">
+                  <span>Friend Requests</span>
+                  {incomingRequests.length > 0 && (
+                    <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                      {incomingRequests.length}
+                    </span>
+                  )}
+                </div>
               </button>
               <button 
                 onClick={() => setCurrentView('settings')}
@@ -359,6 +404,13 @@ function App() {
               currentUser={currentUser}
               onViewProfile={handleViewProfile}
               onUpdateCurrentUser={updateUser}
+            />
+          )}
+          {currentView === 'friend-requests' && (
+            <FriendRequests 
+              currentUser={currentUser}
+              onClose={() => setCurrentView('feed')}
+              onViewProfile={handleViewProfile}
             />
           )}
           {currentView === 'log' && <MealLogger user={currentUser} onClose={() => setCurrentView('feed')} onUpdateUser={updateUser} />}

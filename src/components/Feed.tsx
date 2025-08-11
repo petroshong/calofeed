@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, MessageCircle, Share, MoreHorizontal, MapPin, Clock, Bookmark, Star, ChevronDown, Filter, Send, Eye } from 'lucide-react';
+import { Heart, MessageCircle, Share, MoreHorizontal, MapPin, Clock, User, Flag, Copy, Send, Eye, Star, Grid, List, Lock } from 'lucide-react';
 import { Stories } from './Stories';
 import { SuggestedUsers } from './SuggestedUsers';
 import { ActivityFeed } from './ActivityFeed';
@@ -10,6 +10,7 @@ import { FoodCategoryFilter } from './FoodCategoryFilter';
 import { AllSuggestions } from './AllSuggestions';
 import { MealActions } from './MealActions';
 import { useMeals } from '../hooks/useMeals';
+import { useFriendRequests } from '../hooks/useFriendRequests';
 import type { Meal, User } from '../types';
 
 // Mock meals for demonstration
@@ -82,6 +83,7 @@ interface FeedProps {
 
 export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdateCurrentUser }) => {
   const { meals: userMeals, toggleLike, toggleBookmark, deleteMeal } = useMeals(currentUser);
+  const { areFriends } = useFriendRequests(currentUser);
   const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
   const [shareModal, setShareModal] = useState<Meal | null>(null);
   const [feedFilter, setFeedFilter] = useState<'all' | 'following' | 'trending'>('all');
@@ -89,15 +91,26 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
   const [showCategoryFilter, setShowCategoryFilter] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [showAllSuggestions, setShowAllSuggestions] = useState(false);
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
 
   // Combine user meals with mock feed meals
   const publicUserMeals = userMeals.filter(meal => meal.visibility === 'public');
-  const allMeals = [...publicUserMeals, ...mockFeedMeals];
+  
+  // Filter meals based on privacy settings
+  const visibleMeals = [...publicUserMeals, ...mockFeedMeals.filter(meal => {
+    // If the meal owner has a private account
+    if (meal.user.isPrivate) {
+      // Only show if they're friends or it's the current user
+      return areFriends(meal.user.id) || meal.user.id === currentUser.id;
+    }
+    // Public accounts - show all public meals
+    return meal.visibility === 'public';
+  })];
 
   // Filter meals by selected categories
   const filteredMeals = selectedCategories.length === 0 
-    ? allMeals 
-    : allMeals.filter(meal => 
+    ? visibleMeals 
+    : visibleMeals.filter(meal => 
         selectedCategories.includes(meal.mealType) ||
         meal.tags.some(tag => selectedCategories.includes(tag)) ||
         (selectedCategories.includes('protein') && meal.protein > 25) ||
@@ -118,6 +131,24 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <h2 className="text-lg font-semibold text-gray-900">Your Feed</h2>
+              <div className="flex items-center space-x-2 border border-gray-300 rounded-lg p-1">
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`p-2 rounded-md transition-colors ${
+                    viewMode === 'list' ? 'bg-green-600 text-white' : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <List className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-2 rounded-md transition-colors ${
+                    viewMode === 'grid' ? 'bg-green-600 text-white' : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <Grid className="w-4 h-4" />
+                </button>
+              </div>
               {selectedCategories.length > 0 && (
                 <div className="flex items-center space-x-2">
                   <span className="text-sm text-green-600 font-medium">
@@ -173,7 +204,7 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
         </div>
 
         {/* Feed Posts */}
-        <div className="space-y-6 p-4">
+        <div className={viewMode === 'grid' ? 'p-4' : 'space-y-6 p-4'}>
           {filteredMeals.length === 0 ? (
             <div className="text-center py-12">
               <Filter className="w-16 h-16 text-gray-400 mx-auto mb-4" />
@@ -194,139 +225,258 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
               )}
             </div>
           ) : (
-            filteredMeals.map((meal) => (
-              <article key={meal.id} className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-                {/* Post Header */}
-                <div className="p-4 flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <button onClick={() => onViewProfile && onViewProfile(meal.user)}>
+            viewMode === 'grid' ? (
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredMeals.map((meal) => (
+                  <div key={meal.id} className="aspect-square relative group cursor-pointer">
+                    <img 
+                      src={meal.image} 
+                      alt="Meal"
+                      className="w-full h-full object-cover rounded-xl"
+                      onClick={() => setSelectedMeal(meal)}
+                    />
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 rounded-xl flex items-center justify-center">
+                      <div className="text-white opacity-0 group-hover:opacity-100 text-center">
+                        <div className="font-bold text-lg mb-1">{meal.calories} cal</div>
+                        <div className="text-sm flex items-center justify-center space-x-3">
+                          <span className="flex items-center space-x-1">
+                            <Heart className="w-3 h-3" />
+                            <span>{meal.likes}</span>
+                          </span>
+                          <span className="flex items-center space-x-1">
+                            <MessageCircle className="w-3 h-3" />
+                            <span>{meal.comments.length}</span>
+                          </span>
+                          <span className="flex items-center space-x-1">
+                            <Eye className="w-3 h-3" />
+                            <span>{meal.views}</span>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* User Avatar Overlay */}
+                    <div className="absolute top-3 left-3">
                       <img 
                         src={meal.user.avatar} 
                         alt={meal.user.displayName}
-                        className="w-10 h-10 rounded-full object-cover hover:ring-2 hover:ring-blue-500 transition-all"
+                        className="w-8 h-8 rounded-full object-cover border-2 border-white shadow-lg"
                       />
-                    </button>
-                    <div>
-                      <button 
-                        onClick={() => onViewProfile && onViewProfile(meal.user)}
-                        className="flex items-center space-x-2 hover:text-blue-600 transition-colors"
-                      >
-                        <h3 className="font-semibold text-gray-900">{meal.user.displayName}</h3>
-                        {meal.user.isVerified && <Star className="w-4 h-4 text-blue-500 fill-current" />}
+                      {meal.user.isPrivate && (
+                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center">
+                          <Lock className="w-2 h-2 text-white" />
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Calorie Badge */}
+                    <div className="absolute top-3 right-3 bg-black bg-opacity-70 text-white px-2 py-1 rounded-full text-xs font-medium">
+                      {meal.calories} cal
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              filteredMeals.map((meal) => (
+                <article key={meal.id} className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                  {/* Post Header */}
+                  <div className="p-4 flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <button onClick={() => onViewProfile && onViewProfile(meal.user)}>
+                        <img 
+                          src={meal.user.avatar} 
+                          alt={meal.user.displayName}
+                          className="w-10 h-10 rounded-full object-cover hover:ring-2 hover:ring-blue-500 transition-all"
+                        />
                       </button>
-                      <div className="flex items-center text-sm text-gray-500 space-x-2">
-                        <Clock className="w-4 h-4" />
-                        <span>{meal.timestamp}</span>
-                        {meal.location && (
-                          <>
-                            <span>•</span>
-                            <MapPin className="w-4 h-4" />
-                            <span>{meal.location}</span>
-                          </>
-                        )}
+                      <div>
+                        <button 
+                          onClick={() => onViewProfile && onViewProfile(meal.user)}
+                          className="flex items-center space-x-2 hover:text-blue-600 transition-colors"
+                        >
+                          <h3 className="font-semibold text-gray-900">{meal.user.displayName}</h3>
+                          {meal.user.isVerified && <Star className="w-4 h-4 text-blue-500 fill-current" />}
+                          {meal.user.isPrivate && <Lock className="w-4 h-4 text-yellow-500" />}
+                        </button>
+                        <div className="flex items-center text-sm text-gray-500 space-x-2">
+                          <Clock className="w-4 h-4" />
+                          <span>{meal.timestamp}</span>
+                          {meal.location && (
+                            <>
+                              <span>•</span>
+                              <MapPin className="w-4 h-4" />
+                              <span>{meal.location}</span>
+                            </>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <button className="text-gray-400 hover:text-gray-600 p-2">
-                    <MoreHorizontal className="w-5 h-5" />
-                  </button>
-                </div>
-
-                {/* Food Image */}
-                <div className="relative">
-                  <img 
-                    src={meal.image} 
-                    alt="Food"
-                    className="w-full h-80 object-cover cursor-pointer"
-                    onClick={() => setSelectedMeal(meal)}
-                  />
-                  <div className="absolute top-4 right-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm font-medium">
-                    {meal.calories} cal
-                  </div>
-                  <div className="absolute bottom-4 left-4 flex items-center space-x-1 text-white text-sm">
-                    <Eye className="w-4 h-4" />
-                    <span>{meal.views}</span>
-                  </div>
-                </div>
-                <MealActions
-                  meal={meal}
-                  isOwner={meal.userId === currentUser.id}
-                  onDelete={deleteMeal}
-                  onShare={setShareModal}
-                />
-                
-                <div className="p-4">
-                  {/* Nutrition Info */}
-                  <div className="flex justify-between items-center mb-3 p-3 bg-gray-50 rounded-lg">
-                    <div className="text-center">
-                      <div className="text-lg font-bold text-green-600">{meal.protein}g</div>
-                      <div className="text-xs text-gray-600">Protein</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-lg font-bold text-blue-600">{meal.carbs}g</div>
-                      <div className="text-xs text-gray-600">Carbs</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-lg font-bold text-orange-600">{meal.fat}g</div>
-                      <div className="text-xs text-gray-600">Fat</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-lg font-bold text-purple-600">{meal.calories}</div>
-                      <div className="text-xs text-gray-600">Calories</div>
-                    </div>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center space-x-4">
-                      <button 
-                        onClick={() => toggleLike(meal.id)}
-                        className={`flex items-center space-x-2 ${
-                          meal.isLiked ? 'text-red-600' : 'text-gray-600 hover:text-red-600'
-                        } transition-colors`}
-                      >
-                        <Heart className={`w-6 h-6 ${meal.isLiked ? 'fill-current' : ''}`} />
-                        <span className="font-medium">{meal.likes}</span>
-                      </button>
-                      <button 
-                        onClick={() => setSelectedMeal(meal)}
-                        className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors"
-                      >
-                        <MessageCircle className="w-6 h-6" />
-                        <span className="font-medium">{meal.comments.length}</span>
-                      </button>
-                      <button 
-                        onClick={() => setShareModal(meal)}
-                        className="flex items-center space-x-2 text-gray-600 hover:text-green-600 transition-colors"
-                      >
-                        <Send className="w-6 h-6" />
-                        <span className="font-medium">{meal.shares}</span>
-                      </button>
-                    </div>
-                    <button 
-                      onClick={() => toggleBookmark(meal.id)}
-                      className={`${
-                        meal.isBookmarked ? 'text-yellow-600' : 'text-gray-600 hover:text-yellow-600'
-                      } transition-colors`}
-                    >
-                      <Bookmark className={`w-6 h-6 ${meal.isBookmarked ? 'fill-current' : ''}`} />
+                    <button className="text-gray-400 hover:text-gray-600 p-2">
+                      <MoreHorizontal className="w-5 h-5" />
                     </button>
                   </div>
 
-                  {/* Description */}
-                  <div className="text-gray-900 mb-3">
-                    <span className="font-semibold">{meal.user.displayName}</span>
-                    <span className="ml-2">{meal.description}</span>
+                  {/* Food Image */}
+                  <div className="relative">
+                    <img 
+                      src={meal.image} 
+                      alt="Food"
+                      className="w-full h-80 object-cover cursor-pointer"
+                      onClick={() => setSelectedMeal(meal)}
+                    />
+                    <div className="absolute top-4 right-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm font-medium">
+                      {meal.calories} cal
+                    </div>
+                    <div className="absolute bottom-4 left-4 flex items-center space-x-1 text-white text-sm">
+                      <Eye className="w-4 h-4" />
+                      <span>{meal.views}</span>
+                    </div>
                   </div>
+                  <MealActions
+                    meal={meal}
+                    isOwner={meal.userId === currentUser.id}
+                    onDelete={deleteMeal}
+                    onShare={setShareModal}
+                  />
+                  
+                  <div className="p-4">
+                    {/* Nutrition Info */}
+                    <div className="flex justify-between items-center mb-3 p-3 bg-gray-50 rounded-lg">
+                      <div className="text-center">
+                        <div className="text-lg font-bold text-green-600">{meal.protein}g</div>
+                        <div className="text-xs text-gray-600">Protein</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-lg font-bold text-blue-600">{meal.carbs}g</div>
+                        <div className="text-xs text-gray-600">Carbs</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-lg font-bold text-orange-600">{meal.fat}g</div>
+                        <div className="text-xs text-gray-600">Fat</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-lg font-bold text-purple-600">{meal.calories}</div>
+                        <div className="text-xs text-gray-600">Calories</div>
+                      </div>
+                    </div>
 
-                  {/* Tags */}
-                  {meal.tags && meal.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {meal.tags.map((tag) => (
-                        <span key={tag} className="px-2 py-1 bg-blue-50 text-blue-700 text-sm rounded-full cursor-pointer hover:bg-blue-100 transition-colors">
-                          #{tag}
-                        </span>
-                      ))}
+                    {/* Actions */}
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center space-x-4">
+                        <button 
+                          onClick={() => toggleLike(meal.id)}
+                          className={`flex items-center space-x-2 ${
+                            meal.isLiked ? 'text-red-600' : 'text-gray-600 hover:text-red-600'
+                          } transition-colors`}
+                        >
+                          <Heart className={`w-6 h-6 ${meal.isLiked ? 'fill-current' : ''}`} />
+                          <span className="font-medium">{meal.likes}</span>
+                        </button>
+                        <button 
+                          onClick={() => setSelectedMeal(meal)}
+                          className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors"
+                        >
+                          <MessageCircle className="w-6 h-6" />
+                          <span className="font-medium">{meal.comments.length}</span>
+                        </button>
+                        <button 
+                          onClick={() => setShareModal(meal)}
+                          className="flex items-center space-x-2 text-gray-600 hover:text-green-600 transition-colors"
+                        >
+                          <Send className="w-6 h-6" />
+                          <span className="font-medium">{meal.shares}</span>
+                        </button>
+                      </div>
+                      <button 
+                        onClick={() => toggleBookmark(meal.id)}
+                        className={`${
+                          meal.isBookmarked ? 'text-yellow-600' : 'text-gray-600 hover:text-yellow-600'
+                        } transition-colors`}
+                      >
+                        <Bookmark className={`w-6 h-6 ${meal.isBookmarked ? 'fill-current' : ''}`} />
+                      </button>
+                    </div>
+
+                    {/* Description */}
+                    <div className="text-gray-900 mb-3">
+                      <span className="font-semibold">{meal.user.displayName}</span>
+                      <span className="ml-2">{meal.description}</span>
+                    </div>
+
+                    {/* Tags */}
+                    {meal.tags && meal.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {meal.tags.map((tag) => (
+                          <span key={tag} className="px-2 py-1 bg-blue-50 text-blue-700 text-sm rounded-full cursor-pointer hover:bg-blue-100 transition-colors">
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* View Comments */}
+                    {meal.comments.length > 0 && (
+                      <button 
+                        onClick={() => setSelectedMeal(meal)}
+                        className="text-gray-600 hover:text-gray-900 text-sm font-medium"
+                      >
+                        View all {meal.comments.length} comments
+                      </button>
+                    )}
+                  </div>
+                </article>
+              ))
+            )
+          )}
+        </div>
+      </div>
+
+      {/* Sidebar */}
+      <div className="hidden lg:block lg:w-80 space-y-6 p-4">
+        <SuggestedUsers 
+          onViewProfile={onViewProfile} 
+          onViewAllSuggestions={() => setShowAllSuggestions(true)}
+        />
+        <TrendingSection />
+        <ActivityFeed />
+      </div>
+
+      {/* Modals */}
+      {selectedMeal && (
+        <MealDetail 
+          meal={selectedMeal} 
+          onClose={() => setSelectedMeal(null)} 
+        />
+      )}
+      
+      {shareModal && (
+        <SocialShare 
+          meal={shareModal} 
+          onClose={() => setShareModal(null)} 
+        />
+      )}
+      
+      {/* Category Filter Modal */}
+      {showCategoryFilter && (
+        <FoodCategoryFilter
+          selectedCategories={selectedCategories}
+          onCategoryChange={setSelectedCategories}
+          onClose={() => setShowCategoryFilter(false)}
+        />
+      )}
+      
+      {/* All Suggestions Modal */}
+      {showAllSuggestions && (
+        <AllSuggestions
+          onClose={() => setShowAllSuggestions(false)}
+          onViewProfile={onViewProfile}
+          currentUser={currentUser}
+          onUpdateCurrentUser={onUpdateCurrentUser}
+        />
+      )}
+    </div>
+  );
+};
                     </div>
                   )}
 

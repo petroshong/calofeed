@@ -58,6 +58,7 @@ export const useAuth = () => {
       isVerified: true,
       isPremium: true,
       isInfluencer: false,
+      isPrivate: false,
       privacySettings: {
         profileVisibility: 'public',
         mealVisibility: 'public',

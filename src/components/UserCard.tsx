@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { UserPlus, UserCheck, MessageCircle, Star, Crown, MapPin, Flame, Trophy } from 'lucide-react';
+import { UserPlus, UserCheck, MessageCircle, Star, Crown, MapPin, Flame, Trophy, Lock, Clock } from 'lucide-react';
+import { useFriendRequests } from '../hooks/useFriendRequests';
 import type { User } from '../types';
 
 interface UserCardProps {
@@ -15,10 +16,19 @@ export const UserCard: React.FC<UserCardProps> = ({
   showFollowButton = true,
   onViewProfile
 }) => {
+  const { sendFriendRequest, hasPendingRequest, areFriends } = useFriendRequests({} as User);
   const [isFollowing, setIsFollowing] = useState(user.isFollowing);
+  const [requestSent, setRequestSent] = useState(user.followRequestSent || false);
 
-  const toggleFollow = () => {
-    setIsFollowing(!isFollowing);
+  const handleFollowAction = () => {
+    if (user.isPrivate && !areFriends(user.id)) {
+      // Send friend request for private accounts
+      sendFriendRequest(user);
+      setRequestSent(true);
+    } else {
+      // Regular follow for public accounts
+      setIsFollowing(!isFollowing);
+    }
   };
 
   if (variant === 'compact') {
@@ -45,14 +55,32 @@ export const UserCard: React.FC<UserCardProps> = ({
         </div>
         {showFollowButton && (
           <button
-            onClick={toggleFollow}
-            className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-              isFollowing 
-                ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' 
+            onClick={handleFollowAction}
+            className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors flex items-center space-x-1 ${
+            onClick={handleFollowAction}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2 ${
+              isFollowing || areFriends(user.id)
+                ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                : requestSent || hasPendingRequest(user.id)
+                ? 'bg-yellow-100 text-yellow-700 border border-yellow-300'
                 : 'bg-green-600 text-white hover:bg-green-700'
             }`}
+            disabled={requestSent || hasPendingRequest(user.id)}
+            disabled={requestSent || hasPendingRequest(user.id)}
           >
-            {isFollowing ? 'Following' : 'Follow'}
+            {user.isPrivate && <Lock className="w-4 h-4" />}
+            <span>
+              {areFriends(user.id) ? 'Friends' :
+               isFollowing ? 'Following' :
+               requestSent || hasPendingRequest(user.id) ? 'Requested' :
+               user.isPrivate ? 'Request' : 'Follow'}
+            </span>
+            <span>
+              {areFriends(user.id) ? 'Friends' :
+               isFollowing ? 'Following' :
+               requestSent || hasPendingRequest(user.id) ? 'Requested' :
+               user.isPrivate ? 'Request' : 'Follow'}
+            </span>
           </button>
         )}
       </div>
@@ -166,14 +194,23 @@ export const UserCard: React.FC<UserCardProps> = ({
       </div>
       {showFollowButton && (
         <button
-          onClick={toggleFollow}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-            isFollowing 
-              ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' 
+          onClick={handleFollowAction}
+          className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2 ${
+            isFollowing || areFriends(user.id)
+              ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              : requestSent || hasPendingRequest(user.id)
+              ? 'bg-yellow-100 text-yellow-700 border border-yellow-300'
               : 'bg-green-600 text-white hover:bg-green-700'
           }`}
+          disabled={requestSent || hasPendingRequest(user.id)}
         >
-          {isFollowing ? 'Following' : 'Follow'}
+          {user.isPrivate && <Lock className="w-4 h-4" />}
+          <span>
+            {areFriends(user.id) ? 'Friends' :
+             isFollowing ? 'Following' :
+             requestSent || hasPendingRequest(user.id) ? 'Requested' :
+             user.isPrivate ? 'Request' : 'Follow'}
+          </span>
         </button>
       )}
     </div>

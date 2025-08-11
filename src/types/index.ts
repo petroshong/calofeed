@@ -7,6 +7,9 @@ export interface User {
   bio: string;
   coverImage?: string;
   isFollowing: boolean;
+  isPrivate: boolean;
+  followRequestSent?: boolean;
+  followRequestReceived?: boolean;
   followers: number;
   following: number;
   mealsLogged: number;
@@ -241,6 +244,17 @@ export interface PrivacySettings {
   allowSharing: boolean;
   showActivity: boolean;
   allowStoryViews: boolean;
+}
+
+export interface FriendRequest {
+  id: string;
+  fromUserId: string;
+  toUserId: string;
+  fromUser: User;
+  toUser: User;
+  timestamp: string;
+  status: 'pending' | 'accepted' | 'declined';
+  message?: string;
 }
 
 export interface NotificationSettings {

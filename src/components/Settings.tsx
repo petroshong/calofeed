@@ -466,11 +466,23 @@ export const Settings: React.FC<SettingsProps> = ({ user, onLogout, onUpdateUser
             <div className="p-6 space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-3">Profile Visibility</label>
+                <p className="text-sm text-gray-600 mb-3">
+                  {privacy.profileVisibility === 'private' ? 
+                    'Only approved followers can see your profile and posts' :
+                    privacy.profileVisibility === 'friends' ?
+                    'Only your friends can see your profile and posts' :
+                    'Anyone can see your profile and posts'
+                  }
+                </p>
                 <div className="space-y-2">
                   {['public', 'friends', 'private'].map((option) => (
                     <button
                       key={option}
-                      onClick={() => updatePrivacySetting('profileVisibility', option)}
+                      onClick={() => {
+                        updatePrivacySetting('profileVisibility', option);
+                        // Update user's private status
+                        onUpdateUser({ isPrivate: option === 'private' });
+                      }}
                       className={`w-full flex items-center justify-between p-3 border rounded-lg transition-colors ${
                         privacy.profileVisibility === option 
                           ? 'border-green-500 bg-green-50 text-green-700' 
@@ -481,7 +493,14 @@ export const Settings: React.FC<SettingsProps> = ({ user, onLogout, onUpdateUser
                         {option === 'public' && <Globe className="w-4 h-4" />}
                         {option === 'friends' && <Users className="w-4 h-4" />}
                         {option === 'private' && <Lock className="w-4 h-4" />}
-                        <span className="capitalize">{option}</span>
+                        <div>
+                          <span className="capitalize font-medium">{option}</span>
+                          <div className="text-xs text-gray-500">
+                            {option === 'private' && 'Requires approval to follow'}
+                            {option === 'friends' && 'Friends only'}
+                            {option === 'public' && 'Anyone can see'}
+                          </div>
+                        </div>
                       </div>
                       {privacy.profileVisibility === option && <Check className="w-4 h-4 text-green-600" />}
                     </button>
