@@ -480,6 +480,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ onClose, onViewProfile
           </div>
         )}
       </div>
+      </div>
     </div>
   );
 };
