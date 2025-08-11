@@ -189,7 +189,7 @@ export const MealLogger: React.FC<MealLoggerProps> = ({ user, onClose, onUpdateU
                 <div className="relative">
                   <img 
                     src={imagePreview} 
-                    placeholder="Enter fat (e.g., 12)"
+                    alt="Meal preview"
                     className="w-full h-64 object-cover rounded-xl"
                   />
                   <button
@@ -479,6 +479,9 @@ export const MealLogger: React.FC<MealLoggerProps> = ({ user, onClose, onUpdateU
             {/* Current Daily Progress */}
             <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4">
               <h3 className="font-semibold text-gray-900 mb-3">Today's Progress</h3>
+              <p className="text-sm text-green-700 mb-3">
+                Track your daily nutrition goals by logging each meal's calories and macros
+              </p>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <div className="flex justify-between mb-1">
