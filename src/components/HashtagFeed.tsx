@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Hash, TrendingUp, Clock, Heart, MessageCircle, Share2, Eye, Filter } from 'lucide-react';
+import { Hash, TrendingUp, Clock, Heart, MessageCircle, Share2, Eye, Filter, X } from 'lucide-react';
 import type { Meal, User } from '../types';
 
 interface HashtagFeedProps {
