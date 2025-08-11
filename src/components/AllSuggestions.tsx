@@ -342,15 +342,15 @@ export const AllSuggestions: React.FC<AllSuggestionsProps> = ({ onClose, onViewP
                   
                   <div className="flex flex-col space-y-2">
                     <button
-                            isFollowing(user.id)
+                      onClick={() => toggleFollow(user.id)}
                       className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2 ${
-                        user.isFollowing 
+                        isFollowing(user.id)
                           ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' 
                           : 'bg-green-600 text-white hover:bg-green-700'
-                          {isFollowing(user.id) ? <UserCheck className="w-4 h-4" /> : <UserPlus className="w-4 h-4" />}
-                          <span>{isFollowing(user.id) ? 'Following' : 'Follow'}</span>
-                      {user.isFollowing ? <UserCheck className="w-4 h-4" /> : <UserPlus className="w-4 h-4" />}
-                      <span>{user.isFollowing ? 'Following' : 'Follow'}</span>
+                      }`}
+                    >
+                      {isFollowing(user.id) ? <UserCheck className="w-4 h-4" /> : <UserPlus className="w-4 h-4" />}
+                      <span>{isFollowing(user.id) ? 'Following' : 'Follow'}</span>
                     </button>
                     <button 
                       onClick={() => onViewProfile(user)}
