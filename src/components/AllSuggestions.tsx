@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X, Search, Filter, UserPlus, UserCheck, Star, Crown, MapPin, Flame, Trophy, Users, TrendingUp } from 'lucide-react';
-import { useFollowing } from '../hooks/useFollowing';
 import type { User } from '../types';
+import { useFollowing } from '../hooks/useFollowing';
 
 interface AllSuggestionsProps {
   onClose: () => void;
