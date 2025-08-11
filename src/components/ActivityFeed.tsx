@@ -172,9 +172,9 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({ onHashtagClick }) =>
                   {getActivityMessage(activity)}
                 </p>
                 {activity.data.description && (
-                  <p className="text-sm text-gray-600 mt-1">
-                    {renderTextWithHashtags(activity.data.description)}
-                  </p>
+                 <div className="text-sm text-gray-600 mt-1">
+                   {renderTextWithHashtags(activity.data.description)}
+                 </div>
                 )}
                 <p className="text-xs text-gray-500 mt-1">{activity.timestamp}</p>
               </div>
