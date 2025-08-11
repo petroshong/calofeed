@@ -416,8 +416,10 @@ export const Discover: React.FC<DiscoverProps> = ({ onHashtagClick }) => {
                           </div>
                         </div>
                       </div>
-                      <button className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
-                        View Location
+                      <button 
+                        onClick={() => alert(`Checking in at ${spot.name}! 📍\n\nYou've checked in at this location. This would:\n• Add to your location history\n• Show on your profile\n• Notify your followers\n• Add to trending locations`)}
+                        className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+                        Check In
                       </button>
                     </div>
                   </div>
