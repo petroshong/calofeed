@@ -17,19 +17,23 @@ import { UserProfile } from './components/UserProfile';
 import { FindFriends } from './components/FindFriends';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { FriendRequests } from './components/FriendRequests';
+import { MealDetail } from './components/MealDetail';
 import { useAuth } from './hooks/useAuth';
 import { useNotifications } from './hooks/useNotifications';
 import { useFriendRequests } from './hooks/useFriendRequests';
-import type { User } from './types';
+import { useMeals } from './hooks/useMeals';
+import type { User, Meal } from './types';
 
 function App() {
   const { currentUser, isAuthenticated, login, logout, updateUser } = useAuth();
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
   const { getIncomingRequests } = useFriendRequests(currentUser);
+  const { meals: userMeals } = useMeals(currentUser);
   const [currentView, setCurrentView] = useState<'feed' | 'profile' | 'log' | 'challenges' | 'leaderboard' | 'notifications' | 'settings' | 'groups' | 'discover' | 'calories' | 'find-friends' | 'user-profile' | 'friend-requests'>('feed');
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
 
   const incomingRequests = getIncomingRequests();
 
@@ -37,6 +41,34 @@ function App() {
     setSelectedUser(user);
     setCurrentView('user-profile');
   };
+
+  const handleViewMeal = (mealId: string) => {
+    // Find meal in user's meals or mock data
+    const allMeals = [...userMeals];
+    const meal = allMeals.find(m => m.id === mealId);
+    if (meal) {
+      setSelectedMeal(meal);
+    }
+  };
+
+  // Handle URL routing for shared meal links
+  useEffect(() => {
+    const handleUrlChange = () => {
+      const path = window.location.pathname;
+      const mealMatch = path.match(/\/meal\/(.+)/);
+      if (mealMatch) {
+        const mealId = mealMatch[1];
+        handleViewMeal(mealId);
+      }
+    };
+
+    // Check initial URL
+    handleUrlChange();
+
+    // Listen for URL changes
+    window.addEventListener('popstate', handleUrlChange);
+    return () => window.removeEventListener('popstate', handleUrlChange);
+  }, [userMeals]);
 
   if (!isAuthenticated || !currentUser) {
     return <AuthScreen onLogin={login} />;
@@ -383,6 +415,22 @@ function App() {
           {currentView === 'settings' && <SettingsComponent user={currentUser} onLogout={logout} onUpdateUser={updateUser} />}
         </main>
       </div>
+
+      {/* Meal Detail Modal */}
+      {selectedMeal && (
+        <MealDetail 
+          meal={selectedMeal} 
+          onClose={() => {
+            setSelectedMeal(null);
+            // Reset URL to home
+            window.history.pushState({}, '', '/');
+          }}
+          onHashtagClick={(hashtag) => {
+            setSelectedMeal(null);
+            // Could implement hashtag navigation here
+          }}
+        />
+      )}
 
       {/* Search Modal */}
       {showSearch && (

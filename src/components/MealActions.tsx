@@ -29,8 +29,10 @@ export const MealActions: React.FC<MealActionsProps> = ({
   };
 
   const copyMealLink = () => {
-    const mealUrl = `https://eatsocial.app/meal/${meal.id}`;
+    const mealUrl = `${window.location.origin}/meal/${meal.id}`;
     navigator.clipboard.writeText(mealUrl);
+    // Update URL to show the meal
+    window.history.pushState({}, '', `/meal/${meal.id}`);
     // Show a more elegant notification
     const notification = document.createElement('div');
     notification.className = 'fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-50';
@@ -42,6 +44,8 @@ export const MealActions: React.FC<MealActionsProps> = ({
     }, 2000);
     
     setShowMenu(false);
+    // Trigger URL change event
+    window.dispatchEvent(new PopStateEvent('popstate'));
   };
 
   return (
