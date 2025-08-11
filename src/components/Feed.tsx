@@ -183,7 +183,7 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                     className="text-xs text-gray-500 hover:text-gray-700 underline"
                   >
                     Clear
-                  <span className="text-gray-700">Hot: #mealprep</span>
+                  </button>
                 </div>
               )}
             </div>
@@ -218,10 +218,6 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                         }`}
                       >
                         {filter.charAt(0).toUpperCase() + filter.slice(1)}
-                <div className="hidden lg:flex items-center space-x-2">
-                  <MapPin className="w-4 h-4 text-blue-500" />
-                  <span className="text-gray-700">47 check-ins today</span>
-                </div>
                       </button>
                     ))}
                   </div>
@@ -251,11 +247,14 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                   return today === mealDate;
                 }).length} meals</span>
               </div>
+              <div className="hidden lg:flex items-center space-x-2">
+                <MapPin className="w-4 h-4 text-blue-500" />
+                <span className="text-gray-700">47 check-ins today</span>
+              </div>
             </div>
-            <div className="flex items-center space-x-1 lg:space-x-2 text-xs lg:text-sm text-gray-600">
+            <div className="flex items-center space-x-2 text-xs lg:text-sm text-gray-600">
               <Zap className="w-4 h-4 text-yellow-500" />
               <span>Live feed</span>
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             </div>
           </div>
         </div>
@@ -392,12 +391,6 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                       <span>{meal.views}</span>
                     </div>
                   </div>
-                  <MealActions
-                    meal={meal}
-                    isOwner={meal.userId === currentUser.id}
-                    onDelete={deleteMeal}
-                    onShare={setShareModal}
-                  />
                   
                   <div className="p-3 lg:p-4">
                     {/* Actions */}
