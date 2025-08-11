@@ -147,17 +147,17 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({ onHashtagClick, onAc
   return (
     <div className="bg-white border border-gray-200 rounded-xl">
       <div className="p-4 border-b border-gray-200">
-        <h2 className="text-lg font-semibold text-gray-900 flex items-center">
+        <h2 className="text-base lg:text-lg font-semibold text-gray-900 flex items-center">
           <Clock className="w-5 h-5 mr-2 text-gray-600" />
           Recent Activity
         </h2>
       </div>
       
-      <div className="divide-y divide-gray-100 max-h-96 overflow-y-auto">
+      <div className="divide-y divide-gray-100 max-h-64 lg:max-h-96 overflow-y-auto">
         {activities.map((activity) => (
           <div 
             key={activity.id} 
-            className="p-4 hover:bg-gray-50 transition-colors cursor-pointer"
+            className="p-3 lg:p-4 hover:bg-gray-50 transition-colors cursor-pointer"
             onClick={() => onActivityClick && onActivityClick(activity)}
           >
             <div className="flex items-start space-x-3">
@@ -169,16 +169,16 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({ onHashtagClick, onAc
                   <img 
                     src={activity.user.avatar} 
                     alt={activity.user.displayName}
-                    className="w-6 h-6 rounded-full object-cover"
+                    className="w-5 h-5 lg:w-6 lg:h-6 rounded-full object-cover"
                   />
-                  <span className="font-semibold text-gray-900">{activity.user.displayName}</span>
+                  <span className="font-semibold text-sm lg:text-base text-gray-900">{activity.user.displayName}</span>
                   {activity.user.isVerified && <Star className="w-3 h-3 text-blue-500 fill-current" />}
                 </div>
-                <p className="text-sm text-gray-700 mt-1">
+                <p className="text-xs lg:text-sm text-gray-700 mt-1">
                   {getActivityMessage(activity)}
                 </p>
                 {activity.data.description && (
-                 <div className="text-sm text-gray-600 mt-1">
+                 <div className="text-xs lg:text-sm text-gray-600 mt-1">
                    {renderTextWithHashtags(activity.data.description)}
                  </div>
                 )}
@@ -189,7 +189,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({ onHashtagClick, onAc
                 <img 
                   src={activity.data.image} 
                   alt="Meal"
-                  className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
+                  className="w-10 h-10 lg:w-12 lg:h-12 rounded-lg object-cover flex-shrink-0"
                 />
               )}
             </div>

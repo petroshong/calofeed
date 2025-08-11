@@ -185,7 +185,7 @@ function App() {
       </header>
       {/* Desktop Header */}
       <header className="hidden lg:block bg-white border-b border-gray-200 sticky top-0 z-40">
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 xl:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-8">
             <button 
               onClick={() => setCurrentView('feed')}
@@ -200,7 +200,7 @@ function App() {
             <div className="flex items-center space-x-1">
               <button
                 onClick={() => setCurrentView('discover')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                className={`px-3 lg:px-4 py-2 rounded-lg font-medium transition-colors text-sm lg:text-base ${
                   currentView === 'discover' 
                     ? 'bg-green-50 text-green-700' 
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
@@ -210,7 +210,7 @@ function App() {
               </button>
               <button
                 onClick={() => setCurrentView('groups')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                className={`px-3 lg:px-4 py-2 rounded-lg font-medium transition-colors text-sm lg:text-base ${
                   currentView === 'groups' 
                     ? 'bg-green-50 text-green-700' 
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
@@ -220,7 +220,7 @@ function App() {
               </button>
               <button
                 onClick={() => setCurrentView('challenges')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                className={`px-3 lg:px-4 py-2 rounded-lg font-medium transition-colors text-sm lg:text-base ${
                   currentView === 'challenges' 
                     ? 'bg-green-50 text-green-700' 
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
@@ -230,7 +230,7 @@ function App() {
               </button>
               <button
                 onClick={() => setCurrentView('leaderboard')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                className={`px-3 lg:px-4 py-2 rounded-lg font-medium transition-colors text-sm lg:text-base ${
                   currentView === 'leaderboard' 
                     ? 'bg-green-50 text-green-700' 
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
@@ -240,7 +240,7 @@ function App() {
               </button>
               <button
                 onClick={() => setCurrentView('calories')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                className={`px-3 lg:px-4 py-2 rounded-lg font-medium transition-colors text-sm lg:text-base ${
                   currentView === 'calories' 
                     ? 'bg-green-50 text-green-700' 
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
@@ -250,7 +250,7 @@ function App() {
               </button>
               <button
                 onClick={() => setCurrentView('find-friends')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                className={`px-3 lg:px-4 py-2 rounded-lg font-medium transition-colors text-sm lg:text-base ${
                   currentView === 'find-friends' 
                     ? 'bg-green-50 text-green-700' 
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
@@ -261,14 +261,14 @@ function App() {
             </div>
           </div>
 
-          <div className="flex-1 max-w-md mx-8">
+          <div className="flex-1 max-w-sm lg:max-w-md mx-4 lg:mx-8">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 onClick={() => setShowSearch(true)}
                 type="text"
                 placeholder="Search users, meals, or challenges..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent cursor-pointer"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent cursor-pointer text-sm lg:text-base"
                 readOnly
               />
             </div>
@@ -277,10 +277,11 @@ function App() {
           <div className="flex items-center space-x-4">
             <button
               onClick={() => setCurrentView('log')}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium flex items-center space-x-2 transition-colors"
+              className="bg-green-600 hover:bg-green-700 text-white px-3 lg:px-4 py-2 rounded-lg font-medium flex items-center space-x-2 transition-colors text-sm lg:text-base"
             >
               <Plus className="w-4 h-4" />
-              <span>Log Meal</span>
+              <span className="hidden lg:inline">Log Meal</span>
+              <span className="lg:hidden">Log</span>
             </button>
             <button 
               onClick={() => setCurrentView('notifications')}
@@ -295,7 +296,7 @@ function App() {
             </button>
             <button 
               onClick={() => setCurrentView('profile')}
-              className="w-8 h-8 rounded-full overflow-hidden"
+              className="w-7 h-7 lg:w-8 lg:h-8 rounded-full overflow-hidden"
             >
               <img src={currentUser.avatar} alt="Profile" className="w-full h-full object-cover" />
             </button>
@@ -305,7 +306,7 @@ function App() {
 
       <div className="flex">
         {/* Desktop Sidebar */}
-        <aside className="hidden lg:block w-64 bg-white border-r border-gray-200 min-h-screen">
+        <aside className="hidden lg:block w-56 xl:w-64 bg-white border-r border-gray-200 min-h-screen">
           <div className="p-6">
             <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 mb-6">
               <div className="flex items-center justify-between mb-3">
@@ -381,7 +382,7 @@ function App() {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 lg:max-w-4xl lg:mx-auto">
+        <main className="flex-1">
           {currentView === 'feed' && (
             <Feed 
               onViewProfile={handleViewProfile} 

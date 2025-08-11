@@ -94,16 +94,17 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
   const [showAllSuggestions, setShowAllSuggestions] = useState(false);
   const [showHashtagFeed, setShowHashtagFeed] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const { isFollowing } = useFollowing(currentUser);
 
   // Combine user meals with mock feed meals
   const publicUserMeals = userMeals.filter(meal => meal.visibility === 'public');
   
   // Filter meals based on privacy settings
-  const visibleMeals = [...publicUserMeals, ...mockFeedMeals.map(meal => ({
+  let visibleMeals = [...publicUserMeals, ...mockFeedMeals.map(meal => ({
     ...meal,
     user: {
       ...meal.user,
-      isFollowing: areFriends(meal.user.id)
+      isFollowing: isFollowing(meal.user.id)
     }
   })).filter(meal => {
     // If the meal owner has a private account
@@ -114,6 +115,15 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
     // Public accounts - show all public meals
     return meal.visibility === 'public';
   })];
+
+  // Apply feed filter
+  if (feedFilter === 'following') {
+    visibleMeals = visibleMeals.filter(meal => 
+      meal.userId === currentUser.id || isFollowing(meal.user.id)
+    );
+  } else if (feedFilter === 'trending') {
+    visibleMeals = visibleMeals.sort((a, b) => b.likes - a.likes);
+  }
 
   // Filter meals by selected categories
   const filteredMeals = selectedCategories.length === 0 
@@ -128,18 +138,18 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
       );
 
   return (
-    <div className="lg:flex lg:space-x-8 max-w-6xl mx-auto pb-20 lg:pb-0">
+    <div className="lg:flex lg:space-x-6 xl:space-x-8 max-w-7xl mx-auto pb-20 lg:pb-0">
       {/* Main Feed */}
-      <div className="lg:flex-1 max-w-2xl lg:max-w-none">
+      <div className="lg:flex-1 lg:max-w-2xl xl:max-w-3xl">
         {/* Stories */}
         <Stories currentUser={currentUser} />
 
         {/* Feed Filter */}
-        <div className="bg-white border-b border-gray-200 p-4 sticky top-14 lg:top-16 z-30">
+        <div className="bg-white border-b border-gray-200 p-3 lg:p-4 sticky top-14 lg:top-16 z-30">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <h2 className="text-lg font-semibold text-gray-900">Your Feed</h2>
-              <div className="flex items-center space-x-2 border border-gray-300 rounded-lg p-1">
+            <div className="flex items-center space-x-2 lg:space-x-4">
+              <h2 className="text-base lg:text-lg font-semibold text-gray-900">Your Feed</h2>
+              <div className="hidden sm:flex items-center space-x-2 border border-gray-300 rounded-lg p-1">
                 <button
                   onClick={() => setViewMode('list')}
                   className={`p-2 rounded-md transition-colors ${
@@ -158,7 +168,7 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                 </button>
               </div>
               {selectedCategories.length > 0 && (
-                <div className="flex items-center space-x-2">
+                <div className="hidden sm:flex items-center space-x-2">
                   <span className="text-sm text-green-600 font-medium">
                     {selectedCategories.length} filter{selectedCategories.length !== 1 ? 's' : ''} active
                   </span>
@@ -171,7 +181,7 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                 </div>
               )}
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1 lg:space-x-2">
               <button
                 onClick={() => setShowCategoryFilter(true)}
                 className={`flex items-center space-x-2 px-3 py-2 border rounded-lg text-sm font-medium transition-colors ${
@@ -181,7 +191,7 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                 }`}
               >
                 <Filter className="w-4 h-4" />
-                <span>Categories</span>
+                <span className="hidden sm:inline">Categories</span>
               </button>
               <div className="relative">
                 <button
@@ -189,7 +199,7 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                   className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
                 >
                   <span className="capitalize">{feedFilter}</span>
-                  <ChevronDown className="w-4 h-4" />
+                  <ChevronDown className="w-3 h-3 lg:w-4 lg:h-4" />
                 </button>
                 {showFilterMenu && (
                   <div className="absolute right-0 top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-40 min-w-[120px]">
@@ -212,18 +222,18 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
         </div>
 
         {/* Quick Stats Bar */}
-        <div className="bg-white border-b border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-6 text-sm">
+        <div className="bg-white border-b border-gray-200 p-3 lg:p-4">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="flex items-center space-x-3 lg:space-x-6 text-xs lg:text-sm">
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                 <span className="text-gray-700">{filteredMeals.length} posts</span>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="hidden sm:flex items-center space-x-2">
                 <TrendingUp className="w-4 h-4 text-pink-500" />
                 <span className="text-gray-700">Trending: #mealprep</span>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="hidden md:flex items-center space-x-2">
                 <Calendar className="w-4 h-4 text-blue-500" />
                 <span className="text-gray-700">Today: {filteredMeals.filter(m => {
                   const today = new Date().toDateString();
@@ -232,7 +242,7 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                 }).length} meals</span>
               </div>
             </div>
-            <div className="flex items-center space-x-2 text-sm text-gray-600">
+            <div className="flex items-center space-x-2 text-xs lg:text-sm text-gray-600">
               <Zap className="w-4 h-4 text-yellow-500" />
               <span>Live feed</span>
             </div>
@@ -240,7 +250,7 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
         </div>
 
         {/* Feed Posts */}
-        <div className={viewMode === 'grid' ? 'p-4' : 'space-y-6 p-4'}>
+        <div className={viewMode === 'grid' ? 'p-3 lg:p-4' : 'space-y-4 lg:space-y-6 p-3 lg:p-4'}>
           {filteredMeals.length === 0 ? (
             <div className="text-center py-12">
               <Filter className="w-16 h-16 text-gray-400 mx-auto mb-4" />
@@ -262,7 +272,7 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
             </div>
           ) : (
             viewMode === 'grid' ? (
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-2 lg:gap-4">
                 {filteredMeals.map((meal) => (
                   <div key={meal.id} className="aspect-square relative group cursor-pointer">
                     <img 
@@ -273,8 +283,8 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                     />
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 rounded-xl flex items-center justify-center">
                       <div className="text-white opacity-0 group-hover:opacity-100 text-center">
-                        <div className="font-bold text-lg mb-1">{meal.calories} cal</div>
-                        <div className="text-sm flex items-center justify-center space-x-3">
+                        <div className="font-bold text-sm lg:text-lg mb-1">{meal.calories} cal</div>
+                        <div className="text-xs lg:text-sm flex items-center justify-center space-x-2 lg:space-x-3">
                           <span className="flex items-center space-x-1">
                             <Heart className="w-3 h-3" />
                             <span>{meal.likes}</span>
@@ -292,11 +302,11 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                     </div>
                     
                     {/* User Avatar Overlay */}
-                    <div className="absolute top-3 left-3">
+                    <div className="absolute top-2 lg:top-3 left-2 lg:left-3">
                       <img 
                         src={meal.user.avatar} 
                         alt={meal.user.displayName}
-                        className="w-8 h-8 rounded-full object-cover border-2 border-white shadow-lg"
+                        className="w-6 h-6 lg:w-8 lg:h-8 rounded-full object-cover border-2 border-white shadow-lg"
                       />
                       {meal.user.isPrivate && (
                         <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center">
@@ -306,7 +316,7 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                     </div>
                     
                     {/* Calorie Badge */}
-                    <div className="absolute top-3 right-3 bg-black bg-opacity-70 text-white px-2 py-1 rounded-full text-xs font-medium">
+                    <div className="absolute top-2 lg:top-3 right-2 lg:right-3 bg-black bg-opacity-70 text-white px-2 py-1 rounded-full text-xs font-medium">
                       {meal.calories} cal
                     </div>
                   </div>
@@ -316,13 +326,13 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
               filteredMeals.map((meal) => (
                 <article key={meal.id} className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
                   {/* Post Header */}
-                  <div className="p-4 flex items-center justify-between">
+                  <div className="p-3 lg:p-4 flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <button onClick={() => onViewProfile && onViewProfile(meal.user)}>
                         <img 
                           src={meal.user.avatar} 
                           alt={meal.user.displayName}
-                          className="w-10 h-10 rounded-full object-cover hover:ring-2 hover:ring-blue-500 transition-all"
+                          className="w-8 h-8 lg:w-10 lg:h-10 rounded-full object-cover hover:ring-2 hover:ring-blue-500 transition-all"
                         />
                       </button>
                       <div>
@@ -334,7 +344,7 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                           {meal.user.isVerified && <Star className="w-4 h-4 text-blue-500 fill-current" />}
                           {meal.user.isPrivate && <Lock className="w-4 h-4 text-yellow-500" />}
                         </button>
-                        <div className="flex items-center text-sm text-gray-500 space-x-2">
+                        <div className="flex items-center text-xs lg:text-sm text-gray-500 space-x-2">
                           <Clock className="w-4 h-4" />
                           <span>{meal.timestamp}</span>
                           {meal.location && (
@@ -360,13 +370,13 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                     <img 
                       src={meal.image} 
                       alt="Food"
-                      className="w-full h-80 object-cover cursor-pointer"
+                      className="w-full h-64 lg:h-80 object-cover cursor-pointer"
                       onClick={() => setSelectedMeal(meal)}
                     />
-                    <div className="absolute top-4 right-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm font-medium">
+                    <div className="absolute top-3 lg:top-4 right-3 lg:right-4 bg-black bg-opacity-50 text-white px-2 lg:px-3 py-1 rounded-full text-xs lg:text-sm font-medium">
                       {meal.calories} cal
                     </div>
-                    <div className="absolute bottom-4 left-4 flex items-center space-x-1 text-white text-sm">
+                    <div className="absolute bottom-3 lg:bottom-4 left-3 lg:left-4 flex items-center space-x-1 text-white text-xs lg:text-sm">
                       <Eye className="w-4 h-4" />
                       <span>{meal.views}</span>
                     </div>
@@ -378,10 +388,10 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                     onShare={setShareModal}
                   />
                   
-                  <div className="p-4">
+                  <div className="p-3 lg:p-4">
                     {/* Actions */}
                     <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center space-x-4">
+                      <div className="flex items-center space-x-3 lg:space-x-4">
                         <button 
                           onClick={() => toggleLike(meal.id)}
                           className={`flex items-center space-x-2 ${
@@ -389,21 +399,21 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                           } transition-colors`}
                         >
                           <Heart className={`w-6 h-6 ${meal.isLiked ? 'fill-current' : ''}`} />
-                          <span className="font-medium">{meal.likes}</span>
+                          <span className="font-medium text-sm lg:text-base">{meal.likes}</span>
                         </button>
                         <button 
                           onClick={() => setSelectedMeal(meal)}
                           className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors"
                         >
                           <MessageCircle className="w-6 h-6" />
-                          <span className="font-medium">{meal.comments.length}</span>
+                          <span className="font-medium text-sm lg:text-base">{meal.comments.length}</span>
                         </button>
                         <button 
                           onClick={() => setShareModal(meal)}
                           className="flex items-center space-x-2 text-gray-600 hover:text-green-600 transition-colors"
                         >
                           <Send className="w-6 h-6" />
-                          <span className="font-medium">{meal.shares}</span>
+                          <span className="font-medium text-sm lg:text-base">{meal.shares}</span>
                         </button>
                       </div>
                       <button 
@@ -444,7 +454,7 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                           <button 
                             key={tag} 
                             onClick={() => setShowHashtagFeed(tag)}
-                            className="px-3 py-1 bg-blue-50 text-blue-700 text-sm rounded-full cursor-pointer hover:bg-blue-100 hover:scale-105 transition-all duration-200 font-medium"
+                            className="px-2 lg:px-3 py-1 bg-blue-50 text-blue-700 text-xs lg:text-sm rounded-full cursor-pointer hover:bg-blue-100 hover:scale-105 transition-all duration-200 font-medium"
                           >
                             #{tag}
                           </button>
@@ -456,7 +466,7 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                     {meal.comments.length > 0 && (
                       <button 
                         onClick={() => setSelectedMeal(meal)}
-                        className="text-gray-600 hover:text-gray-900 text-sm font-medium"
+                        className="text-gray-600 hover:text-gray-900 text-xs lg:text-sm font-medium"
                       >
                         View all {meal.comments.length} comments
                       </button>
@@ -470,7 +480,7 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
       </div>
 
       {/* Sidebar */}
-      <div className="hidden lg:block lg:w-80 space-y-6 p-4">
+      <div className="hidden lg:block lg:w-72 xl:w-80 space-y-4 lg:space-y-6 p-4">
         <SuggestedUsers 
           currentUser={currentUser}
           onViewProfile={onViewProfile} 

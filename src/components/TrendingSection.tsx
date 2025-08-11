@@ -53,10 +53,10 @@ const trendingData: TrendingItem[] = [
 
 export const TrendingSection: React.FC<TrendingSectionProps> = ({ onHashtagClick }) => {
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-6">
+    <div className="bg-white border border-gray-200 rounded-xl p-4 lg:p-6">
       <div className="flex items-center space-x-2 mb-4">
         <TrendingUp className="w-5 h-5 text-pink-500" />
-        <h2 className="text-lg font-semibold text-gray-900">Trending Now</h2>
+        <h2 className="text-base lg:text-lg font-semibold text-gray-900">Trending Now</h2>
       </div>
       
       <div className="space-y-3">
@@ -67,16 +67,16 @@ export const TrendingSection: React.FC<TrendingSectionProps> = ({ onHashtagClick
             className="w-full flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer text-left"
           >
             <div className="flex items-center space-x-3">
-              <div className="text-sm font-bold text-gray-500 w-6">#{index + 1}</div>
+              <div className="text-xs lg:text-sm font-bold text-gray-500 w-4 lg:w-6">#{index + 1}</div>
               <div className="flex items-center space-x-2">
                 {item.type === 'hashtag' && <Hash className="w-4 h-4 text-pink-500" />}
                 {item.type === 'location' && <MapPin className="w-4 h-4 text-blue-500" />}
                 {item.type === 'user' && <Users className="w-4 h-4 text-green-500" />}
                 <div>
-                  <div className={`font-medium ${item.type === 'hashtag' ? 'text-pink-600 hover:text-pink-700' : 'text-gray-900'}`}>
+                  <div className={`font-medium text-sm lg:text-base ${item.type === 'hashtag' ? 'text-pink-600 hover:text-pink-700' : 'text-gray-900'}`}>
                     {item.type === 'hashtag' ? `#${item.name}` : item.name}
                   </div>
-                  <div className="text-xs text-gray-600">
+                  <div className="text-xs lg:text-sm text-gray-600">
                     {item.count.toLocaleString()} {item.type === 'hashtag' ? 'posts' : item.type === 'location' ? 'check-ins' : 'followers'}
                   </div>
                 </div>
@@ -92,7 +92,7 @@ export const TrendingSection: React.FC<TrendingSectionProps> = ({ onHashtagClick
         ))}
       </div>
       
-      <button className="w-full mt-4 text-pink-600 hover:text-pink-700 font-medium text-sm">
+      <button className="w-full mt-4 text-pink-600 hover:text-pink-700 font-medium text-xs lg:text-sm">
         View All Trending
       </button>
     </div>

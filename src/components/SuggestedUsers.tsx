@@ -96,7 +96,7 @@ export const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ currentUser, onV
 
   if (visibleUsers.length === 0) {
     return (
-      <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6">
+      <div className="bg-white border border-gray-200 rounded-xl p-4 lg:p-6 mb-4 lg:mb-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Suggested for You</h2>
         <div className="text-center py-8">
           <UserPlus className="w-12 h-12 text-gray-400 mx-auto mb-3" />
@@ -113,7 +113,7 @@ export const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ currentUser, onV
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6">
+    <div className="bg-white border border-gray-200 rounded-xl p-4 lg:p-6 mb-4 lg:mb-6">
       <h2 className="text-lg font-semibold text-gray-900 mb-4">Suggested for You</h2>
       <div className="space-y-4">
         {visibleUsers.slice(0, 3).map((user) => (
@@ -122,14 +122,14 @@ export const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ currentUser, onV
               <img 
                 src={user.avatar} 
                 alt={user.displayName}
-                className="w-12 h-12 rounded-full object-cover hover:ring-2 hover:ring-blue-500 transition-all"
+                className="w-10 h-10 lg:w-12 lg:h-12 rounded-full object-cover hover:ring-2 hover:ring-blue-500 transition-all"
               />
             </button>
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-2">
                 <button 
                   onClick={() => onViewProfile && onViewProfile(user)}
-                  className="font-semibold text-gray-900 truncate hover:text-blue-600 transition-colors"
+                  className="font-semibold text-sm lg:text-base text-gray-900 truncate hover:text-blue-600 transition-colors"
                 >
                   {user.displayName}
                 </button>
@@ -138,7 +138,7 @@ export const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ currentUser, onV
               </div>
               <p className="text-sm text-gray-600 truncate">@{user.username}</p>
               <div className="flex items-center space-x-3 text-xs text-gray-500 mt-1">
-                <span>{user.followers.toLocaleString()} followers</span>
+                <span className="hidden sm:inline">{user.followers.toLocaleString()} followers</span>
                 <div className="flex items-center space-x-1">
                   <Flame className="w-3 h-3 text-orange-500" />
                   <span>{user.streak}d</span>
@@ -158,7 +158,7 @@ export const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ currentUser, onV
               </button>
               <button
                 onClick={() => toggleFollow(user.id)}
-                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors flex items-center space-x-1 ${
+                className={`px-2 lg:px-3 py-1 rounded-lg text-xs lg:text-sm font-medium transition-colors flex items-center space-x-1 ${
                   isFollowing(user.id) || user.isFollowing
                     ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     : 'bg-green-600 text-white hover:bg-green-700'
@@ -174,7 +174,7 @@ export const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ currentUser, onV
       
       <button 
         onClick={() => onViewAllSuggestions && onViewAllSuggestions()}
-        className="w-full mt-4 text-green-600 hover:text-green-700 font-medium text-sm"
+        className="w-full mt-4 text-green-600 hover:text-green-700 font-medium text-xs lg:text-sm"
       >
         See All Suggestions
       </button>

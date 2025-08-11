@@ -50,7 +50,7 @@ export const FoodCategoryFilter: React.FC<FoodCategoryFilterProps> = ({
     >
       <div 
         onClick={(e) => e.stopPropagation()}
-        className="bg-white rounded-t-3xl lg:rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+        className="bg-white rounded-t-3xl lg:rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto m-4"
       >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
@@ -69,30 +69,30 @@ export const FoodCategoryFilter: React.FC<FoodCategoryFilterProps> = ({
           </button>
         </div>
 
-        <div className="p-6">
+        <div className="p-4 lg:p-6">
           {/* Quick Actions */}
           <div className="flex space-x-3 mb-6">
             <button
               onClick={selectAll}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
+              className="px-3 lg:px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors text-sm lg:text-base"
             >
               Select All
             </button>
             <button
               onClick={clearAll}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+              className="px-3 lg:px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors text-sm lg:text-base"
             >
               Clear All
             </button>
           </div>
 
           {/* Categories Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-4">
             {foodCategories.map((category) => (
               <button
                 key={category.id}
                 onClick={() => toggleCategory(category.id)}
-                className={`p-4 border-2 rounded-xl transition-all duration-200 ${
+                className={`p-3 lg:p-4 border-2 rounded-xl transition-all duration-200 ${
                   selectedCategories.includes(category.id)
                     ? `${category.color} border-current shadow-md transform scale-105`
                     : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
@@ -100,7 +100,7 @@ export const FoodCategoryFilter: React.FC<FoodCategoryFilterProps> = ({
               >
                 <div className="text-center">
                   <div className="text-3xl mb-2">{category.emoji}</div>
-                  <div className="font-medium">{category.name}</div>
+                  <div className="font-medium text-sm lg:text-base">{category.name}</div>
                 </div>
               </button>
             ))}
@@ -110,13 +110,13 @@ export const FoodCategoryFilter: React.FC<FoodCategoryFilterProps> = ({
           <div className="flex space-x-4 mt-8">
             <button
               onClick={onClose}
-              className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+              className="flex-1 px-4 lg:px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors text-sm lg:text-base"
             >
               Cancel
             </button>
             <button
               onClick={onClose}
-              className="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
+              className="flex-1 px-4 lg:px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors text-sm lg:text-base"
             >
               Apply Filters
             </button>
