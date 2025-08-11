@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Search, Filter, UserPlus, UserCheck, Star, Crown, MapPin, Flame, Trophy, Users, TrendingUp } from 'lucide-react';
+import { useFollowing } from '../hooks/useFollowing';
 import type { User } from '../types';
 
 interface AllSuggestionsProps {
@@ -139,30 +140,30 @@ const allSuggestedUsers: User[] = [
 ];
 
 export const AllSuggestions: React.FC<AllSuggestionsProps> = ({ onClose, onViewProfile, currentUser, onUpdateCurrentUser }) => {
-  const [users, setUsers] = useState<User[]>(allSuggestedUsers);
+  const { followUser, unfollowUser, isFollowing } = useFollowing(currentUser);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterBy, setFilterBy] = useState<'all' | 'verified' | 'premium' | 'influencer' | 'nearby'>('all');
   const [sortBy, setSortBy] = useState<'followers' | 'streak' | 'level' | 'mutual'>('followers');
 
   const toggleFollow = (userId: string) => {
-    setUsers(prev => prev.map(user => {
-      if (user.id === userId) {
-        const newFollowingState = !user.isFollowing;
-        // Update current user's following count
-        onUpdateCurrentUser({
-          following: newFollowingState ? currentUser.following + 1 : currentUser.following - 1
-        });
-        return {
-          ...user,
-          isFollowing: newFollowingState,
-          followers: newFollowingState ? user.followers + 1 : user.followers - 1
-        };
-      }
-      return user;
-    }));
+    const currentlyFollowing = isFollowing(userId);
+    
+    if (currentlyFollowing) {
+      unfollowUser(userId);
+    } else {
+      followUser(userId);
+    }
+    
+    // Update current user's following count
+    onUpdateCurrentUser({
+      following: currentlyFollowing ? currentUser.following - 1 : currentUser.following + 1
+    });
   };
 
-  const filteredAndSortedUsers = users
+  // Filter out users that are already being followed
+  const availableUsers = allSuggestedUsers.filter(user => !isFollowing(user.id));
+
+  const filteredAndSortedUsers = availableUsers
     .filter(user => {
       // Search filter
       const matchesSearch = user.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -341,13 +342,13 @@ export const AllSuggestions: React.FC<AllSuggestionsProps> = ({ onClose, onViewP
                   
                   <div className="flex flex-col space-y-2">
                     <button
-                      onClick={() => toggleFollow(user.id)}
+                            isFollowing(user.id)
                       className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2 ${
                         user.isFollowing 
                           ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' 
                           : 'bg-green-600 text-white hover:bg-green-700'
-                      }`}
-                    >
+                          {isFollowing(user.id) ? <UserCheck className="w-4 h-4" /> : <UserPlus className="w-4 h-4" />}
+                          <span>{isFollowing(user.id) ? 'Following' : 'Follow'}</span>
                       {user.isFollowing ? <UserCheck className="w-4 h-4" /> : <UserPlus className="w-4 h-4" />}
                       <span>{user.isFollowing ? 'Following' : 'Follow'}</span>
                     </button>

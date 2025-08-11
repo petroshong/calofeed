@@ -65,9 +65,11 @@ interface SuggestedUsersProps {
 }
 
 export const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ currentUser, onViewProfile, onViewAllSuggestions, onUpdateCurrentUser }) => {
-  const [users, setUsers] = useState<User[]>(suggestedUsers);
   const [dismissedUsers, setDismissedUsers] = useState<string[]>([]);
   const { followUser, unfollowUser, isFollowing } = useFollowing(currentUser);
+
+  // Filter out users that are already being followed
+  const availableUsers = suggestedUsers.filter(user => !isFollowing(user.id));
 
   const toggleFollow = (userId: string) => {
     const currentlyFollowing = isFollowing(userId);
@@ -77,17 +79,6 @@ export const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ currentUser, onV
     } else {
       followUser(userId);
     }
-    
-    // Update the user's following state in the UI
-    setUsers(prev => prev.map(user => 
-      user.id === userId 
-        ? { 
-            ...user, 
-            isFollowing: !currentlyFollowing, 
-            followers: currentlyFollowing ? user.followers - 1 : user.followers + 1 
-          }
-        : user
-    ));
     
     // Update current user's following count
     if (onUpdateCurrentUser) {
@@ -101,10 +92,24 @@ export const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ currentUser, onV
     setDismissedUsers(prev => [...prev, userId]);
   };
 
-  const visibleUsers = users.filter(user => !dismissedUsers.includes(user.id));
+  const visibleUsers = availableUsers.filter(user => !dismissedUsers.includes(user.id));
 
   if (visibleUsers.length === 0) {
-    return null;
+    return (
+      <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Suggested for You</h2>
+        <div className="text-center py-8">
+          <UserPlus className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+          <p className="text-gray-600 text-sm">You're following everyone we suggested!</p>
+          <button 
+            onClick={() => onViewAllSuggestions && onViewAllSuggestions()}
+            className="mt-3 text-green-600 hover:text-green-700 font-medium text-sm"
+          >
+            Find More People
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
