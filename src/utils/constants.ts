@@ -1,9 +1,9 @@
 export const APP_CONFIG = {
-  name: 'EatSocial',
+  name: 'CaloFeed',
   version: '1.0.0',
   description: 'Social Food & Calorie Tracker',
-  author: 'EatSocial Team',
-  website: 'https://eatsocial.app'
+  author: 'CaloFeed Team',
+  website: 'https://calofeed.app'
 };
 
 export const NUTRITION_GOALS = {
@@ -74,7 +74,7 @@ export const API_ENDPOINTS = {
 };
 
 export const STORAGE_KEYS = {
-  USER_PREFERENCES: 'eatsocial_user_preferences',
-  RECENT_SEARCHES: 'eatsocial_recent_searches',
-  OFFLINE_DATA: 'eatsocial_offline_data'
+  USER_PREFERENCES: 'calofeed_user_preferences',
+  RECENT_SEARCHES: 'calofeed_recent_searches',
+  OFFLINE_DATA: 'calofeed_offline_data'
 };
