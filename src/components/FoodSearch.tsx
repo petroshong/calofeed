@@ -174,7 +174,11 @@ export const FoodSearch: React.FC<FoodSearchProps> = ({ onClose, onSelectFood })
   };
 
   return (
-    <div className="fixed inset-0 bg-white z-50 flex flex-col">
+    <div 
+      className="fixed inset-0 bg-white z-50 flex flex-col"
+      onClick={onClose}
+    >
+      <div onClick={(e) => e.stopPropagation()}>
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         <h2 className="text-xl font-bold text-gray-900">Search Foods</h2>
