@@ -103,7 +103,7 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
     ...meal,
     user: {
       ...meal.user,
-      isFollowing: isFollowing(meal.user.id)
+      isFollowing: areFriends(meal.user.id)
     }
   })).filter(meal => {
     // If the meal owner has a private account
