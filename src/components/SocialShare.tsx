@@ -87,8 +87,14 @@ export const SocialShare: React.FC<SocialShareProps> = ({ meal, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center">
-      <div className="bg-white rounded-t-3xl lg:rounded-2xl max-w-md w-full max-h-[80vh] overflow-y-auto">
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center"
+      onClick={onClose}
+    >
+      <div 
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white rounded-t-3xl lg:rounded-2xl max-w-md w-full max-h-[80vh] overflow-y-auto"
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-xl font-bold text-gray-900">Share Meal</h2>

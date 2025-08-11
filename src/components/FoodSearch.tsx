@@ -287,6 +287,7 @@ export const FoodSearch: React.FC<FoodSearchProps> = ({ onClose, onSelectFood })
           ))}
         </div>
       </div>
+      </div>
     </div>
   );
 };

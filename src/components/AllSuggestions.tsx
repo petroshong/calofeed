@@ -258,6 +258,7 @@ export const AllSuggestions: React.FC<AllSuggestionsProps> = ({ onClose, onViewP
           </select>
         </div>
       </div>
+      </div>
 
       {/* Users List */}
       <div className="flex-1 overflow-y-auto p-4">

@@ -157,6 +157,7 @@ export const HashtagFeed: React.FC<HashtagFeedProps> = ({ hashtag, onClose, allM
           )}
         </div>
       </div>
+      </div>
     </div>
   );
 };
