@@ -413,7 +413,22 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                     {/* Description */}
                     <div className="text-gray-900 mb-3">
                       <span className="font-semibold">{meal.user.displayName}</span>
-                      <span className="ml-2">{meal.description}</span>
+                      <span className="ml-2">
+                        {meal.description.split(/(\s|^)(#\w+)/g).map((part, index) => {
+                          if (part.match(/^#\w+/)) {
+                            return (
+                              <button
+                                key={index}
+                                onClick={() => setShowHashtagFeed(part.slice(1))}
+                                className="text-blue-600 hover:text-blue-700 font-medium hover:underline transition-colors"
+                              >
+                                {part}
+                              </button>
+                            );
+                          }
+                          return <span key={index}>{part}</span>;
+                        })}
+                      </span>
                     </div>
 
                     {/* Tags */}
