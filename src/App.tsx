@@ -298,15 +298,6 @@ function App() {
                     ></div>
                   </div>
                 </div>
-                <button
-                  onClick={() => { setCurrentView('find-friends'); setShowMobileMenu(false); }}
-                  className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
-                    currentView === 'find-friends' ? 'bg-green-50 text-green-700' : 'text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  <Users className="w-5 h-5" />
-                  <span>Find Friends</span>
-                </button>
               </div>
             </div>
 
@@ -321,11 +312,6 @@ function App() {
 
             <div className="space-y-2">
               <h3 className="font-medium text-gray-900 mb-3">Quick Actions</h3>
-              <button 
-                onClick={() => setCurrentView('find-friends')}
-                className="w-full flex items-center space-x-3 p-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-              >
-                <Users className="w-5 h-5" />
               <button
                 onClick={() => { setCurrentView('friend-requests'); setShowMobileMenu(false); }}
                 className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
@@ -346,6 +332,15 @@ function App() {
                 onClick={() => { setCurrentView('find-friends'); setShowMobileMenu(false); }}
                 className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
                   currentView === 'find-friends' ? 'bg-green-50 text-green-700' : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                <Users className="w-5 h-5" />
+                <span>Find Friends</span>
+              </button>
+            </div>
+          </div>
+        </aside>
+
         {/* Main Content */}
         <main className="flex-1 lg:max-w-4xl lg:mx-auto">
           {currentView === 'feed' && (
