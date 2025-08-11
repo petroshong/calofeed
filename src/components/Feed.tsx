@@ -370,26 +370,6 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                   />
                   
                   <div className="p-4">
-                    {/* Nutrition Info */}
-                    <div className="flex justify-between items-center mb-3 p-3 bg-gray-50 rounded-lg">
-                      <div className="text-center">
-                        <div className="text-lg font-bold text-green-600">{meal.protein}g</div>
-                        <div className="text-xs text-gray-600">Protein</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-lg font-bold text-blue-600">{meal.carbs}g</div>
-                        <div className="text-xs text-gray-600">Carbs</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-lg font-bold text-orange-600">{meal.fat}g</div>
-                        <div className="text-xs text-gray-600">Fat</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-lg font-bold text-purple-600">{meal.calories}</div>
-                        <div className="text-xs text-gray-600">Calories</div>
-                      </div>
-                    </div>
-
                     {/* Actions */}
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center space-x-4">
