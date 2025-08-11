@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { UserPlus, X, Star, Crown, Flame, Trophy } from 'lucide-react';
+import { useFollowing } from '../hooks/useFollowing';
 import type { User } from '../types';
 
 const suggestedUsers: User[] = [
@@ -57,20 +58,43 @@ const suggestedUsers: User[] = [
 ];
 
 interface SuggestedUsersProps {
+  currentUser: User;
   onViewProfile?: (user: User) => void;
   onViewAllSuggestions?: () => void;
+  onUpdateCurrentUser?: (updates: Partial<User>) => void;
 }
 
-export const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ onViewProfile, onViewAllSuggestions }) => {
+export const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ currentUser, onViewProfile, onViewAllSuggestions, onUpdateCurrentUser }) => {
   const [users, setUsers] = useState<User[]>(suggestedUsers);
   const [dismissedUsers, setDismissedUsers] = useState<string[]>([]);
+  const { followUser, unfollowUser, isFollowing } = useFollowing(currentUser);
 
-  const followUser = (userId: string) => {
+  const toggleFollow = (userId: string) => {
+    const currentlyFollowing = isFollowing(userId);
+    
+    if (currentlyFollowing) {
+      unfollowUser(userId);
+    } else {
+      followUser(userId);
+    }
+    
+    // Update the user's following state in the UI
     setUsers(prev => prev.map(user => 
       user.id === userId 
-        ? { ...user, isFollowing: true, followers: user.followers + 1 }
+        ? { 
+            ...user, 
+            isFollowing: !currentlyFollowing, 
+            followers: currentlyFollowing ? user.followers - 1 : user.followers + 1 
+          }
         : user
     ));
+    
+    // Update current user's following count
+    if (onUpdateCurrentUser) {
+      onUpdateCurrentUser({
+        following: currentlyFollowing ? currentUser.following - 1 : currentUser.following + 1
+      });
+    }
   };
 
   const dismissUser = (userId: string) => {
@@ -99,10 +123,14 @@ export const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ onViewProfile, o
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-2">
                 <button 
-                  onClick={() => onViewProfile && onViewProfile(user)}
-                  className="font-semibold text-gray-900 truncate hover:text-blue-600 transition-colors"
-                >
-                  {user.displayName}
+                  onClick={() => toggleFollow(user.id)}
+                  className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors flex items-center space-x-1 ${
+                    isFollowing(user.id) || user.isFollowing
+                      ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-green-600 text-white hover:bg-green-700'
+                  }`}
+                  <UserPlus className="w-3 h-3" />
+                  <span>{isFollowing(user.id) || user.isFollowing ? 'Following' : 'Follow'}</span>
                 </button>
                 {user.isVerified && <Star className="w-4 h-4 text-blue-500 fill-current" />}
                 {user.isInfluencer && <Crown className="w-4 h-4 text-yellow-500 fill-current" />}

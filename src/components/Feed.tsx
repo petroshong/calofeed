@@ -472,8 +472,10 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
       {/* Sidebar */}
       <div className="hidden lg:block lg:w-80 space-y-6 p-4">
         <SuggestedUsers 
+          currentUser={currentUser}
           onViewProfile={onViewProfile} 
           onViewAllSuggestions={() => setShowAllSuggestions(true)}
+          onUpdateCurrentUser={onUpdateCurrentUser}
         />
         <TrendingSection onHashtagClick={setShowHashtagFeed} />
         <ActivityFeed 

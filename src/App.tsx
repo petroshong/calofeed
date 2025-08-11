@@ -98,10 +98,15 @@ function App() {
           </button>
           
           <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 bg-gradient-to-br from-green-500 to-emerald-600 rounded-md flex items-center justify-center">
+            <button 
+              onClick={() => setCurrentView('feed')}
+              className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
+            >
+              <div className="w-6 h-6 bg-gradient-to-br from-green-500 to-emerald-600 rounded-md flex items-center justify-center">
               <Flame className="w-4 h-4 text-white" />
-            </div>
-            <span className="text-lg font-bold text-gray-900">CaloFeed</span>
+              </div>
+              <span className="text-lg font-bold text-gray-900">CaloFeed</span>
+            </button>
           </div>
           
           <div className="flex items-center space-x-2">
@@ -182,24 +187,17 @@ function App() {
       <header className="hidden lg:block bg-white border-b border-gray-200 sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-8">
-            <div className="flex items-center space-x-2">
+            <button 
+              onClick={() => setCurrentView('feed')}
+              className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
+            >
               <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
                 <Flame className="w-5 h-5 text-white" />
               </div>
               <span className="text-xl font-bold text-gray-900">CaloFeed</span>
-            </div>
+            </button>
             
             <div className="flex items-center space-x-1">
-              <button
-                onClick={() => setCurrentView('feed')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  currentView === 'feed' 
-                    ? 'bg-green-50 text-green-700' 
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
-              >
-                Feed
-              </button>
               <button
                 onClick={() => setCurrentView('discover')}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
