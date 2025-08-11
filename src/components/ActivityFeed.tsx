@@ -63,7 +63,7 @@ const mockActivities: Activity[] = [
         name: 'Veggie Master',
         emoji: '🥬',
         description: 'Logged 100 vegetable servings'
-      }
+      },
       description: 'Just earned the Veggie Master badge! #plantbased #veggies'
     }
   },
