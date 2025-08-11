@@ -520,9 +520,14 @@ export const MealLogger: React.FC<MealLoggerProps> = ({ user, onClose, onUpdateU
               <button
                 type="submit"
                 disabled={!formData.calories}
-                className="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+                className="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
               >
-                Log Meal ({formData.calories || 0} cal)
+                <span>Log Meal</span>
+                {formData.calories && (
+                  <span className="bg-green-700 px-2 py-1 rounded-full text-xs">
+                    {formData.calories} cal
+                  </span>
+                )}
               </button>
             </div>
           </form>

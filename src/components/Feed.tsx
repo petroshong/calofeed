@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, MessageCircle, Share, MoreHorizontal, MapPin, Clock, User as UserIcon, Flag, Copy, Send, Eye, Star, Grid, List, Lock, Filter, ChevronDown, Bookmark } from 'lucide-react';
+import { Heart, MessageCircle, Share, MoreHorizontal, MapPin, Clock, User as UserIcon, Flag, Copy, Send, Eye, Star, Grid, List, Lock, Filter, ChevronDown, Bookmark, Zap, TrendingUp, Calendar } from 'lucide-react';
 import { Stories } from './Stories';
 import { SuggestedUsers } from './SuggestedUsers';
 import { ActivityFeed } from './ActivityFeed';
@@ -201,6 +201,34 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                   </div>
                 )}
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Stats Bar */}
+        <div className="bg-white border-b border-gray-200 p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-6 text-sm">
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span className="text-gray-700">{filteredMeals.length} posts</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <TrendingUp className="w-4 h-4 text-pink-500" />
+                <span className="text-gray-700">Trending: #mealprep</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Calendar className="w-4 h-4 text-blue-500" />
+                <span className="text-gray-700">Today: {filteredMeals.filter(m => {
+                  const today = new Date().toDateString();
+                  const mealDate = new Date(m.timestamp).toDateString();
+                  return today === mealDate;
+                }).length} meals</span>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <Zap className="w-4 h-4 text-yellow-500" />
+              <span>Live feed</span>
             </div>
           </div>
         </div>
@@ -412,7 +440,7 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                           <button 
                             key={tag} 
                             onClick={() => setShowHashtagFeed(tag)}
-                            className="px-2 py-1 bg-blue-50 text-blue-700 text-sm rounded-full cursor-pointer hover:bg-blue-100 transition-colors"
+                            className="px-3 py-1 bg-blue-50 text-blue-700 text-sm rounded-full cursor-pointer hover:bg-blue-100 hover:scale-105 transition-all duration-200 font-medium"
                           >
                             #{tag}
                           </button>

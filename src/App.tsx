@@ -326,20 +326,6 @@ function App() {
                 className="w-full flex items-center space-x-3 p-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
               >
                 <Users className="w-5 h-5" />
-                <div className="flex items-center justify-between w-full">
-                  <span>Find Friends</span>
-                  {incomingRequests.length > 0 && (
-                    <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                      {incomingRequests.length}
-                    </span>
-                  )}
-                </div>
-                {incomingRequests.length > 0 && (
-                  <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {incomingRequests.length}
-                  </span>
-                )}
-              </button>
               <button
                 onClick={() => { setCurrentView('friend-requests'); setShowMobileMenu(false); }}
                 className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
@@ -347,7 +333,122 @@ function App() {
                 }`}
               >
                 <UserPlus className="w-5 h-5" />
-                <span>Friend Requests</span>
+                <div className="flex items-center justify-between w-full">
+                  <span>Friend Requests</span>
+                  {incomingRequests.length > 0 && (
+                    <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                      {incomingRequests.length}
+                    </span>
+                  )}
+                </div>
+              </button>
+              <button
+                onClick={() => { setCurrentView('find-friends'); setShowMobileMenu(false); }}
+                className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
+                  currentView === 'find-friends' ? 'bg-green-50 text-green-700' : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                <Users className="w-5 h-5" />
+                <span>Find Friends</span>
+              </button>
+              <button 
+                onClick={() => setCurrentView('calories')}
+                className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
+                  currentView === 'calories' ? 'bg-green-50 text-green-700' : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                <Target className="w-5 h-5" />
+                <span>Calorie Tracker</span>
+              </button>
+              <button 
+                onClick={() => setCurrentView('challenges')}
+                className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
+                  currentView === 'challenges' ? 'bg-green-50 text-green-700' : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                <Trophy className="w-5 h-5" />
+                <span>Challenges</span>
+              </button>
+              <button 
+                onClick={() => setCurrentView('leaderboard')}
+                className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
+                  currentView === 'leaderboard' ? 'bg-green-50 text-green-700' : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                <Trophy className="w-5 h-5" />
+                <span>Leaderboard</span>
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        {/* Main Content */}
+        <main className="flex-1 lg:max-w-4xl lg:mx-auto">
+          {currentView === 'feed' && (
+            <Feed 
+              onViewProfile={handleViewProfile} 
+              currentUser={currentUser}
+              onUpdateCurrentUser={updateUser}
+            />
+          )}
+          {currentView === 'discover' && <Discover />}
+          {currentView === 'groups' && <Groups />}
+          {currentView === 'profile' && <Profile user={currentUser} onUpdateUser={updateUser} />}
+          {currentView === 'user-profile' && selectedUser && (
+            <UserProfile 
+              user={selectedUser} 
+              currentUser={currentUser}
+              onBack={() => setCurrentView('feed')}
+              onUpdateCurrentUser={updateUser}
+            />
+          )}
+          {currentView === 'find-friends' && (
+            <FindFriends 
+              currentUser={currentUser}
+              onViewProfile={handleViewProfile}
+              onUpdateCurrentUser={updateUser}
+            />
+          )}
+          {currentView === 'friend-requests' && (
+            <FriendRequests 
+              currentUser={currentUser}
+              onClose={() => setCurrentView('feed')}
+              onViewProfile={handleViewProfile}
+            />
+          )}
+          {currentView === 'log' && <MealLogger user={currentUser} onClose={() => setCurrentView('feed')} onUpdateUser={updateUser} />}
+          {currentView === 'challenges' && <Challenges />}
+          {currentView === 'leaderboard' && <Leaderboard />}
+          {currentView === 'calories' && <CalorieTracker user={currentUser} onUpdateUser={updateUser} />}
+          {currentView === 'notifications' && <Notifications notifications={notifications} onMarkAsRead={markAsRead} onMarkAllAsRead={markAllAsRead} />}
+          {currentView === 'settings' && <SettingsComponent user={currentUser} onLogout={logout} onUpdateUser={updateUser} />}
+        </main>
+      </div>
+
+      {/* Search Modal */}
+      {showSearch && (
+        <SearchModal 
+          onClose={() => setShowSearch(false)} 
+          onViewProfile={handleViewProfile}
+          onSelectFood={(food) => {
+            console.log('Selected food:', food);
+            setShowSearch(false);
+            // Could open meal logger with pre-filled food data
+          }}
+        />
+      )}
+
+      {/* Mobile Navigation */}
+      <Navigation 
+        currentView={currentView} 
+        onViewChange={setCurrentView}
+        currentUser={currentUser}
+      />
+    </div>
+  );
+}
+
+export default App;
                 {incomingRequests.length > 0 && (
                   <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                     {incomingRequests.length}

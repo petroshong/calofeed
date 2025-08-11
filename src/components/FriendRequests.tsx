@@ -18,7 +18,7 @@ export const FriendRequests: React.FC<FriendRequestsProps> = ({ currentUser, onC
     cancelFriendRequest 
   } = useFriendRequests(currentUser);
   
-  const [activeTab, setActiveTab] = useState<'incoming' | 'outgoing'>('incoming');
+  const [activeTab, setActiveTab] = useState<'incoming' | 'outgoing' | 'find'>('incoming');
   
   const incomingRequests = getIncomingRequests();
   const outgoingRequests = getOutgoingRequests();
@@ -85,6 +85,16 @@ export const FriendRequests: React.FC<FriendRequestsProps> = ({ currentUser, onC
             }`}
           >
             Outgoing ({outgoingRequests.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('find')}
+            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${
+              activeTab === 'find' 
+                ? 'bg-white text-green-600 shadow-sm' 
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            Find Friends
           </button>
         </div>
 
@@ -213,6 +223,94 @@ export const FriendRequests: React.FC<FriendRequestsProps> = ({ currentUser, onC
                   </div>
                 ))
               )}
+            </div>
+          )}
+
+          {activeTab === 'find' && (
+            <div className="space-y-6">
+              {/* Quick Connect Options */}
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Connect</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <button className="flex items-center space-x-3 p-4 bg-white border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors">
+                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <Users className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div className="text-left">
+                      <div className="font-medium text-gray-900">Import Contacts</div>
+                      <div className="text-sm text-gray-600">Find friends from your contacts</div>
+                    </div>
+                  </button>
+                  <button className="flex items-center space-x-3 p-4 bg-white border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors">
+                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                      <MapPin className="w-5 h-5 text-green-600" />
+                    </div>
+                    <div className="text-left">
+                      <div className="font-medium text-gray-900">Find Nearby</div>
+                      <div className="text-sm text-gray-600">Connect with local users</div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              {/* Suggested Users */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Suggested for You</h3>
+                <div className="space-y-4">
+                  {[
+                    {
+                      id: '1',
+                      username: 'chef_maria',
+                      displayName: 'Chef Maria',
+                      avatar: 'https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg?auto=compress&cs=tinysrgb&w=150',
+                      bio: 'Professional chef sharing healthy recipes 👩‍🍳',
+                      followers: 45623,
+                      isVerified: true,
+                      commonInterests: ['healthy-cooking', 'meal-prep']
+                    },
+                    {
+                      id: '2',
+                      username: 'fitness_coach',
+                      displayName: 'David Kim',
+                      avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=150',
+                      bio: 'Fitness coach & nutrition expert 💪',
+                      followers: 23456,
+                      isVerified: false,
+                      commonInterests: ['protein', 'fitness']
+                    }
+                  ].map((user) => (
+                    <div key={user.id} className="bg-white border border-gray-200 rounded-xl p-4">
+                      <div className="flex items-center space-x-3">
+                        <img 
+                          src={user.avatar} 
+                          alt={user.displayName}
+                          className="w-12 h-12 rounded-full object-cover"
+                        />
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2">
+                            <h4 className="font-semibold text-gray-900">{user.displayName}</h4>
+                            {user.isVerified && <Star className="w-4 h-4 text-blue-500 fill-current" />}
+                          </div>
+                          <p className="text-sm text-gray-600">@{user.username}</p>
+                          <p className="text-xs text-gray-500">{user.followers.toLocaleString()} followers</p>
+                          {user.commonInterests && (
+                            <div className="flex flex-wrap gap-1 mt-2">
+                              {user.commonInterests.map((interest) => (
+                                <span key={interest} className="px-2 py-1 bg-green-50 text-green-700 text-xs rounded-full">
+                                  #{interest}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        <button className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors">
+                          Follow
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
         </div>

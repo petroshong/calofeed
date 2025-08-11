@@ -80,9 +80,9 @@ export const Stories: React.FC<StoriesProps> = ({ currentUser }) => {
           {/* Add Story */}
           <button
             onClick={() => setShowCreateStory(true)}
-            className="flex flex-col items-center space-y-1 flex-shrink-0"
+            className="flex flex-col items-center space-y-1 flex-shrink-0 group"
           >
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 p-0.5">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 p-0.5 group-hover:scale-105 transition-transform">
               <div className="w-full h-full bg-white rounded-full flex items-center justify-center">
                 <Plus className="w-6 h-6 text-green-600" />
               </div>

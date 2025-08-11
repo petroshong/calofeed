@@ -66,7 +66,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChang
               </span>
             )}
           </div>
-          <span className="text-xs font-medium">Requests</span>
+          <span className="text-xs font-medium">Friends</span>
         </button>
 
         <button
