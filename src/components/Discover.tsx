@@ -230,7 +230,7 @@ export const Discover: React.FC = () => {
                       </div>
                       <div className="flex items-center space-x-2 text-sm">
                         <TrendingUp className="w-4 h-4 text-pink-500" />
-                        <span className="font-medium text-pink-600">Trending</span>
+                        <span className="font-medium text-pink-600 bg-pink-50 px-2 py-1 rounded-full">Viral</span>
                       </div>
                     </div>
 

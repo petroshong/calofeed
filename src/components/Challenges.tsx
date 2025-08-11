@@ -330,6 +330,10 @@ export const Challenges: React.FC = () => {
                           </div>
                         )}
                       </div>
+                      <div className="flex items-center space-x-1">
+                        <Trophy className="w-4 h-4" />
+                        <span className="capitalize">{challenge.difficulty}</span>
+                      </div>
                     </div>
                   </div>
 

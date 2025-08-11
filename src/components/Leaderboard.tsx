@@ -313,7 +313,13 @@ export const Leaderboard: React.FC = () => {
                   <div className="font-semibold text-sm text-gray-900">{currentData[2].displayName}</div>
                   <div className="text-lg font-bold text-amber-600">{currentData[2].score}</div>
                   <div className="text-xs text-gray-600">{getScoreLabel(activeTab)}</div>
-                </div>
+                <span className="font-medium">Next: #14 (2 points away)</span>
+              </div>
+            </div>
+            <div className="mt-3 pt-3 border-t border-green-200">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">Weekly Progress</span>
+                <span className="font-medium text-green-600">+12 points</span>
               </div>
             </div>
           </div>
