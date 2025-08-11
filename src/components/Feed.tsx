@@ -469,8 +469,8 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
           onViewProfile={onViewProfile} 
           onViewAllSuggestions={() => setShowAllSuggestions(true)}
         />
-        <TrendingSection />
-        <ActivityFeed />
+        <TrendingSection onHashtagClick={setShowHashtagFeed} />
+        <ActivityFeed onHashtagClick={setShowHashtagFeed} />
       </div>
 
       {/* Modals */}

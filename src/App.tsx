@@ -382,7 +382,10 @@ function App() {
               onUpdateCurrentUser={updateUser}
             />
           )}
-          {currentView === 'discover' && <Discover />}
+          {currentView === 'discover' && <Discover onHashtagClick={(hashtag) => {
+            // Could implement hashtag navigation here or open hashtag feed
+            console.log('Hashtag clicked:', hashtag);
+          }} />}
           {currentView === 'groups' && <Groups />}
           {currentView === 'profile' && <Profile user={currentUser} onUpdateUser={updateUser} />}
           {currentView === 'user-profile' && selectedUser && (

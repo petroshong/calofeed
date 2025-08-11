@@ -10,6 +10,9 @@ interface Activity {
   data: any;
 }
 
+interface ActivityFeedProps {
+  onHashtagClick?: (hashtag: string) => void;
+}
 const mockActivities: Activity[] = [
   {
     id: '1',
@@ -24,7 +27,8 @@ const mockActivities: Activity[] = [
     data: {
       mealType: 'lunch',
       calories: 520,
-      image: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=400'
+      image: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=400',
+      description: 'Perfect post-workout meal! #protein #postworkout'
     }
   },
   {
@@ -40,7 +44,8 @@ const mockActivities: Activity[] = [
     data: {
       goalType: 'protein',
       target: 150,
-      achieved: 152
+      achieved: 152,
+      description: 'Crushed my protein goal today! #proteingoals #fitness'
     }
   },
   {
@@ -59,6 +64,7 @@ const mockActivities: Activity[] = [
         emoji: '🥬',
         description: 'Logged 100 vegetable servings'
       }
+      description: 'Just earned the Veggie Master badge! #plantbased #veggies'
     }
   },
   {
@@ -73,14 +79,31 @@ const mockActivities: Activity[] = [
     timestamp: '3 hours ago',
     data: {
       streak: 30,
-      milestone: '30-day streak'
+      milestone: '30-day streak',
+      description: '30 days of consistent logging! #streak #consistency #keto'
     }
   }
 ];
 
-export const ActivityFeed: React.FC = () => {
+export const ActivityFeed: React.FC<ActivityFeedProps> = ({ onHashtagClick }) => {
   const [activities] = useState<Activity[]>(mockActivities);
 
+  const renderTextWithHashtags = (text: string) => {
+    return text.split(/(\s|^)(#\w+)/g).map((part, index) => {
+      if (part.match(/^#\w+/)) {
+        return (
+          <button
+            key={index}
+            onClick={() => onHashtagClick && onHashtagClick(part.slice(1))}
+            className="text-blue-600 hover:text-blue-700 font-medium hover:underline transition-colors"
+          >
+            {part}
+          </button>
+        );
+      }
+      return <span key={index}>{part}</span>;
+    });
+  };
   const getActivityIcon = (type: string) => {
     switch (type) {
       case 'meal_logged':
@@ -148,6 +171,11 @@ export const ActivityFeed: React.FC = () => {
                 <p className="text-sm text-gray-700 mt-1">
                   {getActivityMessage(activity)}
                 </p>
+                {activity.data.description && (
+                  <p className="text-sm text-gray-600 mt-1">
+                    {renderTextWithHashtags(activity.data.description)}
+                  </p>
+                )}
                 <p className="text-xs text-gray-500 mt-1">{activity.timestamp}</p>
               </div>
               

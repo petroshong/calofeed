@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { TrendingUp, Hash, MapPin, Clock, Heart, MessageCircle, Bookmark, Star, Filter, Users, Flame } from 'lucide-react';
 import type { Meal, User } from '../types';
 
+interface DiscoverProps {
+  onHashtagClick?: (hashtag: string) => void;
+}
 const trendingHashtags = [
   { tag: 'mealprep', count: 2847 },
   { tag: 'keto', count: 1923 },
@@ -117,7 +120,7 @@ const trendingMeals: Meal[] = [
   }
 ];
 
-export const Discover: React.FC = () => {
+export const Discover: React.FC<DiscoverProps> = ({ onHashtagClick }) => {
   const [activeTab, setActiveTab] = useState<'trending' | 'hashtags' | 'users' | 'nearby'>('trending');
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'today' | 'week' | 'month'>('week');
 
@@ -298,11 +301,15 @@ export const Discover: React.FC = () => {
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Trending Hashtags</h2>
               <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                 {trendingHashtags.map((hashtag, index) => (
-                  <div key={hashtag.tag} className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow cursor-pointer">
+                  <button 
+                    key={hashtag.tag} 
+                    onClick={() => onHashtagClick && onHashtagClick(hashtag.tag)}
+                    className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow cursor-pointer text-left"
+                  >
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center space-x-2">
                         <Hash className="w-5 h-5 text-pink-500" />
-                        <span className="font-semibold text-gray-900">#{hashtag.tag}</span>
+                        <span className="font-semibold text-pink-600 hover:text-pink-700">#{hashtag.tag}</span>
                       </div>
                       <div className="text-sm font-medium text-pink-600">#{index + 1}</div>
                     </div>
@@ -311,7 +318,7 @@ export const Discover: React.FC = () => {
                       <TrendingUp className="w-3 h-3 mr-1" />
                       <span>+{Math.floor(Math.random() * 50 + 10)}% this week</span>
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
             </div>

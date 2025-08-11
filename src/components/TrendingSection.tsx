@@ -10,6 +10,9 @@ interface TrendingItem {
   image?: string;
 }
 
+interface TrendingSectionProps {
+  onHashtagClick?: (hashtag: string) => void;
+}
 const trendingData: TrendingItem[] = [
   {
     id: '1',
@@ -48,7 +51,7 @@ const trendingData: TrendingItem[] = [
   }
 ];
 
-export const TrendingSection: React.FC = () => {
+export const TrendingSection: React.FC<TrendingSectionProps> = ({ onHashtagClick }) => {
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-6">
       <div className="flex items-center space-x-2 mb-4">
@@ -58,7 +61,11 @@ export const TrendingSection: React.FC = () => {
       
       <div className="space-y-3">
         {trendingData.map((item, index) => (
-          <div key={item.id} className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer">
+          <button 
+            key={item.id} 
+            onClick={() => item.type === 'hashtag' && onHashtagClick && onHashtagClick(item.name)}
+            className="w-full flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer text-left"
+          >
             <div className="flex items-center space-x-3">
               <div className="text-sm font-bold text-gray-500 w-6">#{index + 1}</div>
               <div className="flex items-center space-x-2">
@@ -66,7 +73,7 @@ export const TrendingSection: React.FC = () => {
                 {item.type === 'location' && <MapPin className="w-4 h-4 text-blue-500" />}
                 {item.type === 'user' && <Users className="w-4 h-4 text-green-500" />}
                 <div>
-                  <div className="font-medium text-gray-900">
+                  <div className={`font-medium ${item.type === 'hashtag' ? 'text-pink-600 hover:text-pink-700' : 'text-gray-900'}`}>
                     {item.type === 'hashtag' ? `#${item.name}` : item.name}
                   </div>
                   <div className="text-xs text-gray-600">
@@ -81,7 +88,7 @@ export const TrendingSection: React.FC = () => {
                 <span className="text-xs font-medium">+{item.trend}%</span>
               </div>
             </div>
-          </div>
+          </button>
         ))}
       </div>
       
