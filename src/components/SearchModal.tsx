@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Search, X, Hash, TrendingUp, Clock, MapPin, Users, Star } from 'lucide-react';
-import type { User } from '../types';
+import type { User, FoodItem } from '../types';
 
 interface SearchModalProps {
   onClose: () => void;
   onViewProfile: (user: User) => void;
+  onSelectFood?: (food: FoodItem) => void;
 }
 
 const trendingHashtags = [
@@ -55,12 +56,138 @@ const mockPlaces = [
   { id: '3', name: 'Fresh & Fit', location: 'Uptown', meals: 28, rating: 4.9 }
 ];
 
-export const SearchModal: React.FC<SearchModalProps> = ({ onClose, onViewProfile }) => {
+const mockFoodItems: FoodItem[] = [
+  {
+    id: '1',
+    name: 'Grilled Chicken Breast',
+    brand: 'Generic',
+    calories: 165,
+    protein: 31,
+    carbs: 0,
+    fat: 3.6,
+    fiber: 0,
+    sugar: 0,
+    sodium: 74,
+    servingSize: '100',
+    servingUnit: 'g',
+    verified: true,
+    category: 'protein'
+  },
+  {
+    id: '2',
+    name: 'Brown Rice',
+    brand: 'Uncle Ben\'s',
+    calories: 112,
+    protein: 2.6,
+    carbs: 22,
+    fat: 0.9,
+    fiber: 1.8,
+    sugar: 0.4,
+    sodium: 5,
+    servingSize: '100',
+    servingUnit: 'g',
+    verified: true,
+    category: 'grains'
+  },
+  {
+    id: '3',
+    name: 'Avocado',
+    calories: 160,
+    protein: 2,
+    carbs: 8.5,
+    fat: 14.7,
+    fiber: 6.7,
+    sugar: 0.7,
+    sodium: 7,
+    servingSize: '100',
+    servingUnit: 'g',
+    verified: true,
+    category: 'healthy fats'
+  },
+  {
+    id: '4',
+    name: 'Greek Yogurt',
+    brand: 'Chobani',
+    calories: 100,
+    protein: 17,
+    carbs: 6,
+    fat: 0,
+    fiber: 0,
+    sugar: 4,
+    sodium: 60,
+    servingSize: '170',
+    servingUnit: 'g',
+    verified: true,
+    category: 'dairy'
+  },
+  {
+    id: '5',
+    name: 'Salmon Fillet',
+    calories: 208,
+    protein: 22,
+    carbs: 0,
+    fat: 12,
+    fiber: 0,
+    sugar: 0,
+    sodium: 59,
+    servingSize: '100',
+    servingUnit: 'g',
+    verified: true,
+    category: 'protein'
+  },
+  {
+    id: '6',
+    name: 'Quinoa',
+    calories: 120,
+    protein: 4.4,
+    carbs: 22,
+    fat: 1.9,
+    fiber: 2.8,
+    sugar: 0.9,
+    sodium: 7,
+    servingSize: '100',
+    servingUnit: 'g',
+    verified: true,
+    category: 'grains'
+  },
+  {
+    id: '7',
+    name: 'Sweet Potato',
+    calories: 86,
+    protein: 1.6,
+    carbs: 20,
+    fat: 0.1,
+    fiber: 3,
+    sugar: 4.2,
+    sodium: 5,
+    servingSize: '100',
+    servingUnit: 'g',
+    verified: true,
+    category: 'vegetables'
+  },
+  {
+    id: '8',
+    name: 'Almonds',
+    calories: 579,
+    protein: 21,
+    carbs: 22,
+    fat: 50,
+    fiber: 12,
+    sugar: 4.4,
+    sodium: 1,
+    servingSize: '100',
+    servingUnit: 'g',
+    verified: true,
+    category: 'nuts'
+  }
+];
+
+export const SearchModal: React.FC<SearchModalProps> = ({ onClose, onViewProfile, onSelectFood }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'all' | 'users' | 'foods' | 'places'>('all');
   const [searchResults, setSearchResults] = useState<{
     users: User[];
-    foods: any[];
+    foods: FoodItem[];
     places: any[];
   }>({
     users: [],
@@ -79,10 +206,15 @@ export const SearchModal: React.FC<SearchModalProps> = ({ onClose, onViewProfile
       const filteredPlaces = mockPlaces.filter(place =>
         place.name.toLowerCase().includes(query.toLowerCase())
       );
+      const filteredFoods = mockFoodItems.filter(food =>
+        food.name.toLowerCase().includes(query.toLowerCase()) ||
+        (food.brand && food.brand.toLowerCase().includes(query.toLowerCase())) ||
+        (food.category && food.category.toLowerCase().includes(query.toLowerCase()))
+      );
       
       setSearchResults({
         users: filteredUsers,
-        foods: [], // Would be populated from food database
+        foods: filteredFoods,
         places: filteredPlaces
       });
     } else {
@@ -219,7 +351,9 @@ export const SearchModal: React.FC<SearchModalProps> = ({ onClose, onViewProfile
                 {/* Users Results */}
                 {(activeTab === 'all' || activeTab === 'users') && searchResults.users.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Users</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                      Users ({searchResults.users.length})
+                    </h3>
                     <div className="space-y-3">
                       {searchResults.users.map((user) => (
                         <div key={user.id} className="flex items-center space-x-3 p-3 bg-white border border-gray-200 rounded-lg">
@@ -252,10 +386,65 @@ export const SearchModal: React.FC<SearchModalProps> = ({ onClose, onViewProfile
                   </div>
                 )}
 
+                {/* Foods Results */}
+                {(activeTab === 'all' || activeTab === 'foods') && searchResults.foods.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                      Foods ({searchResults.foods.length})
+                    </h3>
+                    <div className="space-y-3">
+                      {searchResults.foods.map((food) => (
+                        <div 
+                          key={food.id} 
+                          onClick={() => onSelectFood && onSelectFood(food)}
+                          className="flex items-center space-x-3 p-3 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow cursor-pointer"
+                        >
+                          <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <span className="text-2xl">
+                              {food.category === 'protein' && '🥩'}
+                              {food.category === 'grains' && '🌾'}
+                              {food.category === 'vegetables' && '🥬'}
+                              {food.category === 'dairy' && '🥛'}
+                              {food.category === 'healthy fats' && '🥑'}
+                              {food.category === 'nuts' && '🥜'}
+                              {!['protein', 'grains', 'vegetables', 'dairy', 'healthy fats', 'nuts'].includes(food.category || '') && '🍽️'}
+                            </span>
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2">
+                              <div className="font-semibold text-gray-900">{food.name}</div>
+                              {food.verified && <Star className="w-4 h-4 text-blue-500 fill-current" />}
+                            </div>
+                            {food.brand && (
+                              <div className="text-sm text-gray-600">{food.brand}</div>
+                            )}
+                            <div className="flex items-center space-x-3 text-xs text-gray-500 mt-1">
+                              <span>{food.calories} cal</span>
+                              <span>{food.protein}g protein</span>
+                              <span>per {food.servingSize}{food.servingUnit}</span>
+                              {food.category && (
+                                <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full">
+                                  {food.category}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-lg font-bold text-green-600">{food.calories}</div>
+                            <div className="text-xs text-gray-600">cal</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Places Results */}
                 {(activeTab === 'all' || activeTab === 'places') && searchResults.places.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Places</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                      Places ({searchResults.places.length})
+                    </h3>
                     <div className="space-y-3">
                       {searchResults.places.map((place) => (
                         <div key={place.id} className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg">

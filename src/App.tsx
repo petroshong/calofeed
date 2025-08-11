@@ -371,7 +371,17 @@ function App() {
       </div>
 
       {/* Search Modal */}
-      {showSearch && <SearchModal onClose={() => setShowSearch(false)} onViewProfile={handleViewProfile} />}
+      {showSearch && (
+        <SearchModal 
+          onClose={() => setShowSearch(false)} 
+          onViewProfile={handleViewProfile}
+          onSelectFood={(food) => {
+            console.log('Selected food:', food);
+            setShowSearch(false);
+            // Could open meal logger with pre-filled food data
+          }}
+        />
+      )}
 
       {/* Mobile Navigation */}
       <Navigation 
