@@ -7,6 +7,7 @@ import type { Meal, Comment } from '../types';
 interface MealDetailProps {
   meal: Meal;
   onClose: () => void;
+  onHashtagClick?: (hashtag: string) => void;
 }
 
 const mockComments: Comment[] = [
@@ -44,7 +45,7 @@ const mockComments: Comment[] = [
   }
 ];
 
-export const MealDetail: React.FC<MealDetailProps> = ({ meal, onClose }) => {
+export const MealDetail: React.FC<MealDetailProps> = ({ meal, onClose, onHashtagClick }) => {
   const [comments, setComments] = useState<Comment[]>(mockComments);
   const [newComment, setNewComment] = useState('');
   const [isLiked, setIsLiked] = useState(meal.isLiked);
@@ -227,9 +228,16 @@ export const MealDetail: React.FC<MealDetailProps> = ({ meal, onClose }) => {
                 {meal.tags && meal.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-4">
                     {meal.tags.map((tag) => (
-                      <span key={tag} className="px-2 py-1 bg-blue-50 text-blue-700 text-sm rounded-full cursor-pointer hover:bg-blue-100 transition-colors">
+                      <button 
+                        key={tag} 
+                        onClick={() => {
+                          onHashtagClick && onHashtagClick(tag);
+                          onClose();
+                        }}
+                        className="px-2 py-1 bg-blue-50 text-blue-700 text-sm rounded-full cursor-pointer hover:bg-blue-100 transition-colors"
+                      >
                         #{tag}
-                      </span>
+                      </button>
                     ))}
                   </div>
                 )}

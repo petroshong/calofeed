@@ -1,74 +1,30 @@
 import React, { useState } from 'react';
 import { Hash, TrendingUp, Clock, Heart, MessageCircle, Share2, Eye, Filter } from 'lucide-react';
-import type { Meal } from '../types';
+import type { Meal, User } from '../types';
 
 interface HashtagFeedProps {
   hashtag: string;
   onClose: () => void;
+  allMeals?: Meal[];
 }
 
-const mockHashtagMeals: Meal[] = [
-  {
-    id: '1',
-    userId: '1',
-    user: {
-      id: '1',
-      username: 'mealprep_master',
-      displayName: 'Prep Master',
-      avatar: 'https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&w=150',
-    } as any,
-    image: 'https://images.pexels.com/photos/1640774/pexels-photo-1640774.jpeg?auto=compress&cs=tinysrgb&w=800',
-    description: 'Sunday meal prep session! 5 days of balanced meals ready to go 💪 #mealprep #healthyeating',
-    calories: 450,
-    protein: 35,
-    carbs: 40,
-    fat: 18,
-    timestamp: '2 hours ago',
-    mealType: 'lunch',
-    likes: 156,
-    comments: [],
-    isLiked: false,
-    isBookmarked: false,
-    shares: 23,
-    views: 892,
-    tags: ['mealprep', 'healthyeating', 'batchcooking'],
-    visibility: 'public'
-  },
-  {
-    id: '2',
-    userId: '2',
-    user: {
-      id: '2',
-      username: 'prep_queen',
-      displayName: 'Sarah Prep',
-      avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150',
-    } as any,
-    image: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=800',
-    description: 'Protein-packed containers for the week! Salmon, chicken, and tofu options 🐟🍗 #mealprep #protein',
-    calories: 520,
-    protein: 42,
-    carbs: 35,
-    fat: 22,
-    timestamp: '5 hours ago',
-    mealType: 'dinner',
-    likes: 234,
-    comments: [],
-    isLiked: true,
-    isBookmarked: true,
-    shares: 45,
-    views: 1247,
-    tags: ['mealprep', 'protein', 'salmon'],
-    visibility: 'public'
-  }
-];
-
-export const HashtagFeed: React.FC<HashtagFeedProps> = ({ hashtag, onClose }) => {
-  const [meals, setMeals] = useState<Meal[]>(mockHashtagMeals);
+export const HashtagFeed: React.FC<HashtagFeedProps> = ({ hashtag, onClose, allMeals = [] }) => {
+  // Filter meals that contain the hashtag
+  const hashtagMeals = allMeals.filter(meal => 
+    meal.tags.includes(hashtag.toLowerCase()) ||
+    meal.description.toLowerCase().includes(`#${hashtag.toLowerCase()}`)
+  );
+  
+  const [meals, setMeals] = useState<Meal[]>(hashtagMeals);
   const [sortBy, setSortBy] = useState<'recent' | 'popular' | 'trending'>('recent');
 
   const hashtagStats = {
-    totalPosts: 2847,
-    todayPosts: 156,
+    totalPosts: hashtagMeals.length,
+    todayPosts: hashtagMeals.filter(meal => {
+      const today = new Date().toDateString();
+      const mealDate = new Date(meal.timestamp).toDateString();
+      return today === mealDate;
+    }).length,
     weeklyGrowth: 23,
     topContributors: 45
   };
@@ -146,110 +102,59 @@ export const HashtagFeed: React.FC<HashtagFeedProps> = ({ hashtag, onClose }) =>
 
       {/* Feed */}
       <div className="flex-1 overflow-y-auto p-4">
-        <div className="max-w-2xl mx-auto space-y-6">
-          {meals.map((meal) => (
-            <article key={meal.id} className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-              {/* Post Header */}
-              <div className="p-4 flex items-center justify-between">
-                <div className="flex items-center space-x-3">
+        <div className="max-w-4xl mx-auto">
+          {meals.length === 0 ? (
+            <div className="text-center py-12">
+              <Hash className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">No posts found</h3>
+              <p className="text-gray-600">No meals have been tagged with #{hashtag} yet</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 gap-1 lg:gap-4">
+              {meals.map((meal) => (
+                <div key={meal.id} className="aspect-square relative group cursor-pointer">
                   <img 
-                    src={meal.user.avatar} 
-                    alt={meal.user.displayName}
-                    className="w-10 h-10 rounded-full object-cover"
+                    src={meal.image} 
+                    alt="Meal"
+                    className="w-full h-full object-cover rounded-lg"
                   />
-                  <div>
-                    <h3 className="font-semibold text-gray-900">{meal.user.displayName}</h3>
-                    <div className="flex items-center text-sm text-gray-500 space-x-2">
-                      <Clock className="w-4 h-4" />
-                      <span>{meal.timestamp}</span>
+                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 rounded-lg flex items-center justify-center">
+                    <div className="text-white opacity-0 group-hover:opacity-100 text-center">
+                      <div className="font-bold text-lg mb-1">{meal.calories} cal</div>
+                      <div className="text-sm flex items-center justify-center space-x-3">
+                        <span className="flex items-center space-x-1">
+                          <Heart className="w-3 h-3" />
+                          <span>{meal.likes}</span>
+                        </span>
+                        <span className="flex items-center space-x-1">
+                          <MessageCircle className="w-3 h-3" />
+                          <span>{meal.comments.length}</span>
+                        </span>
+                        <span className="flex items-center space-x-1">
+                          <Eye className="w-3 h-3" />
+                          <span>{meal.views}</span>
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="flex items-center space-x-2 text-sm text-pink-600">
-                  <TrendingUp className="w-4 h-4" />
-                  <span>Trending</span>
-                </div>
-              </div>
-
-              {/* Food Image */}
-              <div className="relative">
-                <img 
-                  src={meal.image} 
-                  alt="Food"
-                  className="w-full h-80 object-cover"
-                />
-                <div className="absolute top-4 right-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm font-medium">
-                  {meal.calories} cal
-                </div>
-                <div className="absolute bottom-4 left-4 flex items-center space-x-1 text-white text-sm">
-                  <Eye className="w-4 h-4" />
-                  <span>{meal.views}</span>
-                </div>
-              </div>
-
-              {/* Post Content */}
-              <div className="p-4">
-                {/* Actions */}
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center space-x-4">
-                    <button 
-                      onClick={() => toggleLike(meal.id)}
-                      className={`flex items-center space-x-2 ${
-                        meal.isLiked ? 'text-red-600' : 'text-gray-600 hover:text-red-600'
-                      } transition-colors`}
-                    >
-                      <Heart className={`w-6 h-6 ${meal.isLiked ? 'fill-current' : ''}`} />
-                      <span className="font-medium">{meal.likes}</span>
-                    </button>
-                    <button className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors">
-                      <MessageCircle className="w-6 h-6" />
-                      <span className="font-medium">{meal.comments.length}</span>
-                    </button>
-                    <button className="flex items-center space-x-2 text-gray-600 hover:text-green-600 transition-colors">
-                      <Share2 className="w-6 h-6" />
-                      <span className="font-medium">{meal.shares}</span>
-                    </button>
+                  
+                  {/* User Avatar Overlay */}
+                  <div className="absolute top-2 left-2">
+                    <img 
+                      src={meal.user.avatar} 
+                      alt={meal.user.displayName}
+                      className="w-6 h-6 rounded-full object-cover border-2 border-white shadow-lg"
+                    />
+                  </div>
+                  
+                  {/* Calorie Badge */}
+                  <div className="absolute top-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded-full text-xs font-medium">
+                    {meal.calories} cal
                   </div>
                 </div>
-
-                {/* Description */}
-                <div className="text-gray-900 mb-3">
-                  <span className="font-semibold">{meal.user.displayName}</span>
-                  <span className="ml-2">
-                    {meal.description.split(/(\s#\w+)/g).map((part, index) => 
-                      part.match(/^\s#\w+/) ? (
-                        <span key={index} className="text-pink-600 font-medium cursor-pointer hover:underline">
-                          {part}
-                        </span>
-                      ) : (
-                        <span key={index}>{part}</span>
-                      )
-                    )}
-                  </span>
-                </div>
-
-                {/* Nutrition Info */}
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <div className="text-center">
-                    <div className="text-sm font-bold text-green-600">{meal.protein}g</div>
-                    <div className="text-xs text-gray-600">Protein</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-sm font-bold text-blue-600">{meal.carbs}g</div>
-                    <div className="text-xs text-gray-600">Carbs</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-sm font-bold text-orange-600">{meal.fat}g</div>
-                    <div className="text-xs text-gray-600">Fat</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-sm font-bold text-purple-600">{meal.calories}</div>
-                    <div className="text-xs text-gray-600">Calories</div>
-                  </div>
-                </div>
-              </div>
-            </article>
-          ))}
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

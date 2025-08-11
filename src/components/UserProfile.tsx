@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, UserPlus, UserCheck, MessageCircle, Share2, MoreHorizontal, MapPin, Calendar, Target, Flame, Trophy, Star, Grid, List, Crown, Copy, X, Heart, Eye } from 'lucide-react';
 import { FollowersModal } from './FollowersModal';
 import { SocialShare } from './SocialShare';
+import { HashtagFeed } from './HashtagFeed';
 import { useMeals } from '../hooks/useMeals';
 import type { User, Meal } from '../types';
 
@@ -49,6 +50,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, currentUser, onB
   const [isFollowing, setIsFollowing] = useState(user.isFollowing);
   const [showFollowersModal, setShowFollowersModal] = useState<'followers' | 'following' | null>(null);
   const [showShareProfile, setShowShareProfile] = useState(false);
+  const [showHashtagFeed, setShowHashtagFeed] = useState<string | null>(null);
   const [followerCount, setFollowerCount] = useState(user.followers);
 
   const userMeals = getUserMeals(user.id);
@@ -364,6 +366,15 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, currentUser, onB
             </div>
           </div>
         </div>
+      )}
+      
+      {/* Hashtag Feed Modal */}
+      {showHashtagFeed && (
+        <HashtagFeed
+          hashtag={showHashtagFeed}
+          onClose={() => setShowHashtagFeed(null)}
+          allMeals={userMeals}
+        />
       )}
     </div>
   );

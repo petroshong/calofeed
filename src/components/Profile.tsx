@@ -3,6 +3,7 @@ import { Settings, UserPlus, UserCheck, MapPin, Calendar, Target, Flame, Trophy,
 import { FollowersModal } from './FollowersModal';
 import { SocialShare } from './SocialShare';
 import { EditProfile } from './EditProfile';
+import { HashtagFeed } from './HashtagFeed';
 import { MealActions } from './MealActions';
 import { CalorieTracker } from './CalorieTracker';
 import { WeightTracker } from './WeightTracker';
@@ -46,6 +47,7 @@ export const Profile: React.FC<ProfileProps> = ({ user, onUpdateUser }) => {
   const [showShareProfile, setShowShareProfile] = useState(false);
   const [showCalorieTracker, setShowCalorieTracker] = useState(false);
   const [showWeightTracker, setShowWeightTracker] = useState(false);
+  const [showHashtagFeed, setShowHashtagFeed] = useState<string | null>(null);
 
   const userMeals = getUserMeals(user.id);
 
@@ -557,6 +559,15 @@ export const Profile: React.FC<ProfileProps> = ({ user, onUpdateUser }) => {
           user={user}
           onClose={() => setShowWeightTracker(false)}
           onUpdateUser={onUpdateUser}
+        />
+      )}
+      
+      {/* Hashtag Feed Modal */}
+      {showHashtagFeed && (
+        <HashtagFeed
+          hashtag={showHashtagFeed}
+          onClose={() => setShowHashtagFeed(null)}
+          allMeals={userMeals}
         />
       )}
     </div>

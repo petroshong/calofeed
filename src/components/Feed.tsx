@@ -7,6 +7,7 @@ import { TrendingSection } from './TrendingSection';
 import { SocialShare } from './SocialShare';
 import { MealDetail } from './MealDetail';
 import { FoodCategoryFilter } from './FoodCategoryFilter';
+import { HashtagFeed } from './HashtagFeed';
 import { AllSuggestions } from './AllSuggestions';
 import { MealActions } from './MealActions';
 import { useMeals } from '../hooks/useMeals';
@@ -91,6 +92,7 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
   const [showCategoryFilter, setShowCategoryFilter] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [showAllSuggestions, setShowAllSuggestions] = useState(false);
+  const [showHashtagFeed, setShowHashtagFeed] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
 
   // Combine user meals with mock feed meals
@@ -407,9 +409,13 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                     {meal.tags && meal.tags.length > 0 && (
                       <div className="flex flex-wrap gap-2 mb-3">
                         {meal.tags.map((tag) => (
-                          <span key={tag} className="px-2 py-1 bg-blue-50 text-blue-700 text-sm rounded-full cursor-pointer hover:bg-blue-100 transition-colors">
+                          <button 
+                            key={tag} 
+                            onClick={() => setShowHashtagFeed(tag)}
+                            className="px-2 py-1 bg-blue-50 text-blue-700 text-sm rounded-full cursor-pointer hover:bg-blue-100 transition-colors"
+                          >
                             #{tag}
-                          </span>
+                          </button>
                         ))}
                       </div>
                     )}
@@ -446,6 +452,7 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
         <MealDetail 
           meal={selectedMeal} 
           onClose={() => setSelectedMeal(null)} 
+          onHashtagClick={setShowHashtagFeed}
         />
       )}
       
@@ -472,6 +479,15 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
           onViewProfile={onViewProfile}
           currentUser={currentUser}
           onUpdateCurrentUser={onUpdateCurrentUser}
+        />
+      )}
+      
+      {/* Hashtag Feed Modal */}
+      {showHashtagFeed && (
+        <HashtagFeed
+          hashtag={showHashtagFeed}
+          onClose={() => setShowHashtagFeed(null)}
+          allMeals={filteredMeals}
         />
       )}
     </div>
