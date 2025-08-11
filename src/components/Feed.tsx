@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, MessageCircle, Share, MoreHorizontal, MapPin, Clock, User, Flag, Copy, Send, Eye, Star, Grid, List, Lock } from 'lucide-react';
+import { Heart, MessageCircle, Share, MoreHorizontal, MapPin, Clock, User, Flag, Copy, Send, Eye, Star, Grid, List, Lock, Filter, ChevronDown, Bookmark } from 'lucide-react';
 import { Stories } from './Stories';
 import { SuggestedUsers } from './SuggestedUsers';
 import { ActivityFeed } from './ActivityFeed';
@@ -427,71 +427,6 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                 </article>
               ))
             )
-          )}
-        </div>
-      </div>
-
-      {/* Sidebar */}
-      <div className="hidden lg:block lg:w-80 space-y-6 p-4">
-        <SuggestedUsers 
-          onViewProfile={onViewProfile} 
-          onViewAllSuggestions={() => setShowAllSuggestions(true)}
-        />
-        <TrendingSection />
-        <ActivityFeed />
-      </div>
-
-      {/* Modals */}
-      {selectedMeal && (
-        <MealDetail 
-          meal={selectedMeal} 
-          onClose={() => setSelectedMeal(null)} 
-        />
-      )}
-      
-      {shareModal && (
-        <SocialShare 
-          meal={shareModal} 
-          onClose={() => setShareModal(null)} 
-        />
-      )}
-      
-      {/* Category Filter Modal */}
-      {showCategoryFilter && (
-        <FoodCategoryFilter
-          selectedCategories={selectedCategories}
-          onCategoryChange={setSelectedCategories}
-          onClose={() => setShowCategoryFilter(false)}
-        />
-      )}
-      
-      {/* All Suggestions Modal */}
-      {showAllSuggestions && (
-        <AllSuggestions
-          onClose={() => setShowAllSuggestions(false)}
-          onViewProfile={onViewProfile}
-          currentUser={currentUser}
-          onUpdateCurrentUser={onUpdateCurrentUser}
-        />
-      )}
-    </div>
-  );
-};
-                    </div>
-                  )}
-
-                  {/* View Comments */}
-                  {meal.comments.length > 0 && (
-                    <button 
-                      onClick={() => setSelectedMeal(meal)}
-                      className="text-gray-600 hover:text-gray-900 text-sm font-medium"
-                    >
-                      View all {meal.comments.length} comments
-                    </button>
-                  )}
-                </div>
-              </article>
-            ))
           )}
         </div>
       </div>
