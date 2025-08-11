@@ -522,7 +522,7 @@ export const Profile: React.FC<ProfileProps> = ({ user, onUpdateUser }) => {
               </div>
               
               <button
-                onClick={() => navigator.clipboard.writeText(`Check out ${user.displayName}'s profile on EatSocial! https://eatsocial.app/profile/${user.username}`)}
+                onClick={() => navigator.clipboard.writeText(`Check out ${user.displayName}'s profile on CaloFeed! https://calofeed.app/profile/${user.username}`)}
                 className="w-full flex items-center justify-center space-x-2 p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <Copy className="w-5 h-5 text-gray-600" />

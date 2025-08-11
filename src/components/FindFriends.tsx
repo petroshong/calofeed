@@ -213,12 +213,12 @@ export const FindFriends: React.FC<FindFriendsProps> = ({ currentUser, onViewPro
                         />
                       </button>
                       <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
+                              isFollowing(user.id)
                           <button 
                             onClick={() => onViewProfile(user)}
                             className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors"
-                          >
-                            {user.displayName}
+                            {isFollowing(user.id) ? <UserCheck className="w-4 h-4" /> : <UserPlus className="w-4 h-4" />}
+                            <span>{isFollowing(user.id) ? 'Following' : 'Follow'}</span>
                           </button>
                           {user.isVerified && <Star className="w-5 h-5 text-blue-500 fill-current" />}
                           {user.isPremium && (

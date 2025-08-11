@@ -67,13 +67,13 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, currentUser, onB
   };
 
   const shareProfile = () => {
-    const shareText = `Check out ${user.displayName}'s profile on EatSocial! 🍽️\n\n${user.bio}\n\n${followerCount.toLocaleString()} followers • ${user.streak} day streak\n\nhttps://eatsocial.app/profile/${user.username}`;
+    const shareText = `Check out ${user.displayName}'s profile on CaloFeed! 🍽️\n\n${user.bio}\n\n${followerCount.toLocaleString()} followers • ${user.streak} day streak\n\nhttps://calofeed.app/profile/${user.username}`;
     
     if (navigator.share) {
       navigator.share({
-        title: `${user.displayName} on EatSocial`,
+        title: `${user.displayName} on CaloFeed`,
         text: shareText,
-        url: `https://eatsocial.app/profile/${user.username}`
+        url: `https://calofeed.app/profile/${user.username}`
       });
     } else {
       navigator.clipboard.writeText(shareText);

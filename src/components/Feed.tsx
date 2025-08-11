@@ -99,7 +99,13 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
   const publicUserMeals = userMeals.filter(meal => meal.visibility === 'public');
   
   // Filter meals based on privacy settings
-  const visibleMeals = [...publicUserMeals, ...mockFeedMeals.filter(meal => {
+  const visibleMeals = [...publicUserMeals, ...mockFeedMeals.map(meal => ({
+    ...meal,
+    user: {
+      ...meal.user,
+      isFollowing: isFollowing(meal.user.id)
+    }
+  })).filter(meal => {
     // If the meal owner has a private account
     if (meal.user.isPrivate) {
       // Only show if they're friends or it's the current user

@@ -101,7 +101,7 @@ function App() {
             <div className="w-6 h-6 bg-gradient-to-br from-green-500 to-emerald-600 rounded-md flex items-center justify-center">
               <Flame className="w-4 h-4 text-white" />
             </div>
-            <span className="text-lg font-bold text-gray-900">EatSocial</span>
+            <span className="text-lg font-bold text-gray-900">CaloFeed</span>
           </div>
           
           <div className="flex items-center space-x-2">
@@ -186,7 +186,7 @@ function App() {
               <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
                 <Flame className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold text-gray-900">EatSocial</span>
+              <span className="text-xl font-bold text-gray-900">CaloFeed</span>
             </div>
             
             <div className="flex items-center space-x-1">

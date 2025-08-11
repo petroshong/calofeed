@@ -252,7 +252,7 @@ export const Settings: React.FC<SettingsProps> = ({ user, onLogout, onUpdateUser
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl lg:text-3xl font-bold mb-2">Settings</h1>
-            <p className="text-gray-300">Customize your EatSocial experience</p>
+            <p className="text-gray-300">Customize your CaloFeed experience</p>
           </div>
           <SettingsIcon className="w-12 h-12 text-gray-400" />
         </div>

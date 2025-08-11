@@ -189,7 +189,7 @@ export const MealLogger: React.FC<MealLoggerProps> = ({ user, onClose, onUpdateU
                 <div className="relative">
                   <img 
                     src={imagePreview} 
-                    alt="Meal preview"
+                    placeholder="Enter fat (e.g., 12)"
                     className="w-full h-64 object-cover rounded-xl"
                   />
                   <button

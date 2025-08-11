@@ -9,9 +9,9 @@ interface SocialShareProps {
 
 export const SocialShare: React.FC<SocialShareProps> = ({ meal, onClose }) => {
   const [copied, setCopied] = useState(false);
-  const [shareText, setShareText] = useState(`Check out this amazing ${meal.mealType}! 🍽️ ${meal.calories} calories of pure deliciousness. #EatSocial #${meal.mealType} #HealthyEating`);
+  const [shareText, setShareText] = useState(`Check out this amazing ${meal.mealType}! 🍽️ ${meal.calories} calories of pure deliciousness. #CaloFeed #${meal.mealType} #HealthyEating`);
 
-  const shareUrl = `https://eatsocial.app/meal/${meal.id}`;
+  const shareUrl = `https://calofeed.app/meal/${meal.id}`;
 
   const handleCopyLink = async () => {
     try {
