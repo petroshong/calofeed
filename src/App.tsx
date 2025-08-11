@@ -62,12 +62,21 @@ function App() {
       }
     };
 
+    const handleViewMealEvent = (event: CustomEvent) => {
+      const { mealId } = event.detail;
+      handleViewMeal(mealId);
+    };
     // Check initial URL
     handleUrlChange();
 
     // Listen for URL changes
     window.addEventListener('popstate', handleUrlChange);
-    return () => window.removeEventListener('popstate', handleUrlChange);
+    window.addEventListener('viewMeal', handleViewMealEvent as EventListener);
+    
+    return () => {
+      window.removeEventListener('popstate', handleUrlChange);
+      window.removeEventListener('viewMeal', handleViewMealEvent as EventListener);
+    };
   }, [userMeals]);
 
   if (!isAuthenticated || !currentUser) {

@@ -12,6 +12,7 @@ interface Activity {
 
 interface ActivityFeedProps {
   onHashtagClick?: (hashtag: string) => void;
+  onActivityClick?: (activity: Activity) => void;
 }
 const mockActivities: Activity[] = [
   {
@@ -27,6 +28,7 @@ const mockActivities: Activity[] = [
     data: {
       mealType: 'lunch',
       calories: 520,
+      mealId: 'mock-1',
       image: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=400',
       description: 'Perfect post-workout meal! #protein #postworkout'
     }
@@ -85,7 +87,7 @@ const mockActivities: Activity[] = [
   }
 ];
 
-export const ActivityFeed: React.FC<ActivityFeedProps> = ({ onHashtagClick }) => {
+export const ActivityFeed: React.FC<ActivityFeedProps> = ({ onHashtagClick, onActivityClick }) => {
   const [activities] = useState<Activity[]>(mockActivities);
 
   const renderTextWithHashtags = (text: string) => {
@@ -153,7 +155,11 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({ onHashtagClick }) =>
       
       <div className="divide-y divide-gray-100 max-h-96 overflow-y-auto">
         {activities.map((activity) => (
-          <div key={activity.id} className="p-4 hover:bg-gray-50 transition-colors">
+          <div 
+            key={activity.id} 
+            className="p-4 hover:bg-gray-50 transition-colors cursor-pointer"
+            onClick={() => onActivityClick && onActivityClick(activity)}
+          >
             <div className="flex items-start space-x-3">
               <div className="flex-shrink-0">
                 {getActivityIcon(activity.type)}

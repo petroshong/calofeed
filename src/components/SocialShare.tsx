@@ -15,9 +15,6 @@ export const SocialShare: React.FC<SocialShareProps> = ({ meal, onClose }) => {
 
   const handleCopyLink = async () => {
     try {
-      // Update URL to show the meal
-      const mealUrl = `${window.location.origin}/meal/${meal.id}`;
-      window.history.pushState({}, '', `/meal/${meal.id}`);
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -83,8 +80,10 @@ export const SocialShare: React.FC<SocialShareProps> = ({ meal, onClose }) => {
   const openMealLink = () => {
     // Update current page URL to show the meal
     window.history.pushState({}, '', `/meal/${meal.id}`);
-    // Trigger a custom event to notify the app of the URL change
-    window.dispatchEvent(new PopStateEvent('popstate'));
+    // Close the share modal and trigger meal view
+    onClose();
+    // Dispatch custom event to trigger meal view
+    window.dispatchEvent(new CustomEvent('viewMeal', { detail: { mealId: meal.id } }));
   };
 
   return (

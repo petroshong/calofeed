@@ -470,7 +470,30 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
           onViewAllSuggestions={() => setShowAllSuggestions(true)}
         />
         <TrendingSection onHashtagClick={setShowHashtagFeed} />
-        <ActivityFeed onHashtagClick={setShowHashtagFeed} />
+        <ActivityFeed 
+          onHashtagClick={setShowHashtagFeed}
+          onActivityClick={(activity) => {
+            if (activity.type === 'meal_logged' && activity.data.mealId) {
+              // Navigate to the specific meal
+              const meal = filteredMeals.find(m => m.id === activity.data.mealId);
+              if (meal) {
+                setSelectedMeal(meal);
+              }
+            } else if (activity.type === 'goal_achieved') {
+              // Navigate to calorie tracker
+              setCurrentView('calories');
+            } else if (activity.type === 'badge_earned') {
+              // Navigate to profile to see badges
+              setCurrentView('profile');
+            } else if (activity.type === 'challenge_joined') {
+              // Navigate to challenges
+              setCurrentView('challenges');
+            } else if (activity.type === 'streak_milestone') {
+              // Navigate to profile
+              setCurrentView('profile');
+            }
+          }}
+        />
       </div>
 
       {/* Modals */}
