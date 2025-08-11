@@ -225,7 +225,11 @@ export const SearchModal: React.FC<SearchModalProps> = ({ onClose, onViewProfile
   const hasResults = searchResults.users.length > 0 || searchResults.foods.length > 0 || searchResults.places.length > 0;
 
   return (
-    <div className="fixed inset-0 bg-white z-50 flex flex-col">
+    <div 
+      className="fixed inset-0 bg-white z-50 flex flex-col"
+      onClick={onClose}
+    >
+      <div onClick={(e) => e.stopPropagation()}>
       {/* Header */}
       <div className="flex items-center space-x-4 p-4 border-b border-gray-200">
         <button
