@@ -202,7 +202,11 @@ export const AllSuggestions: React.FC<AllSuggestionsProps> = ({ onClose, onViewP
     });
 
   return (
-    <div className="fixed inset-0 bg-white z-50 flex flex-col">
+    <div 
+      className="fixed inset-0 bg-white z-50 flex flex-col"
+      onClick={onClose}
+    >
+      <div onClick={(e) => e.stopPropagation()}>
       {/* Header */}
       <div className="flex items-center justify-between p-6 border-b border-gray-200">
         <div>
@@ -257,7 +261,6 @@ export const AllSuggestions: React.FC<AllSuggestionsProps> = ({ onClose, onViewP
             <option value="mutual">Mutual Connections</option>
           </select>
         </div>
-      </div>
       </div>
 
       {/* Users List */}
@@ -360,6 +363,7 @@ export const AllSuggestions: React.FC<AllSuggestionsProps> = ({ onClose, onViewP
             ))}
           </div>
         )}
+      </div>
       </div>
     </div>
   );
