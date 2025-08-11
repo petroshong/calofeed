@@ -31,7 +31,16 @@ export const MealActions: React.FC<MealActionsProps> = ({
   const copyMealLink = () => {
     const mealUrl = `https://eatsocial.app/meal/${meal.id}`;
     navigator.clipboard.writeText(mealUrl);
-    alert('Meal link copied to clipboard!');
+    // Show a more elegant notification
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+    notification.textContent = 'Meal link copied!';
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      document.body.removeChild(notification);
+    }, 2000);
+    
     setShowMenu(false);
   };
 

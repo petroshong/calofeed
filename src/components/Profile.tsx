@@ -145,7 +145,7 @@ export const Profile: React.FC<ProfileProps> = ({ user, onUpdateUser }) => {
                         href={platform === 'website' ? `https://${handle}` : `https://${platform}.com/${handle}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center space-x-1 text-blue-600 hover:text-blue-700 text-sm"
+                        className="px-3 py-1 bg-blue-50 text-blue-700 text-sm rounded-full cursor-pointer hover:bg-blue-100 hover:scale-105 transition-all duration-200 font-medium active:scale-95"
                       >
                         {getSocialIcon(platform)}
                         <span>{handle}</span>

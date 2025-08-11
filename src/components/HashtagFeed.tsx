@@ -49,9 +49,9 @@ export const HashtagFeed: React.FC<HashtagFeedProps> = ({ hashtag, onClose, allM
           <div className="flex items-center space-x-3">
             <button
               onClick={onClose}
-              className="p-2 text-white/80 hover:text-white rounded-full hover:bg-white/20 transition-colors"
+              className="p-2 text-white/80 hover:text-white rounded-full hover:bg-white/20 transition-colors active:scale-95"
             >
-              <Hash className="w-6 h-6" />
+              <X className="w-6 h-6" />
             </button>
             <div>
               <h1 className="text-2xl font-bold">#{hashtag}</h1>

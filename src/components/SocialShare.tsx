@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Share2, Instagram, Twitter, Facebook, MessageCircle, Copy, Check, X, Download, Camera } from 'lucide-react';
+import { Share2, Instagram, Twitter, Facebook, MessageCircle, Copy, Check, X, Download, Camera, ExternalLink } from 'lucide-react';
 import type { Meal } from '../types';
 
 interface SocialShareProps {
@@ -37,9 +37,9 @@ export const SocialShare: React.FC<SocialShareProps> = ({ meal, onClose }) => {
         shareLink = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
         break;
       case 'instagram':
-        // Instagram doesn't support direct URL sharing, so we'll copy the text
-        navigator.clipboard.writeText(shareText);
-        alert('Caption copied! Open Instagram and paste in your story or post.');
+        // Instagram doesn't support direct URL sharing, so we'll copy the text and image
+        navigator.clipboard.writeText(`${shareText}\n\nView full post: ${shareUrl}`);
+        alert('Caption and link copied! Open Instagram and paste in your story or post.');
         return;
       case 'whatsapp':
         shareLink = `https://wa.me/?text=${encodedText} ${encodedUrl}`;
@@ -54,13 +54,31 @@ export const SocialShare: React.FC<SocialShareProps> = ({ meal, onClose }) => {
     }
   };
 
-  const downloadImage = () => {
-    const link = document.createElement('a');
-    link.href = meal.image;
-    link.download = `eatsocial-meal-${meal.id}.jpg`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const downloadImage = async () => {
+    try {
+      const response = await fetch(meal.image);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `eatsocial-meal-${meal.user.username}-${meal.id}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      window.URL.revokeObjectURL(url);
+      
+      // Show success message
+      alert('Image downloaded successfully!');
+    } catch (error) {
+      console.error('Download failed:', error);
+      alert('Failed to download image. Please try again.');
+    }
+  };
+
+  const openMealLink = () => {
+    window.open(shareUrl, '_blank');
   };
 
   return (
@@ -175,6 +193,14 @@ export const SocialShare: React.FC<SocialShareProps> = ({ meal, onClose }) => {
 
           {/* Additional Actions */}
           <div className="space-y-3">
+            <button
+              onClick={openMealLink}
+              className="w-full flex items-center justify-center space-x-2 p-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            >
+              <ExternalLink className="w-5 h-5" />
+              <span>Open Meal Link</span>
+            </button>
+            
             <button
               onClick={handleCopyLink}
               className="w-full flex items-center justify-center space-x-2 p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"

@@ -234,7 +234,7 @@ export const MealDetail: React.FC<MealDetailProps> = ({ meal, onClose, onHashtag
                           onHashtagClick && onHashtagClick(tag);
                           onClose();
                         }}
-                        className="px-2 py-1 bg-blue-50 text-blue-700 text-sm rounded-full cursor-pointer hover:bg-blue-100 transition-colors"
+                        className="px-3 py-1 bg-blue-50 text-blue-700 text-sm rounded-full cursor-pointer hover:bg-blue-100 hover:scale-105 transition-all duration-200 font-medium active:scale-95"
                       >
                         #{tag}
                       </button>

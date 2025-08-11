@@ -328,7 +328,7 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                           {meal.user.isVerified && <Star className="w-4 h-4 text-blue-500 fill-current" />}
                           {meal.user.isPrivate && <Lock className="w-4 h-4 text-yellow-500" />}
                         </button>
-                        <div className="flex items-center text-sm text-gray-500 space-x-2">
+                          className="px-3 py-1 bg-blue-50 text-blue-700 text-sm rounded-full cursor-pointer hover:bg-blue-100 hover:scale-105 transition-all duration-200 font-medium active:scale-95"
                           <Clock className="w-4 h-4" />
                           <span>{meal.timestamp}</span>
                           {meal.location && (
@@ -340,7 +340,7 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                           )}
                         </div>
                       </div>
-                    </div>
+                      className="text-gray-600 hover:text-gray-900 text-sm font-medium hover:underline transition-colors"
                     <button className="text-gray-400 hover:text-gray-600 p-2">
                       <MoreHorizontal className="w-5 h-5" />
                     </button>
