@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { AuthService } from '../services/authService';
+import { showErrorToast, showSuccessToast } from '../utils/errorHandler';
 import type { User } from '../types';
 
 export const useAuth = () => {
@@ -8,10 +9,27 @@ export const useAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isGuest, setIsGuest] = useState(true);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
 
   useEffect(() => {
     checkAuthStatus();
+    
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === 'SIGNED_IN' && session?.user) {
+          const user = await AuthService.getCurrentUser();
+          setCurrentUser(user);
+          setIsAuthenticated(true);
+          setIsGuest(false);
+        } else if (event === 'SIGNED_OUT') {
+          setCurrentUser(null);
+          setIsAuthenticated(false);
+          setIsGuest(true);
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const checkAuthStatus = async () => {
@@ -39,29 +57,17 @@ export const useAuth = () => {
   const login = async (email: string, password: string) => {
     try {
       setLoading(true);
-      setError('');
-      const { user } = await AuthService.signIn(email, password);
+      const result = await AuthService.signIn(email, password);
       
-      if (user) {
+      if (result.user) {
         const userData = await AuthService.getCurrentUser();
         setCurrentUser(userData);
         setIsAuthenticated(true);
         setIsGuest(false);
+        showSuccessToast('Welcome back!');
       }
     } catch (error) {
       console.error('Login failed:', error);
-      // Handle specific auth errors
-      if (error instanceof Error) {
-        if (error.message.includes('Invalid login credentials')) {
-          throw new Error('Invalid email or password. Please check your credentials or create a new account.');
-        } else if (error.message.includes('Email not confirmed')) {
-          throw new Error('Please check your email and click the confirmation link before signing in.');
-        } else if (error.message.includes('Too many requests')) {
-          throw new Error('Too many login attempts. Please wait a few minutes and try again.');
-        } else {
-          throw new Error('Login failed. Please try again or contact support if the problem persists.');
-        }
-      }
       throw error;
     } finally {
       setLoading(false);
@@ -75,24 +81,14 @@ export const useAuth = () => {
   }) => {
     try {
       setLoading(true);
-      setError('');
-      await AuthService.signUp(email, password, userData);
-      // User will need to verify email before being logged in
-      return { success: true, message: 'Account created successfully! Please check your email to verify your account.' };
+      const result = await AuthService.signUp(email, password, userData);
+      
+      if (result.user) {
+        showSuccessToast('Account created! Please check your email to verify.');
+        return { success: true, message: 'Account created successfully! Please check your email to verify your account.' };
+      }
     } catch (error) {
       console.error('Signup failed:', error);
-      // Handle specific signup errors
-      if (error instanceof Error) {
-        if (error.message.includes('User already registered')) {
-          throw new Error('An account with this email already exists. Please sign in instead.');
-        } else if (error.message.includes('Password should be at least 6 characters')) {
-          throw new Error('Password must be at least 6 characters long.');
-        } else if (error.message.includes('duplicate key')) {
-          throw new Error('This username is already taken. Please choose a different username.');
-        } else {
-          throw new Error('Failed to create account. Please try again or contact support.');
-        }
-      }
       throw error;
     } finally {
       setLoading(false);
@@ -105,6 +101,7 @@ export const useAuth = () => {
       setCurrentUser(null);
       setIsAuthenticated(false);
       setIsGuest(true);
+      showSuccessToast('Signed out successfully');
     } catch (error) {
       console.error('Logout failed:', error);
     }
@@ -112,9 +109,16 @@ export const useAuth = () => {
 
   const updateUser = (updates: Partial<User>) => {
     if (currentUser) {
-      setCurrentUser({ ...currentUser, ...updates });
+      const updatedUser = { ...currentUser, ...updates };
+      setCurrentUser(updatedUser);
+      
       // Update in database
-      AuthService.updateProfile(currentUser.id, updates).catch(console.error);
+      AuthService.updateProfile(currentUser.id, updates)
+        .then(() => showSuccessToast('Profile updated successfully'))
+        .catch((error) => {
+          console.error('Profile update failed:', error);
+          showErrorToast(error);
+        });
     }
   };
 
@@ -128,7 +132,6 @@ export const useAuth = () => {
     isAuthenticated,
     isGuest,
     loading,
-    error,
     login,
     signUp,
     logout,

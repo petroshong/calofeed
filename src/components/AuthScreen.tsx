@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Flame, Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
+import { AuthService } from '../services/authService';
+import { handleError } from '../utils/errorHandler';
 
 interface AuthScreenProps {
   onLogin: (email: string, password: string) => void;
@@ -17,8 +19,29 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
     email: '',
     password: '',
     displayName: '',
-    username: ''
+    username: '',
+    confirmPassword: ''
   });
+  const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
+  const [checkingUsername, setCheckingUsername] = useState(false);
+
+  const checkUsername = async (username: string) => {
+    if (username.length < 3) {
+      setUsernameAvailable(null);
+      return;
+    }
+
+    setCheckingUsername(true);
+    try {
+      const available = await AuthService.checkUsernameAvailability(username);
+      setUsernameAvailable(available);
+    } catch (error) {
+      console.error('Username check failed:', error);
+      setUsernameAvailable(null);
+    } finally {
+      setCheckingUsername(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +51,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
 
     try {
       if (isLogin) {
-        await onLogin(formData.email, formData.password);
+        await onLogin(formData.email.trim(), formData.password);
       } else {
         if (!onSignUp) {
           setError('Sign up not available');
@@ -36,7 +59,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
         }
         const result = await onSignUp(formData.email, formData.password, {
           username: formData.username,
-          displayName: formData.displayName
+          displayName: formData.displayName.trim()
         });
         if (result?.success) {
           setSuccess(result.message);
@@ -45,12 +68,14 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
             email: '',
             password: '',
             displayName: '',
-            username: ''
+            username: '',
+            confirmPassword: ''
           });
         }
       }
     } catch (err: any) {
-      setError(err.message || 'Authentication failed. Please try again.');
+      const appError = handleError(err);
+      setError(appError.message);
     } finally {
       setLoading(false);
     }
@@ -59,10 +84,16 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setError(''); // Clear errors when user starts typing
     setSuccess('');
-    setFormData({
+    const newFormData = {
       ...formData,
       [e.target.name]: e.target.value
-    });
+    };
+    setFormData(newFormData);
+
+    // Check username availability when typing
+    if (e.target.name === 'username' && !isLogin) {
+      checkUsername(e.target.value);
+    }
   };
 
   const validateForm = () => {
@@ -70,6 +101,9 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
       return false;
     }
     if (!isLogin && (!formData.displayName || !formData.username)) {
+      return false;
+    }
+    if (!isLogin && formData.password !== formData.confirmPassword) {
       return false;
     }
     return true;
@@ -176,8 +210,25 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
                       required
                       pattern="[a-zA-Z0-9_]+"
                       title="Username can only contain letters, numbers, and underscores"
+                      minLength={3}
+                      maxLength={20}
                     />
+                    {checkingUsername && (
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        <div className="w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full animate-spin"></div>
+                      </div>
+                    )}
                   </div>
+                  {formData.username && !checkingUsername && (
+                    <div className="mt-1 text-xs">
+                      {usernameAvailable === true && (
+                        <span className="text-green-600">✓ Username available</span>
+                      )}
+                      {usernameAvailable === false && (
+                        <span className="text-red-600">✗ Username taken</span>
+                      )}
+                    </div>
+                  )}
                 </div>
               </>
             )}
@@ -233,9 +284,35 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
               )}
             </div>
 
+            {!isLogin && (
+              <div>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleInputChange}
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
+                    placeholder="••••••••"
+                    required
+                  />
+                </div>
+                {formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword && (
+                  <p className="text-xs text-red-600 mt-1">
+                    Passwords don't match
+                  </p>
+                )}
+              </div>
+            )}
+
             <button
               type="submit"
-              disabled={loading || !validateForm()}
+              disabled={loading || !validateForm() || (!isLogin && usernameAvailable === false)}
               className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:transform-none"
             >
               {loading ? (
@@ -266,6 +343,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
                 <div className="text-center">
                   <p className="text-sm text-blue-800 font-medium mb-2">New to CaloFeed?</p>
                   <button
+                    type="button"
                     onClick={() => setIsLogin(false)}
                     className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm"
                   >

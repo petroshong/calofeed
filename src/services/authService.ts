@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import { handleError } from '../utils/errorHandler';
 import type { User } from '../types';
 
 export class AuthService {
@@ -8,6 +9,12 @@ export class AuthService {
     bio?: string;
   }) {
     try {
+      // Check if username is available first
+      const usernameAvailable = await this.checkUsernameAvailability(userData.username);
+      if (!usernameAvailable) {
+        throw new Error('Username is already taken');
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -31,6 +38,7 @@ export class AuthService {
             username: userData.username,
             display_name: userData.displayName,
             bio: userData.bio || '',
+            avatar_url: `https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2`,
             privacy_settings: {
               profileVisibility: 'public',
               mealVisibility: 'public',
@@ -65,7 +73,7 @@ export class AuthService {
       return data;
     } catch (error) {
       console.error('Sign up error:', error);
-      throw error;
+      throw handleError(error);
     }
   }
 
@@ -80,13 +88,13 @@ export class AuthService {
       return data;
     } catch (error) {
       console.error('Sign in error:', error);
-      throw error;
+      throw handleError(error);
     }
   }
 
   static async signOut() {
     const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    if (error) throw handleError(error);
   }
 
   static async getCurrentUser(): Promise<User | null> {
@@ -100,9 +108,39 @@ export class AuthService {
       .eq('id', user.id)
       .single();
 
-    if (error) throw error;
+    if (error) throw handleError(error);
 
     return this.transformProfileToUser(profile, user.email || '');
+  }
+
+  static async checkUsernameAvailability(username: string): Promise<boolean> {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('username')
+      .eq('username', username)
+      .single();
+
+    if (error && error.code === 'PGRST116') {
+      // No rows returned, username is available
+      return true;
+    }
+    
+    return false; // Username exists or other error
+  }
+
+  static async checkUsernameAvailability(username: string): Promise<boolean> {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('username')
+      .eq('username', username)
+      .single();
+
+    if (error && error.code === 'PGRST116') {
+      // No rows returned, username is available
+      return true;
+    }
+    
+    return false; // Username exists or other error
   }
 
   static transformProfileToUser(profile: any, email: string): User {
@@ -181,6 +219,6 @@ export class AuthService {
       })
       .eq('id', userId);
 
-    if (error) throw error;
+    if (error) throw handleError(error);
   }
 }
