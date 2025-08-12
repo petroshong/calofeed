@@ -87,6 +87,7 @@ interface FeedProps {
 }
 
 export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdateCurrentUser }) => {
+export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdateCurrentUser, isGuest, onAuthRequired }) => {
   const { meals: userMeals, toggleLike, toggleBookmark, deleteMeal } = useMeals(currentUser);
   const { areFriends } = useFriendRequests(currentUser);
   const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
