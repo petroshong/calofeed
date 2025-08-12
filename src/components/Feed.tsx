@@ -147,9 +147,9 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
       );
 
   return (
-    <div className="lg:flex lg:space-x-6 xl:space-x-8 max-w-7xl mx-auto pb-20 lg:pb-0">
+    <div className="lg:flex lg:space-x-4 xl:space-x-6 max-w-none pb-20 lg:pb-0">
       {/* Main Feed */}
-      <div className="lg:flex-1 lg:max-w-2xl xl:max-w-3xl">
+      <div className="lg:flex-1 lg:max-w-none xl:max-w-4xl">
         {/* Guest Banner */}
         {isGuest && (
           <div className="p-4">
@@ -495,7 +495,7 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
       </div>
 
       {/* Sidebar */}
-      <div className="hidden lg:block lg:w-72 xl:w-80 space-y-4 lg:space-y-6 p-4">
+      <div className="hidden lg:block lg:w-80 xl:w-96 space-y-4 lg:space-y-6 p-4">
         <SuggestedUsers 
           currentUser={currentUser}
           isGuest={isGuest}

@@ -342,8 +342,8 @@ function App() {
 
       <div className="flex">
         {/* Desktop Sidebar */}
-        {isAuthenticated && currentUser && (
-          <aside className="hidden lg:block w-56 xl:w-64 2xl:w-72 bg-white border-r border-gray-200 min-h-screen">
+        <aside className="hidden lg:block w-64 xl:w-72 bg-white border-r border-gray-200 min-h-screen">
+          {isAuthenticated && currentUser ? (
             <div className="p-6">
               <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 mb-6">
                 <div className="flex items-center justify-between mb-3">
@@ -425,11 +425,53 @@ function App() {
                 </button>
               </div>
             </div>
-          </aside>
-        )}
+          ) : (
+            <div className="p-6">
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 mb-6">
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+                    <Flame className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="font-semibold text-gray-900 mb-2">Welcome to CaloFeed</h3>
+                  <p className="text-sm text-gray-600 mb-4">Sign up to track your nutrition and connect with friends</p>
+                  <button
+                    onClick={() => setShowAuthPrompt(true)}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                  >
+                    Get Started
+                  </button>
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="bg-white border border-gray-200 rounded-lg p-4">
+                  <h4 className="font-medium text-gray-900 mb-2">Features</h4>
+                  <ul className="space-y-2 text-sm text-gray-600">
+                    <li className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <span>Track calories & macros</span>
+                    </li>
+                    <li className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      <span>Share meals with friends</span>
+                    </li>
+                    <li className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                      <span>Join challenges</span>
+                    </li>
+                    <li className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                      <span>Build streaks</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          )}
+        </aside>
 
         {/* Main Content */}
-        <main className="flex-1">
+        <main className="flex-1 min-w-0">
           {currentView === 'feed' && (
             <Feed 
               onViewProfile={handleViewProfile} 
