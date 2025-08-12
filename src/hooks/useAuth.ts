@@ -11,7 +11,11 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    checkAuthStatus();
+    const initAuth = async () => {
+      await checkAuthStatus();
+    };
+    
+    initAuth();
     
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -25,7 +29,9 @@ export const useAuth = () => {
           setCurrentUser(null);
           setIsAuthenticated(false);
           setIsGuest(true);
+          setLoading(false);
         }
+        setLoading(false);
       }
     );
 
@@ -34,11 +40,18 @@ export const useAuth = () => {
 
   const checkAuthStatus = async () => {
     try {
+      setLoading(true);
       const { data: { session } } = await supabase.auth.getSession();
       
       if (session?.user) {
-        const user = await AuthService.getCurrentUser();
-        setCurrentUser(user);
+        try {
+          const user = await AuthService.getCurrentUser();
+          setCurrentUser(user);
+        } catch (profileError) {
+          console.error('Failed to load user profile:', profileError);
+          // If profile doesn't exist, user is still authenticated but needs profile setup
+          setCurrentUser(null);
+        }
         setIsAuthenticated(true);
         setIsGuest(false);
       } else {
@@ -49,6 +62,7 @@ export const useAuth = () => {
       console.error('Auth check failed:', error);
       setIsGuest(true);
       setIsAuthenticated(false);
+      setCurrentUser(null);
     } finally {
       setLoading(false);
     }
