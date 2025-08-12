@@ -36,7 +36,7 @@ function App() {
   const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
 
-  const incomingRequests = currentUser ? getIncomingRequests() : [];
+  const incomingRequests = !isGuest && currentUser ? getIncomingRequests() : [];
 
   const handleAuthRequired = (action: string) => {
     if (isGuest) {
@@ -53,7 +53,7 @@ function App() {
 
   const handleViewMeal = (mealId: string) => {
     // Find meal in user's meals or mock data
-    const allMeals = [...userMeals];
+    const allMeals = userMeals || [];
     const meal = allMeals.find(m => m.id === mealId);
     if (meal) {
       setSelectedMeal(meal);
@@ -88,19 +88,20 @@ function App() {
     };
   }, [userMeals]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <Flame className="w-8 h-8 text-white animate-pulse" />
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">CaloFeed</h1>
-          <p className="text-gray-600">Loading your food journey...</p>
-        </div>
-      </div>
-    );
-  }
+  // Remove loading screen to fix infinite loading
+  // if (loading) {
+  //   return (
+  //     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+  //       <div className="text-center">
+  //         <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+  //           <Flame className="w-8 h-8 text-white animate-pulse" />
+  //         </div>
+  //         <h1 className="text-2xl font-bold text-gray-900 mb-2">CaloFeed</h1>
+  //         <p className="text-gray-600">Loading your food journey...</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="min-h-screen bg-gray-50">
