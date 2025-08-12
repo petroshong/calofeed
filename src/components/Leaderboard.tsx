@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Trophy, Flame, Target, User, Crown, Medal, Award, TrendingUp, Calendar, Filter } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
 
 interface LeaderboardUser {
   id: string;
@@ -129,8 +130,10 @@ export const Leaderboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'calories' | 'streak' | 'protein'>('calories');
   const [timeframe, setTimeframe] = useState<'week' | 'month' | 'all'>('week');
   const [region, setRegion] = useState<'global' | 'local' | 'friends'>('global');
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
 
   const currentData = mockLeaderboardData[activeTab];
+  const { isAuthenticated } = useAuth();
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -361,6 +364,11 @@ export const Leaderboard: React.FC = () => {
                     ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' 
                     : 'bg-blue-600 text-white hover:bg-blue-700'
                 }`}>
+                  onClick={() => {
+                    if (!isAuthenticated) {
+                      setShowAuthPrompt(true);
+                    }
+                  }}
                   {user.isFollowing ? 'Following' : 'Follow'}
                 </button>
               </div>
@@ -375,7 +383,8 @@ export const Leaderboard: React.FC = () => {
         </div>
 
         {/* Your Ranking */}
-        <div className="mt-6 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4">
+        {isAuthenticated && (
+          <div className="mt-6 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white font-bold">
@@ -407,6 +416,52 @@ export const Leaderboard: React.FC = () => {
             </div>
           </div>
         </div>
+        )}
+
+        {!isAuthenticated && (
+          <div className="mt-6 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 text-center">
+            <Trophy className="w-12 h-12 text-blue-600 mx-auto mb-3" />
+            <h3 className="text-lg font-bold text-gray-900 mb-2">Join the Competition</h3>
+            <p className="text-gray-600 mb-4">
+              Sign up to see your ranking and compete with the community!
+            </p>
+            <button
+              onClick={() => setShowAuthPrompt(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+            >
+              Sign Up to Compete
+            </button>
+          </div>
+        )}
+
+        {/* Auth Prompt Modal */}
+        {showAuthPrompt && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl max-w-sm w-full p-6 text-center">
+              <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Trophy className="w-8 h-8 text-blue-600" />
+              </div>
+              <h2 className="text-xl font-bold text-gray-900 mb-2">Join the Leaderboard</h2>
+              <p className="text-gray-600 mb-6">
+                Sign up to track your progress and compete with friends!
+              </p>
+              <div className="space-y-3">
+                <button
+                  onClick={() => setShowAuthPrompt(false)}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
+                >
+                  Sign Up Free
+                </button>
+                <button
+                  onClick={() => setShowAuthPrompt(false)}
+                  className="w-full text-gray-600 hover:text-gray-800 font-medium py-2"
+                >
+                  Continue browsing
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

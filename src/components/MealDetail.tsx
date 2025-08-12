@@ -6,6 +6,8 @@ import type { Meal, Comment } from '../types';
 
 interface MealDetailProps {
   meal: Meal;
+  isGuest?: boolean;
+  onAuthRequired?: () => void;
   onClose: () => void;
   onHashtagClick?: (hashtag: string) => void;
 }
@@ -45,7 +47,7 @@ const mockComments: Comment[] = [
   }
 ];
 
-export const MealDetail: React.FC<MealDetailProps> = ({ meal, onClose, onHashtagClick }) => {
+export const MealDetail: React.FC<MealDetailProps> = ({ meal, isGuest = false, onAuthRequired, onClose, onHashtagClick }) => {
   const [comments, setComments] = useState<Comment[]>(mockComments);
   const [newComment, setNewComment] = useState('');
   const [isLiked, setIsLiked] = useState(meal.isLiked);
@@ -61,6 +63,12 @@ export const MealDetail: React.FC<MealDetailProps> = ({ meal, onClose, onHashtag
 
   const handleAddComment = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (isGuest) {
+      onAuthRequired?.();
+      return;
+    }
+
     if (newComment.trim()) {
       // Extract mentions from comment
       const mentions = newComment.match(/@(\w+)/g)?.map(mention => mention.slice(1)) || [];
@@ -87,11 +95,19 @@ export const MealDetail: React.FC<MealDetailProps> = ({ meal, onClose, onHashtag
   };
 
   const toggleLike = () => {
+    if (isGuest) {
+      onAuthRequired?.();
+      return;
+    }
     setIsLiked(!isLiked);
     setLikesCount(prev => isLiked ? prev - 1 : prev + 1);
   };
 
   const toggleCommentLike = (commentId: string) => {
+    if (isGuest) {
+      onAuthRequired?.();
+      return;
+    }
     setComments(prev => prev.map(comment => 
       comment.id === commentId 
         ? { 
@@ -195,9 +211,12 @@ export const MealDetail: React.FC<MealDetailProps> = ({ meal, onClose, onHashtag
                   <div className="flex items-center space-x-4">
                     <button 
                       onClick={toggleLike}
+                      disabled={isGuest}
                       className={`flex items-center space-x-2 ${
+                        isGuest ? 'text-gray-400 cursor-not-allowed' :
                         isLiked ? 'text-red-600' : 'text-gray-600 hover:text-red-600'
                       } transition-colors`}
+                      title={isGuest ? 'Sign up to like posts' : ''}
                     >
                       <Heart className={`w-6 h-6 ${isLiked ? 'fill-current' : ''}`} />
                       <span className="font-medium">{likesCount}</span>
@@ -216,9 +235,12 @@ export const MealDetail: React.FC<MealDetailProps> = ({ meal, onClose, onHashtag
                   </div>
                   <button 
                     onClick={() => setIsBookmarked(!isBookmarked)}
+                    disabled={isGuest}
                     className={`${
+                      isGuest ? 'text-gray-400 cursor-not-allowed' :
                       isBookmarked ? 'text-yellow-600' : 'text-gray-600 hover:text-yellow-600'
                     } transition-colors`}
+                    title={isGuest ? 'Sign up to bookmark posts' : ''}
                   >
                     <Bookmark className={`w-6 h-6 ${isBookmarked ? 'fill-current' : ''}`} />
                   </button>
@@ -294,14 +316,28 @@ export const MealDetail: React.FC<MealDetailProps> = ({ meal, onClose, onHashtag
                         <div className="flex items-center space-x-4 mt-2">
                           <button
                             onClick={() => toggleCommentLike(comment.id)}
+                            disabled={isGuest}
                             className={`flex items-center space-x-1 text-xs ${
+                              isGuest ? 'text-gray-400 cursor-not-allowed' :
                               comment.isLiked ? 'text-red-600' : 'text-gray-500 hover:text-red-600'
                             } transition-colors`}
+                            title={isGuest ? 'Sign up to like comments' : ''}
                           >
                             <Heart className={`w-3 h-3 ${comment.isLiked ? 'fill-current' : ''}`} />
                             <span>{comment.likes}</span>
                           </button>
-                          <button className="text-xs text-gray-500 hover:text-gray-700 transition-colors">
+                          <button 
+                            onClick={() => {
+                              if (isGuest) {
+                                onAuthRequired?.();
+                              }
+                            }}
+                            disabled={isGuest}
+                            className={`text-xs transition-colors ${
+                              isGuest ? 'text-gray-400 cursor-not-allowed' : 'text-gray-500 hover:text-gray-700'
+                            }`}
+                            title={isGuest ? 'Sign up to reply to comments' : ''}
+                          >
                             Reply
                           </button>
                         </div>
@@ -312,29 +348,41 @@ export const MealDetail: React.FC<MealDetailProps> = ({ meal, onClose, onHashtag
 
                 {/* Add Comment */}
                 <div className="p-4 border-t border-gray-200">
-                  <form onSubmit={handleAddComment} className="flex space-x-3">
-                    <img 
-                      src="https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=50"
-                      alt="Your avatar"
-                      className="w-8 h-8 rounded-full object-cover flex-shrink-0"
-                    />
-                    <div className="flex-1 flex space-x-2">
-                      <MentionInput
-                        value={newComment}
-                        onChange={setNewComment}
-                        placeholder="Add a comment... (use @ to mention)"
-                        className="flex-1"
-                        onSubmit={handleAddComment}
-                      />
+                  {isGuest ? (
+                    <div className="text-center py-4">
+                      <p className="text-gray-600 mb-3">Sign up to join the conversation</p>
                       <button
-                        type="submit"
-                        disabled={!newComment.trim()}
-                        className="px-4 py-2 bg-green-600 text-white rounded-full font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        onClick={() => onAuthRequired?.()}
+                        className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
                       >
-                        Post
+                        Sign Up to Comment
                       </button>
                     </div>
-                  </form>
+                  ) : (
+                    <form onSubmit={handleAddComment} className="flex space-x-3">
+                      <img 
+                        src={currentUser?.avatar || "https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=50"}
+                        alt="Your avatar"
+                        className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                      />
+                      <div className="flex-1 flex space-x-2">
+                        <MentionInput
+                          value={newComment}
+                          onChange={setNewComment}
+                          placeholder="Add a comment... (use @ to mention)"
+                          className="flex-1"
+                          onSubmit={handleAddComment}
+                        />
+                        <button
+                          type="submit"
+                          disabled={!newComment.trim()}
+                          className="px-4 py-2 bg-green-600 text-white rounded-full font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          Post
+                        </button>
+                      </div>
+                    </form>
+                  )}
                 </div>
               </div>
             </div>

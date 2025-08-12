@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Trophy, Users, Calendar, Target, Flame, Star, Clock, Medal, Gift, Zap, Crown, Filter } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
 import type { Challenge } from '../types';
 
 const mockChallenges: Challenge[] = [
@@ -76,8 +77,16 @@ export const Challenges: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'active' | 'completed' | 'discover'>('active');
   const [challenges, setChallenges] = useState<Challenge[]>(mockChallenges);
   const [categoryFilter, setCategoryFilter] = useState<'all' | 'nutrition' | 'fitness' | 'social' | 'lifestyle'>('all');
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
 
   const joinChallenge = (challengeId: string) => {
+    // Check if user is authenticated
+    const { isAuthenticated } = useAuth();
+    if (!isAuthenticated) {
+      setShowAuthPrompt(true);
+      return;
+    }
+
     setChallenges(prev => prev.map(challenge => 
       challenge.id === challengeId 
         ? { ...challenge, isJoined: !challenge.isJoined, participants: challenge.isJoined ? challenge.participants - 1 : challenge.participants + 1 }
@@ -365,6 +374,38 @@ export const Challenges: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Auth Prompt Modal */}
+      {showAuthPrompt && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-sm w-full p-6 text-center">
+            <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <Trophy className="w-8 h-8 text-purple-600" />
+            </div>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Join Challenges</h2>
+            <p className="text-gray-600 mb-6">
+              Sign up to participate in challenges and earn rewards!
+            </p>
+            <div className="space-y-3">
+              <button
+                onClick={() => {
+                  // Navigate to auth
+                  setShowAuthPrompt(false);
+                }}
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
+              >
+                Sign Up Free
+              </button>
+              <button
+                onClick={() => setShowAuthPrompt(false)}
+                className="w-full text-gray-600 hover:text-gray-800 font-medium py-2"
+              >
+                Continue browsing
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -62,16 +62,23 @@ interface SuggestedUsersProps {
   onViewProfile?: (user: User) => void;
   onViewAllSuggestions?: () => void;
   onUpdateCurrentUser?: (updates: Partial<User>) => void;
+  isGuest?: boolean;
+  onAuthRequired?: () => void;
 }
 
-export const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ currentUser, onViewProfile, onViewAllSuggestions, onUpdateCurrentUser }) => {
+export const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ currentUser, onViewProfile, onViewAllSuggestions, onUpdateCurrentUser, isGuest = false, onAuthRequired }) => {
   const [dismissedUsers, setDismissedUsers] = useState<string[]>([]);
-  const { followUser, unfollowUser, isFollowing } = useFollowing(currentUser);
+  const { followUser, unfollowUser, isFollowing } = useFollowing(currentUser || {} as User);
 
   // Filter out users that are already being followed
-  const availableUsers = suggestedUsers.filter(user => !isFollowing(user.id));
+  const availableUsers = suggestedUsers.filter(user => isGuest || !isFollowing(user.id));
 
   const toggleFollow = (userId: string) => {
+    if (isGuest) {
+      onAuthRequired?.();
+      return;
+    }
+
     const currentlyFollowing = isFollowing(userId);
     
     if (currentlyFollowing) {
@@ -83,12 +90,16 @@ export const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ currentUser, onV
     // Update current user's following count
     if (onUpdateCurrentUser) {
       onUpdateCurrentUser({
-        following: currentlyFollowing ? currentUser.following - 1 : currentUser.following + 1
+        following: currentlyFollowing ? (currentUser?.following || 0) + 1 : (currentUser?.following || 0) - 1
       });
     }
   };
 
   const dismissUser = (userId: string) => {
+    if (isGuest) {
+      onAuthRequired?.();
+      return;
+    }
     setDismissedUsers(prev => [...prev, userId]);
   };
 
@@ -152,20 +163,24 @@ export const SuggestedUsers: React.FC<SuggestedUsersProps> = ({ currentUser, onV
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => dismissUser(user.id)}
+                disabled={isGuest}
                 className="p-1 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
               <button
                 onClick={() => toggleFollow(user.id)}
+                disabled={isGuest}
                 className={`px-2 lg:px-3 py-1 rounded-lg text-xs lg:text-sm font-medium transition-colors flex items-center space-x-1 ${
-                  isFollowing(user.id) || user.isFollowing
+                  isGuest ? 'bg-gray-200 text-gray-500 cursor-not-allowed' :
+                  !isGuest && (isFollowing(user.id) || user.isFollowing)
                     ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     : 'bg-green-600 text-white hover:bg-green-700'
                 }`}
+                title={isGuest ? 'Sign up to follow users' : ''}
               >
                 <UserPlus className="w-3 h-3" />
-                <span>{isFollowing(user.id) || user.isFollowing ? 'Following' : 'Follow'}</span>
+                <span>{isGuest ? 'Sign Up' : (isFollowing(user.id) || user.isFollowing) ? 'Following' : 'Follow'}</span>
               </button>
             </div>
           </div>

@@ -9,6 +9,8 @@ import type { User, Meal } from '../types';
 interface UserProfileProps {
   user: User;
   currentUser: User;
+  isGuest?: boolean;
+  onAuthRequired?: () => void;
   onBack: () => void;
   onUpdateCurrentUser: (updates: Partial<User>) => void;
 }
@@ -44,8 +46,8 @@ const mockMeals: Meal[] = [
   }
 ];
 
-export const UserProfile: React.FC<UserProfileProps> = ({ user, currentUser, onBack, onUpdateCurrentUser }) => {
-  const { getUserMeals } = useMeals(currentUser);
+export const UserProfile: React.FC<UserProfileProps> = ({ user, currentUser, isGuest = false, onAuthRequired, onBack, onUpdateCurrentUser }) => {
+  const { getUserMeals } = useMeals(currentUser || {} as User);
   const [activeTab, setActiveTab] = useState<'grid' | 'list'>('grid');
   const [isFollowing, setIsFollowing] = useState(user.isFollowing);
   const [showFollowersModal, setShowFollowersModal] = useState<'followers' | 'following' | null>(null);
@@ -53,17 +55,24 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, currentUser, onB
   const [showHashtagFeed, setShowHashtagFeed] = useState<string | null>(null);
   const [followerCount, setFollowerCount] = useState(user.followers);
 
-  const userMeals = getUserMeals(user.id);
+  const userMeals = !isGuest ? getUserMeals(user.id) : [];
 
   const toggleFollow = () => {
+    if (isGuest) {
+      onAuthRequired?.();
+      return;
+    }
+
     const newFollowingState = !isFollowing;
     setIsFollowing(newFollowingState);
     setFollowerCount(prev => newFollowingState ? prev + 1 : prev - 1);
     
     // Update current user's following count
-    onUpdateCurrentUser({
-      following: newFollowingState ? currentUser.following + 1 : currentUser.following - 1
-    });
+    if (currentUser) {
+      onUpdateCurrentUser({
+        following: newFollowingState ? currentUser.following + 1 : currentUser.following - 1
+      });
+    }
   };
 
   const shareProfile = () => {
@@ -183,17 +192,33 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, currentUser, onB
                 </button>
                 <button
                   onClick={toggleFollow}
+                  disabled={isGuest}
                   className={`px-6 py-2 rounded-lg font-medium flex items-center space-x-2 transition-colors ${
+                    isGuest ? 'bg-gray-200 text-gray-500 cursor-not-allowed' :
                     isFollowing 
                       ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' 
                       : 'bg-green-600 text-white hover:bg-green-700'
                   }`}
+                  title={isGuest ? 'Sign up to follow users' : ''}
                 >
                   {isFollowing ? <UserCheck className="w-5 h-5" /> : <UserPlus className="w-5 h-5" />}
-                  <span>{isFollowing ? 'Following' : 'Follow'}</span>
+                  <span>{isGuest ? 'Sign up to Follow' : isFollowing ? 'Following' : 'Follow'}</span>
                 </button>
                 <button className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center space-x-2">
-                  <MessageCircle className="w-4 h-4" />
+                <button 
+                  onClick={() => {
+                    if (isGuest) {
+                      onAuthRequired?.();
+                    } else {
+                      // Open message modal
+                    }
+                  }}
+                  disabled={isGuest}
+                  className={`px-6 py-2 border border-gray-300 rounded-lg font-medium transition-colors ${
+                    isGuest ? 'text-gray-500 cursor-not-allowed' : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                  title={isGuest ? 'Sign up to message users' : ''}
+                >
                   <span>Message</span>
                 </button>
               </div>

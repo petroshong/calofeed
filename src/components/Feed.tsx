@@ -10,6 +10,7 @@ import { FoodCategoryFilter } from './FoodCategoryFilter';
 import { HashtagFeed } from './HashtagFeed';
 import { AllSuggestions } from './AllSuggestions';
 import { MealActions } from './MealActions';
+import { GuestBanner } from './GuestBanner';
 import { useMeals } from '../hooks/useMeals';
 import { useFriendRequests } from '../hooks/useFriendRequests';
 import { useFollowing } from '../hooks/useFollowing';
@@ -147,8 +148,15 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
     <div className="lg:flex lg:space-x-6 xl:space-x-8 max-w-7xl mx-auto pb-20 lg:pb-0">
       {/* Main Feed */}
       <div className="lg:flex-1 lg:max-w-2xl xl:max-w-3xl">
+        {/* Guest Banner */}
+        {isGuest && (
+          <div className="p-4">
+            <GuestBanner onSignUp={() => onAuthRequired?.()} />
+          </div>
+        )}
+
         {/* Stories */}
-        <Stories currentUser={currentUser} />
+        {!isGuest && currentUser && <Stories currentUser={currentUser} />}
 
         {/* Feed Filter */}
         <div className="bg-white border-b border-gray-200 p-3 lg:p-4 sticky top-14 lg:top-16 z-30">
@@ -488,6 +496,8 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
       <div className="hidden lg:block lg:w-72 xl:w-80 space-y-4 lg:space-y-6 p-4">
         <SuggestedUsers 
           currentUser={currentUser}
+          isGuest={isGuest}
+          onAuthRequired={onAuthRequired}
           onViewProfile={onViewProfile} 
           onViewAllSuggestions={() => setShowAllSuggestions(true)}
           onUpdateCurrentUser={onUpdateCurrentUser}
@@ -550,6 +560,8 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
       {selectedMeal && (
         <MealDetail 
           meal={selectedMeal} 
+          isGuest={isGuest}
+          onAuthRequired={onAuthRequired}
           onClose={() => setSelectedMeal(null)} 
           onHashtagClick={setShowHashtagFeed}
         />

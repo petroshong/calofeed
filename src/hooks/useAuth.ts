@@ -1,120 +1,109 @@
 import { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
+import { AuthService } from '../services/authService';
 import type { User } from '../types';
 
 export const useAuth = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isGuest, setIsGuest] = useState(true);
+  const [loading, setLoading] = useState(true);
 
-  // Mock authentication for demo purposes
   useEffect(() => {
-    const mockUser: User = {
-      id: '1',
-      username: 'fitnessfoodie',
-      displayName: 'Alex Chen',
-      email: 'alex@example.com',
-      avatar: 'https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
-      bio: 'Fitness enthusiast & food lover 🏋️‍♀️🥗 Sharing my healthy journey one meal at a time!',
-      isFollowing: false,
-      followers: 1234,
-      following: 567,
-      mealsLogged: 89,
-      streak: 12,
-      badges: [
-        { id: '1', name: 'Streak Master', emoji: '🔥', description: '7-day logging streak', earnedDate: '2024-01-15', category: 'streak' },
-        { id: '2', name: 'Protein Pro', emoji: '💪', description: 'Hit protein goal 30 days', earnedDate: '2024-01-10', category: 'nutrition' },
-        { id: '3', name: 'Veggie Lover', emoji: '🥗', description: 'Logged 100 vegetable servings', earnedDate: '2024-01-05', category: 'nutrition' },
-        { id: '4', name: 'Community Star', emoji: '⭐', description: '100 likes received', earnedDate: '2024-01-01', category: 'social' }
-      ].map(badge => ({ ...badge, rarity: 'common' as const })),
-      totalLikes: 2847,
-      totalComments: 456,
-      rank: 15,
-      level: 12,
-      xp: 8450,
-      socialScore: 92,
-      coverImage: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=800',
-      dailyCalorieGoal: 2200,
-      dailyProteinGoal: 150,
-      dailyCarbGoal: 275,
-      dailyFatGoal: 73,
-      caloriesConsumed: 1650,
-      proteinConsumed: 112,
-      carbsConsumed: 180,
-      fatConsumed: 45,
-      currentWeight: 165,
-      goalWeight: 160,
-      height: 170,
-      age: 28,
-      activityLevel: 'moderate',
-      dietaryPreferences: ['vegetarian', 'low-carb'],
-      allergies: ['nuts'],
-      joinedDate: '2023-06-15',
-      location: 'San Francisco, CA',
-      website: 'alexfitness.com',
-      socialLinks: {
-        instagram: 'alexfitness',
-        youtube: 'alexfitnesschannel',
-        website: 'alexfitness.com'
-      },
-      isVerified: true,
-      isPremium: true,
-      isInfluencer: false,
-      isPrivate: false,
-      privacySettings: {
-        profileVisibility: 'public',
-        mealVisibility: 'public',
-        showWeight: true,
-        showGoals: true,
-        allowMessages: true,
-        showOnLeaderboard: true,
-        allowTagging: true,
-        allowSharing: true,
-        showActivity: true,
-        allowStoryViews: true
-      },
-      notificationSettings: {
-        likes: true,
-        comments: true,
-        follows: true,
-        challenges: true,
-        achievements: true,
-        reminders: true,
-        groups: true,
-        mentions: true,
-        shares: true,
-        stories: true,
-        email: true,
-        push: true
-      }
-    };
-
-    // Simulate authentication delay
-    setTimeout(() => {
-      setCurrentUser(mockUser);
-      setIsAuthenticated(true);
-    }, 1000);
+    checkAuthStatus();
   }, []);
 
-  const login = (email: string, password: string) => {
-    // Mock login logic
-    setIsAuthenticated(true);
+  const checkAuthStatus = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session?.user) {
+        const user = await AuthService.getCurrentUser();
+        setCurrentUser(user);
+        setIsAuthenticated(true);
+        setIsGuest(false);
+      } else {
+        setIsGuest(true);
+        setIsAuthenticated(false);
+      }
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      setIsGuest(true);
+      setIsAuthenticated(false);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const logout = () => {
-    setCurrentUser(null);
-    setIsAuthenticated(false);
+  const login = async (email: string, password: string) => {
+    try {
+      setLoading(true);
+      const { user } = await AuthService.signIn(email, password);
+      
+      if (user) {
+        const userData = await AuthService.getCurrentUser();
+        setCurrentUser(userData);
+        setIsAuthenticated(true);
+        setIsGuest(false);
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signUp = async (email: string, password: string, userData: {
+    username: string;
+    displayName: string;
+    bio?: string;
+  }) => {
+    try {
+      setLoading(true);
+      await AuthService.signUp(email, password, userData);
+      // User will need to verify email before being logged in
+    } catch (error) {
+      console.error('Signup failed:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await AuthService.signOut();
+      setCurrentUser(null);
+      setIsAuthenticated(false);
+      setIsGuest(true);
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
 
   const updateUser = (updates: Partial<User>) => {
     if (currentUser) {
       setCurrentUser({ ...currentUser, ...updates });
+      // Update in database
+      AuthService.updateProfile(currentUser.id, updates).catch(console.error);
     }
   };
 
+  const requireAuth = () => {
+    if (!isAuthenticated) {
+      throw new Error('Authentication required');
+    }
+  };
   return {
     currentUser,
     isAuthenticated,
+    isGuest,
+    loading,
     login,
+    signUp,
     logout,
-    updateUser
+    updateUser,
+    requireAuth
   };
 };

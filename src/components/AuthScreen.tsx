@@ -3,11 +3,15 @@ import { Flame, Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
 
 interface AuthScreenProps {
   onLogin: (email: string, password: string) => void;
+  onSignUp?: (email: string, password: string, userData: { username: string; displayName: string; bio?: string }) => void;
+  isModal?: boolean;
 }
 
-export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
+export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isModal = false }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -15,9 +19,29 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
     username: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onLogin(formData.email, formData.password);
+    setLoading(true);
+    setError('');
+
+    try {
+      if (isLogin) {
+        await onLogin(formData.email, formData.password);
+      } else {
+        if (!onSignUp) {
+          setError('Sign up not available');
+          return;
+        }
+        await onSignUp(formData.email, formData.password, {
+          username: formData.username,
+          displayName: formData.displayName
+        });
+      }
+    } catch (err: any) {
+      setError(err.message || 'Authentication failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,22 +52,28 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 flex items-center justify-center p-4">
+    <div className={`${isModal ? '' : 'min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 flex items-center justify-center p-4'}`}>
       <div className="max-w-md w-full">
-        {/* Logo and Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl mb-4">
-            <Flame className="w-8 h-8 text-white" />
+        {!isModal && (
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl mb-4">
+              <Flame className="w-8 h-8 text-white" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">CaloFeed</h1>
+            <p className="text-gray-600">
+              {isLogin ? 'Welcome back! Sign in to your account' : 'Join the social food tracking revolution'}
+            </p>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">EatSocial</h1>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">CaloFeed</h1>
-          <p className="text-gray-600">
-            {isLogin ? 'Welcome back! Sign in to your account' : 'Join the social food tracking revolution'}
-          </p>
-        </div>
+        )}
 
         {/* Auth Form */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+        <div className={`${isModal ? '' : 'bg-white rounded-2xl shadow-xl border border-gray-100 p-8'}`}>
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-700 text-sm">{error}</p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             {!isLogin && (
               <>
@@ -130,9 +160,10 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
 
             <button
               type="submit"
+              disabled={loading}
               className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02]"
             >
-              {isLogin ? 'Sign In' : 'Create Account'}
+              {loading ? 'Please wait...' : isLogin ? 'Sign In' : 'Create Account'}
             </button>
           </form>
 
@@ -149,24 +180,25 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
           </div>
         </div>
 
-        {/* Demo Features */}
-        <div className="mt-8 text-center">
-          <p className="text-sm text-gray-500 mb-4">Join thousands of users sharing their food journey</p>
-          <div className="flex justify-center space-x-6 text-sm text-gray-600">
-            <div className="flex items-center">
-              <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-              Social Feed
-            </div>
-            <div className="flex items-center">
-              <div className="w-2 h-2 bg-orange-500 rounded-full mr-2"></div>
-              Challenges
-            </div>
-            <div className="flex items-center">
-              <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
-              Leaderboards
+        {!isModal && (
+          <div className="mt-8 text-center">
+            <p className="text-sm text-gray-500 mb-4">Join thousands of users sharing their food journey</p>
+            <div className="flex justify-center space-x-6 text-sm text-gray-600">
+              <div className="flex items-center">
+                <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                Social Feed
+              </div>
+              <div className="flex items-center">
+                <div className="w-2 h-2 bg-orange-500 rounded-full mr-2"></div>
+                Challenges
+              </div>
+              <div className="flex items-center">
+                <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
+                Leaderboards
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

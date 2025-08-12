@@ -25,17 +25,26 @@ import { useMeals } from './hooks/useMeals';
 import type { User, Meal } from './types';
 
 function App() {
-  const { currentUser, isAuthenticated, login, logout, updateUser } = useAuth();
+  const { currentUser, isAuthenticated, isGuest, loading, login, signUp, logout, updateUser, requireAuth } = useAuth();
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
-  const { getIncomingRequests } = useFriendRequests(currentUser);
-  const { meals: userMeals } = useMeals(currentUser);
+  const { getIncomingRequests } = useFriendRequests(currentUser || {} as User);
+  const { meals: userMeals } = useMeals(currentUser || {} as User);
   const [currentView, setCurrentView] = useState<'feed' | 'profile' | 'log' | 'challenges' | 'leaderboard' | 'notifications' | 'settings' | 'groups' | 'discover' | 'calories' | 'find-friends' | 'user-profile' | 'friend-requests'>('feed');
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
 
-  const incomingRequests = getIncomingRequests();
+  const incomingRequests = currentUser ? getIncomingRequests() : [];
+
+  const handleAuthRequired = (action: string) => {
+    if (isGuest) {
+      setShowAuthPrompt(true);
+      return false;
+    }
+    return true;
+  };
 
   const handleViewProfile = (user: User) => {
     setSelectedUser(user);
@@ -79,8 +88,18 @@ function App() {
     };
   }, [userMeals]);
 
-  if (!isAuthenticated || !currentUser) {
-    return <AuthScreen onLogin={login} />;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <Flame className="w-8 h-8 text-white animate-pulse" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">CaloFeed</h1>
+          <p className="text-gray-600">Loading your food journey...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -276,7 +295,11 @@ function App() {
 
           <div className="flex items-center space-x-4">
             <button
-              onClick={() => setCurrentView('log')}
+              onClick={() => {
+                if (handleAuthRequired('log meal')) {
+                  setCurrentView('log');
+                }
+              }}
               className="bg-green-600 hover:bg-green-700 text-white px-3 lg:px-4 py-2 rounded-lg font-medium flex items-center space-x-2 transition-colors text-sm lg:text-base"
             >
               <Plus className="w-4 h-4" />
@@ -284,118 +307,139 @@ function App() {
               <span className="lg:hidden">Log</span>
             </button>
             <button 
-              onClick={() => setCurrentView('notifications')}
+              onClick={() => {
+                if (handleAuthRequired('view notifications')) {
+                  setCurrentView('notifications');
+                }
+              }}
               className="relative text-gray-600 hover:text-gray-900 p-2 rounded-lg hover:bg-gray-100 transition-colors"
             >
               <Bell className="w-6 h-6" />
-              {unreadCount > 0 && (
+              {!isGuest && unreadCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </span>
               )}
             </button>
-            <button 
-              onClick={() => setCurrentView('profile')}
-              className="w-7 h-7 lg:w-8 lg:h-8 rounded-full overflow-hidden"
-            >
-              <img src={currentUser.avatar} alt="Profile" className="w-full h-full object-cover" />
-            </button>
+            {!isGuest ? (
+              <button 
+                onClick={() => setCurrentView('profile')}
+                className="w-7 h-7 lg:w-8 lg:h-8 rounded-full overflow-hidden"
+              >
+                <img src={currentUser?.avatar} alt="Profile" className="w-full h-full object-cover" />
+              </button>
+            ) : (
+              <button
+                onClick={() => setShowAuthPrompt(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+              >
+                Sign Up
+              </button>
+            )}
           </div>
         </div>
       </header>
 
       <div className="flex">
         {/* Desktop Sidebar */}
-        <aside className="hidden lg:block w-56 xl:w-64 2xl:w-72 bg-white border-r border-gray-200 min-h-screen">
-          <div className="p-6">
-            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 mb-6">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="font-semibold text-gray-900">Today's Goals</h3>
-                <Target className="w-5 h-5 text-green-600" />
-              </div>
-              <div className="text-center mb-3">
-                <div className="text-2xl font-bold text-green-600">
-                  {Math.round((currentUser.caloriesConsumed / currentUser.dailyCalorieGoal) * 100)}%
+        {!isGuest && (
+          <aside className="hidden lg:block w-56 xl:w-64 2xl:w-72 bg-white border-r border-gray-200 min-h-screen">
+            <div className="p-6">
+              {currentUser && (
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 mb-6">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-semibold text-gray-900">Today's Goals</h3>
+                  <Target className="w-5 h-5 text-green-600" />
                 </div>
-                <div className="text-sm text-green-700">Daily Progress</div>
-              </div>
-              <div className="space-y-3">
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-gray-600">Calories</span>
-                    <span className="font-medium">{currentUser.caloriesConsumed}/{currentUser.dailyCalorieGoal}</span>
+                <div className="text-center mb-3">
+                  <div className="text-2xl font-bold text-green-600">
+                    {Math.round((currentUser.caloriesConsumed / currentUser.dailyCalorieGoal) * 100)}%
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-green-600 h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${Math.min((currentUser.caloriesConsumed / currentUser.dailyCalorieGoal) * 100, 100)}%` }}
-                    ></div>
+                  <div className="text-sm text-green-700">Daily Progress</div>
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-600">Calories</span>
+                      <span className="font-medium">{currentUser.caloriesConsumed}/{currentUser.dailyCalorieGoal}</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-green-600 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${Math.min((currentUser.caloriesConsumed / currentUser.dailyCalorieGoal) * 100, 100)}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-600">Protein</span>
+                      <span className="font-medium">{currentUser.proteinConsumed}g/{currentUser.dailyProteinGoal}g</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-orange-500 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${Math.min((currentUser.proteinConsumed / currentUser.dailyProteinGoal) * 100, 100)}%` }}
+                      ></div>
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-gray-600">Protein</span>
-                    <span className="font-medium">{currentUser.proteinConsumed}g/{currentUser.dailyProteinGoal}g</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-orange-500 h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${Math.min((currentUser.proteinConsumed / currentUser.dailyProteinGoal) * 100, 100)}%` }}
-                    ></div>
-                  </div>
-                </div>
               </div>
-            </div>
+              )}
 
-            <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-4 mb-6">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="font-semibold text-gray-900">Streak</h3>
-                <Flame className="w-5 h-5 text-orange-600" />
-              </div>
-              <div className="text-3xl font-bold text-orange-600">{currentUser.streak}</div>
-              <p className="text-sm text-gray-600">days in a row</p>
-              <div className="mt-2 text-xs text-orange-700">
-                Keep it up! You're on fire! 🔥
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <h3 className="font-medium text-gray-900 mb-3">Quick Actions</h3>
-              <button
-                onClick={() => { setCurrentView('friend-requests'); setShowMobileMenu(false); }}
-                className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
-                  currentView === 'friend-requests' ? 'bg-green-50 text-green-700' : 'text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                <UserPlus className="w-5 h-5" />
-                <div className="flex items-center justify-between w-full">
-                  <span>Friend Requests</span>
-                  {incomingRequests.length > 0 && (
-                    <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                      {incomingRequests.length}
-                    </span>
-                  )}
+              {currentUser && (
+                <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-4 mb-6">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-semibold text-gray-900">Streak</h3>
+                  <Flame className="w-5 h-5 text-orange-600" />
                 </div>
-              </button>
-              <button
-                onClick={() => { setCurrentView('find-friends'); setShowMobileMenu(false); }}
-                className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
-                  currentView === 'find-friends' ? 'bg-green-50 text-green-700' : 'text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                <Users className="w-5 h-5" />
-                <span>Find Friends</span>
-              </button>
+                <div className="text-3xl font-bold text-orange-600">{currentUser.streak}</div>
+                <p className="text-sm text-gray-600">days in a row</p>
+                <div className="mt-2 text-xs text-orange-700">
+                  Keep it up! You're on fire! 🔥
+                </div>
+              </div>
+              )}
+
+              <div className="space-y-2">
+                <h3 className="font-medium text-gray-900 mb-3">Quick Actions</h3>
+                <button
+                  onClick={() => { setCurrentView('friend-requests'); setShowMobileMenu(false); }}
+                  className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
+                    currentView === 'friend-requests' ? 'bg-green-50 text-green-700' : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  <UserPlus className="w-5 h-5" />
+                  <div className="flex items-center justify-between w-full">
+                    <span>Friend Requests</span>
+                    {incomingRequests.length > 0 && (
+                      <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                        {incomingRequests.length}
+                      </span>
+                    )}
+                  </div>
+                </button>
+                <button
+                  onClick={() => { setCurrentView('find-friends'); setShowMobileMenu(false); }}
+                  className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
+                    currentView === 'find-friends' ? 'bg-green-50 text-green-700' : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  <Users className="w-5 h-5" />
+                  <span>Find Friends</span>
+                </button>
+              </div>
             </div>
-          </div>
-        </aside>
+          </aside>
+        )}
 
         {/* Main Content */}
-        <main className="flex-1">
+        <main className={`flex-1 ${isGuest ? 'lg:ml-0' : ''}`}>
           {currentView === 'feed' && (
             <Feed 
               onViewProfile={handleViewProfile} 
-              currentUser={currentUser}
+              currentUser={currentUser || {} as User}
+              isGuest={isGuest}
+              onAuthRequired={() => setShowAuthPrompt(true)}
               onUpdateCurrentUser={updateUser}
             />
           )}
@@ -404,35 +448,37 @@ function App() {
             console.log('Hashtag clicked:', hashtag);
           }} />}
           {currentView === 'groups' && <Groups />}
-          {currentView === 'profile' && <Profile user={currentUser} onUpdateUser={updateUser} />}
+          {currentView === 'profile' && currentUser && <Profile user={currentUser} onUpdateUser={updateUser} />}
           {currentView === 'user-profile' && selectedUser && (
             <UserProfile 
               user={selectedUser} 
-              currentUser={currentUser}
+              currentUser={currentUser || {} as User}
+              isGuest={isGuest}
+              onAuthRequired={() => setShowAuthPrompt(true)}
               onBack={() => setCurrentView('feed')}
               onUpdateCurrentUser={updateUser}
             />
           )}
           {currentView === 'find-friends' && (
             <FindFriends 
-              currentUser={currentUser}
+              currentUser={currentUser || {} as User}
               onViewProfile={handleViewProfile}
               onUpdateCurrentUser={updateUser}
             />
           )}
           {currentView === 'friend-requests' && (
             <FriendRequests 
-              currentUser={currentUser}
+              currentUser={currentUser || {} as User}
               onClose={() => setCurrentView('feed')}
               onViewProfile={handleViewProfile}
             />
           )}
-          {currentView === 'log' && <MealLogger user={currentUser} onClose={() => setCurrentView('feed')} onUpdateUser={updateUser} />}
+          {currentView === 'log' && currentUser && <MealLogger user={currentUser} onClose={() => setCurrentView('feed')} onUpdateUser={updateUser} />}
           {currentView === 'challenges' && <Challenges />}
           {currentView === 'leaderboard' && <Leaderboard />}
-          {currentView === 'calories' && <CalorieTracker user={currentUser} onUpdateUser={updateUser} />}
+          {currentView === 'calories' && currentUser && <CalorieTracker user={currentUser} onUpdateUser={updateUser} />}
           {currentView === 'notifications' && <Notifications notifications={notifications} onMarkAsRead={markAsRead} onMarkAllAsRead={markAllAsRead} />}
-          {currentView === 'settings' && <SettingsComponent user={currentUser} onLogout={logout} onUpdateUser={updateUser} />}
+          {currentView === 'settings' && currentUser && <SettingsComponent user={currentUser} onLogout={logout} onUpdateUser={updateUser} />}
         </main>
       </div>
 
@@ -469,8 +515,36 @@ function App() {
       <Navigation 
         currentView={currentView} 
         onViewChange={setCurrentView}
-        currentUser={currentUser}
+        currentUser={currentUser || {} as User}
+        isGuest={isGuest}
+        onAuthRequired={() => setShowAuthPrompt(true)}
       />
+
+      {/* Auth Prompt Modal */}
+      {showAuthPrompt && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center">
+          <div className="bg-white rounded-t-3xl lg:rounded-2xl max-w-md w-full p-6">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Flame className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Join CaloFeed</h2>
+              <p className="text-gray-600 mb-6">
+                Sign up to log meals, follow friends, and join the community!
+              </p>
+              <div className="space-y-3">
+                <AuthScreen onLogin={login} onSignUp={signUp} isModal={true} />
+              </div>
+              <button
+                onClick={() => setShowAuthPrompt(false)}
+                className="mt-4 text-gray-500 hover:text-gray-700 text-sm"
+              >
+                Continue browsing as guest
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
