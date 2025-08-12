@@ -271,7 +271,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
                   >
                     Create Free Account
                   </button>
-                </p>
+                </div>
               </div>
             )}
             {!isLogin && (
