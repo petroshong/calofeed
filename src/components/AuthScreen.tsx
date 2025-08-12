@@ -93,15 +93,50 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
         <div className={`${isModal ? '' : 'bg-white rounded-2xl shadow-xl border border-gray-100 p-8'}`}>
           {error && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-red-700 text-sm">{error}</p>
+              <div className="flex items-start space-x-2">
+                <div className="w-4 h-4 bg-red-500 rounded-full mt-0.5 flex-shrink-0"></div>
+                <div>
+                  <p className="text-red-700 text-sm font-medium">{error}</p>
+                  {error.includes('Invalid login credentials') && (
+                    <p className="text-red-600 text-xs mt-1">
+                      Don't have an account? Click "Sign up" below to create one.
+                    </p>
+                  )}
+                </div>
+              </div>
             </div>
           )}
 
           {success && (
-            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-              <p className="text-green-700 text-sm">{success}</p>
+            <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+              <div className="flex items-start space-x-2">
+                <div className="w-4 h-4 bg-green-500 rounded-full mt-0.5 flex-shrink-0"></div>
+                <div>
+                  <p className="text-green-700 text-sm font-medium">{success}</p>
+                  {success.includes('check your email') && (
+                    <p className="text-green-600 text-xs mt-1">
+                      After verifying your email, return here to sign in.
+                    </p>
+                  )}
+                </div>
+              </div>
             </div>
           )}
+
+          {!isModal && (
+            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <h3 className="text-sm font-medium text-blue-900 mb-2">
+                {isLogin ? 'First time here?' : 'Ready to join?'}
+              </h3>
+              <p className="text-blue-700 text-sm">
+                {isLogin 
+                  ? 'Create a free account to start tracking your nutrition and connecting with friends.'
+                  : 'Join thousands of users sharing their food journey and achieving their health goals.'
+                }
+              </p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             {!isLogin && (
               <>
@@ -201,9 +236,16 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
             <button
               type="submit"
               disabled={loading || !validateForm()}
-              className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02]"
+              className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:transform-none"
             >
-              {loading ? 'Please wait...' : isLogin ? 'Sign In' : 'Create Account'}
+              {loading ? (
+                <div className="flex items-center justify-center space-x-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>{isLogin ? 'Signing in...' : 'Creating account...'}</span>
+                </div>
+              ) : (
+                isLogin ? 'Sign In' : 'Create Account'
+              )}
             </button>
           </form>
 
@@ -221,22 +263,29 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
             </p>
             {isLogin && (
               <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm text-blue-800">
-                  <strong>New to CaloFeed?</strong> Click "Sign up" above to create your account and start tracking your meals.
+                <div className="text-center">
+                  <p className="text-sm text-blue-800 font-medium mb-2">New to CaloFeed?</p>
+                  <button
+                    onClick={() => setIsLogin(false)}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm"
+                  >
+                    Create Free Account
+                  </button>
                 </p>
               </div>
             )}
             {!isLogin && (
               <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-                <p className="text-sm text-green-800">
-                  <strong>Creating your account:</strong> After signing up, check your email for a verification link before signing in.
-                </p>
+                <div className="text-center">
+                  <p className="text-sm text-green-800 font-medium mb-2">Account Creation Process:</p>
+                  <ol className="text-xs text-green-700 text-left space-y-1">
+                    <li>1. Fill out the form and click "Create Account"</li>
+                    <li>2. Check your email for a verification link</li>
+                    <li>3. Click the link to verify your account</li>
+                    <li>4. Return here and sign in with your credentials</li>
+                  </ol>
+                </div>
               </div>
-            )}
-            {isLogin && (
-              <p className="text-sm text-gray-500 mt-2">
-                New to CaloFeed? Click "Sign up" above to create your account and start tracking your meals.
-              </p>
             )}
           </div>
         </div>

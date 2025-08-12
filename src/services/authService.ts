@@ -7,71 +7,81 @@ export class AuthService {
     displayName: string;
     bio?: string;
   }) {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          username: userData.username,
-          display_name: userData.displayName,
-          bio: userData.bio || ''
-        }
-      }
-    });
-
-    if (error) throw error;
-
-    // Create profile after successful signup
-    if (data.user) {
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          id: data.user.id,
-          username: userData.username,
-          display_name: userData.displayName,
-          bio: userData.bio || '',
-          privacy_settings: {
-            profileVisibility: 'public',
-            mealVisibility: 'public',
-            showWeight: true,
-            showGoals: true,
-            allowMessages: true,
-            showOnLeaderboard: true,
-            allowTagging: true,
-            allowSharing: true,
-            showActivity: true,
-            allowStoryViews: true
-          },
-          notification_settings: {
-            likes: true,
-            comments: true,
-            follows: true,
-            challenges: true,
-            achievements: true,
-            reminders: true,
-            groups: true,
-            mentions: true,
-            shares: true,
-            stories: true,
-            email: true,
-            push: true
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            username: userData.username,
+            display_name: userData.displayName,
+            bio: userData.bio || ''
           }
-        });
+        }
+      });
 
-      if (profileError) throw profileError;
+      if (error) throw error;
+
+      // Create profile after successful signup
+      if (data.user) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: data.user.id,
+            username: userData.username,
+            display_name: userData.displayName,
+            bio: userData.bio || '',
+            privacy_settings: {
+              profileVisibility: 'public',
+              mealVisibility: 'public',
+              showWeight: true,
+              showGoals: true,
+              allowMessages: true,
+              showOnLeaderboard: true,
+              allowTagging: true,
+              allowSharing: true,
+              showActivity: true,
+              allowStoryViews: true
+            },
+            notification_settings: {
+              likes: true,
+              comments: true,
+              follows: true,
+              challenges: true,
+              achievements: true,
+              reminders: true,
+              groups: true,
+              mentions: true,
+              shares: true,
+              stories: true,
+              email: true,
+              push: true
+            }
+          });
+
+        if (profileError) throw profileError;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Sign up error:', error);
+      throw error;
     }
-
-    return data;
   }
 
   static async signIn(email: string, password: string) {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
 
-    if (error) throw error;
-    return data;
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Sign in error:', error);
+      throw error;
+    }
   }
 
   static async signOut() {
