@@ -12,6 +12,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -23,6 +24,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
     e.preventDefault();
     setLoading(true);
     setError('');
+    setSuccess('');
 
     try {
       if (isLogin) {
@@ -32,37 +34,46 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
           setError('Sign up not available');
           return;
         }
-        await onSignUp(formData.email, formData.password, {
+        const result = await onSignUp(formData.email, formData.password, {
           username: formData.username,
           displayName: formData.displayName
         });
+        if (result?.success) {
+          setSuccess(result.message);
+          // Clear form after successful signup
+          setFormData({
+            email: '',
+            password: '',
+            displayName: '',
+            username: ''
+          });
+        }
       }
     } catch (err: any) {
-      // Provide more helpful error messages
-      if (err.message?.includes('Invalid login credentials')) {
-        setError(isLogin 
-          ? 'Invalid email or password. Please check your credentials or sign up for a new account.'
-          : 'Unable to create account. Please try again.'
-        );
-      } else if (err.message?.includes('Email not confirmed')) {
-        setError('Please check your email and click the confirmation link before signing in.');
-      } else if (err.message?.includes('User already registered')) {
-        setError('An account with this email already exists. Please sign in instead.');
-      } else {
-        setError(err.message || 'Authentication failed. Please try again.');
-      }
+      setError(err.message || 'Authentication failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setError(''); // Clear errors when user starts typing
+    setSuccess('');
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
   };
 
+  const validateForm = () => {
+    if (!formData.email || !formData.password) {
+      return false;
+    }
+    if (!isLogin && (!formData.displayName || !formData.username)) {
+      return false;
+    }
+    return true;
+  };
   return (
     <div className={`${isModal ? '' : 'min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 flex items-center justify-center p-4'}`}>
       <div className="max-w-md w-full">
@@ -86,6 +97,11 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
             </div>
           )}
 
+          {success && (
+            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+              <p className="text-green-700 text-sm">{success}</p>
+            </div>
+          )}
           <form onSubmit={handleSubmit} className="space-y-6">
             {!isLogin && (
               <>
@@ -103,6 +119,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
                       onChange={handleInputChange}
                       className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
                       placeholder="Your full name"
+                      required
                     />
                   </div>
                 </div>
@@ -121,6 +138,9 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
                       onChange={handleInputChange}
                       className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
                       placeholder="username"
+                      required
+                      pattern="[a-zA-Z0-9_]+"
+                      title="Username can only contain letters, numbers, and underscores"
                     />
                   </div>
                 </div>
@@ -141,6 +161,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
                   onChange={handleInputChange}
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
                   placeholder="your@email.com"
+                  required
                 />
               </div>
             </div>
@@ -159,6 +180,8 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
                   onChange={handleInputChange}
                   className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
                   placeholder="••••••••"
+                  required
+                  minLength={6}
                 />
                 <button
                   type="button"
@@ -168,11 +191,16 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
+              {!isLogin && (
+                <p className="text-xs text-gray-500 mt-1">
+                  Password must be at least 6 characters long
+                </p>
+              )}
             </div>
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !validateForm()}
               className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02]"
             >
               {loading ? 'Please wait...' : isLogin ? 'Sign In' : 'Create Account'}
@@ -187,9 +215,24 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
                 onClick={() => setIsLogin(!isLogin)}
                 className="text-green-600 hover:text-green-700 font-medium"
               >
+                  setSuccess('');
                 {isLogin ? 'Sign up' : 'Sign in'}
               </button>
             </p>
+            {isLogin && (
+              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  <strong>New to CaloFeed?</strong> Click "Sign up" above to create your account and start tracking your meals.
+                </p>
+              </div>
+            )}
+            {!isLogin && (
+              <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-sm text-green-800">
+                  <strong>Creating your account:</strong> After signing up, check your email for a verification link before signing in.
+                </p>
+              </div>
+            )}
             {isLogin && (
               <p className="text-sm text-gray-500 mt-2">
                 New to CaloFeed? Click "Sign up" above to create your account and start tracking your meals.
