@@ -342,11 +342,10 @@ function App() {
 
       <div className="flex">
         {/* Desktop Sidebar */}
-        {!isGuest && (
+        {isAuthenticated && currentUser && (
           <aside className="hidden lg:block w-56 xl:w-64 2xl:w-72 bg-white border-r border-gray-200 min-h-screen">
             <div className="p-6">
-              {currentUser && (
-                <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 mb-6">
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 mb-6">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="font-semibold text-gray-900">Today's Goals</h3>
                   <Target className="w-5 h-5 text-green-600" />
@@ -384,10 +383,8 @@ function App() {
                   </div>
                 </div>
               </div>
-              )}
 
-              {currentUser && (
-                <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-4 mb-6">
+              <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-4 mb-6">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-semibold text-gray-900">Streak</h3>
                   <Flame className="w-5 h-5 text-orange-600" />
@@ -398,7 +395,6 @@ function App() {
                   Keep it up! You're on fire! 🔥
                 </div>
               </div>
-              )}
 
               <div className="space-y-2">
                 <h3 className="font-medium text-gray-900 mb-3">Quick Actions</h3>
@@ -433,7 +429,7 @@ function App() {
         )}
 
         {/* Main Content */}
-        <main className={`flex-1 ${isGuest ? 'lg:ml-0' : ''}`}>
+        <main className="flex-1">
           {currentView === 'feed' && (
             <Feed 
               onViewProfile={handleViewProfile} 
