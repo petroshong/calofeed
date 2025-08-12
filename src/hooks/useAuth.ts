@@ -8,6 +8,7 @@ export const useAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isGuest, setIsGuest] = useState(true);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     checkAuthStatus();
@@ -127,6 +128,7 @@ export const useAuth = () => {
     isAuthenticated,
     isGuest,
     loading,
+    error,
     login,
     signUp,
     logout,
