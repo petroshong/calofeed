@@ -179,6 +179,35 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
             </button>
           </form>
 
+          {isLogin && (
+            <div className="mt-4">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">or</span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setFormData({
+                    ...formData,
+                    email: 'demo@calofeed.com',
+                    password: 'demo123456'
+                  });
+                }}
+                className="mt-4 w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-4 rounded-lg transition-colors"
+              >
+                Try Demo Account
+              </button>
+              <p className="text-xs text-gray-500 mt-2 text-center">
+                Use demo credentials to explore the app
+              </p>
+            </div>
+          )}
+
           <div className="mt-6 text-center">
             <p className="text-gray-600">
               {isLogin ? "Don't have an account? " : "Already have an account? "}
