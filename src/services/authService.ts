@@ -98,9 +98,9 @@ export class AuthService {
   }
 
   static async getCurrentUser(): Promise<User | null> {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
     
-    if (!user) return null;
+    if (userError || !user) return null;
 
     const { data: profile, error } = await supabase
       .from('profiles')
@@ -108,7 +108,10 @@ export class AuthService {
       .eq('id', user.id)
       .single();
 
-    if (error) throw handleError(error);
+    if (error) {
+      console.error('Profile fetch error:', error);
+      return null;
+    }
 
     return this.transformProfileToUser(profile, user.email || '');
   }

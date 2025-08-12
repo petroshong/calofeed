@@ -11,11 +11,7 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const initAuth = async () => {
-      await checkAuthStatus();
-    };
-    
-    initAuth();
+    checkAuthStatus();
     
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -40,7 +36,6 @@ export const useAuth = () => {
 
   const checkAuthStatus = async () => {
     try {
-      setLoading(true);
       const { data: { session } } = await supabase.auth.getSession();
       
       if (session?.user) {
@@ -57,6 +52,7 @@ export const useAuth = () => {
       } else {
         setIsGuest(true);
         setIsAuthenticated(false);
+        setCurrentUser(null);
       }
     } catch (error) {
       console.error('Auth check failed:', error);
