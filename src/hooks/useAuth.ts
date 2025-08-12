@@ -175,3 +175,5 @@ export function useAuth() {
     ...state,
     signOut,
     signUp
+  }
+}
