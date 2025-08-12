@@ -132,8 +132,48 @@ export function useAuth() {
     }
   };
 
+  const signUp = async (email: string, password: string, userData: { username: string; displayName: string; bio?: string }) => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            username: userData.username,
+            display_name: userData.displayName,
+            bio: userData.bio || ''
+          }
+        }
+      });
+
+      if (error) throw error;
+
+      // Create profile after successful signup
+      if (data.user) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: data.user.id,
+            username: userData.username,
+            display_name: userData.displayName,
+            bio: userData.bio || '',
+            avatar_url: `https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2`
+          });
+
+        if (profileError) {
+          console.error('Profile creation error:', profileError);
+        }
+      }
+
+      return { success: true, message: 'Account created successfully! Please check your email to verify your account.' };
+    } catch (error) {
+      console.error('Sign up error:', error);
+      throw error;
+    }
+  };
   return {
     ...state,
     signOut
   };
 }
+    signUp,
