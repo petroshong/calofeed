@@ -82,6 +82,8 @@ interface FeedProps {
   onViewProfile?: (user: User) => void;
   currentUser: User;
   onUpdateCurrentUser: (updates: Partial<User>) => void;
+  isGuest?: boolean;
+  onAuthRequired?: () => void;
 }
 
 export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdateCurrentUser }) => {
