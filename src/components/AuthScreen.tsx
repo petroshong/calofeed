@@ -38,7 +38,19 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
         });
       }
     } catch (err: any) {
-      setError(err.message || 'Authentication failed');
+      // Provide more helpful error messages
+      if (err.message?.includes('Invalid login credentials')) {
+        setError(isLogin 
+          ? 'Invalid email or password. Please check your credentials or sign up for a new account.'
+          : 'Unable to create account. Please try again.'
+        );
+      } else if (err.message?.includes('Email not confirmed')) {
+        setError('Please check your email and click the confirmation link before signing in.');
+      } else if (err.message?.includes('User already registered')) {
+        setError('An account with this email already exists. Please sign in instead.');
+      } else {
+        setError(err.message || 'Authentication failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -177,6 +189,11 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
                 {isLogin ? 'Sign up' : 'Sign in'}
               </button>
             </p>
+            {isLogin && (
+              <p className="text-sm text-gray-500 mt-2">
+                New to CaloFeed? Create an account to start tracking your meals and connecting with others.
+              </p>
+            )}
           </div>
         </div>
 
