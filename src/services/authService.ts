@@ -67,7 +67,10 @@ export class AuthService {
             }
           });
 
-        if (profileError) throw profileError;
+        if (profileError) {
+          console.error('Profile creation error:', profileError);
+          // Don't throw here, as the user account was created successfully
+        }
       }
 
       return data;
@@ -98,52 +101,47 @@ export class AuthService {
   }
 
   static async getCurrentUser(): Promise<User | null> {
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    
-    if (userError || !user) return null;
+    try {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError || !user) return null;
 
-    const { data: profile, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single();
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
 
-    if (error) {
-      console.error('Profile fetch error:', error);
+      if (error) {
+        console.error('Profile fetch error:', error);
+        return null;
+      }
+
+      return this.transformProfileToUser(profile, user.email || '');
+    } catch (error) {
+      console.error('Get current user error:', error);
       return null;
     }
-
-    return this.transformProfileToUser(profile, user.email || '');
   }
 
   static async checkUsernameAvailability(username: string): Promise<boolean> {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('username')
-      .eq('username', username)
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('username', username)
+        .single();
 
-    if (error && error.code === 'PGRST116') {
-      // No rows returned, username is available
-      return true;
+      if (error && error.code === 'PGRST116') {
+        // No rows returned, username is available
+        return true;
+      }
+      
+      return false; // Username exists or other error
+    } catch (error) {
+      console.error('Username check error:', error);
+      return false;
     }
-    
-    return false; // Username exists or other error
-  }
-
-  static async checkUsernameAvailability(username: string): Promise<boolean> {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('username')
-      .eq('username', username)
-      .single();
-
-    if (error && error.code === 'PGRST116') {
-      // No rows returned, username is available
-      return true;
-    }
-    
-    return false; // Username exists or other error
   }
 
   static transformProfileToUser(profile: any, email: string): User {
@@ -153,25 +151,25 @@ export class AuthService {
       displayName: profile.display_name,
       email,
       avatar: profile.avatar_url || `https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2`,
-      bio: profile.bio,
+      bio: profile.bio || '',
       coverImage: profile.cover_image_url,
       isFollowing: false,
-      isPrivate: profile.is_private,
+      isPrivate: profile.is_private || false,
       followers: 0, // Will be calculated from follows table
       following: 0, // Will be calculated from follows table
       mealsLogged: 0, // Will be calculated from meals table
-      streak: profile.streak,
+      streak: profile.streak || 0,
       badges: [], // Will be fetched from user_badges
       totalLikes: 0, // Will be calculated
       totalComments: 0, // Will be calculated
       rank: 0, // Will be calculated
-      level: profile.level,
-      xp: profile.xp,
+      level: profile.level || 1,
+      xp: profile.xp || 0,
       socialScore: 0, // Will be calculated
-      dailyCalorieGoal: profile.daily_calorie_goal,
-      dailyProteinGoal: profile.daily_protein_goal,
-      dailyCarbGoal: profile.daily_carb_goal,
-      dailyFatGoal: profile.daily_fat_goal,
+      dailyCalorieGoal: profile.daily_calorie_goal || 2000,
+      dailyProteinGoal: profile.daily_protein_goal || 150,
+      dailyCarbGoal: profile.daily_carb_goal || 250,
+      dailyFatGoal: profile.daily_fat_goal || 67,
       caloriesConsumed: 0, // Will be calculated from today's entries
       proteinConsumed: 0,
       carbsConsumed: 0,
@@ -180,18 +178,42 @@ export class AuthService {
       goalWeight: profile.goal_weight,
       height: profile.height,
       age: profile.age,
-      activityLevel: profile.activity_level as any,
-      dietaryPreferences: profile.dietary_preferences,
-      allergies: profile.allergies,
+      activityLevel: profile.activity_level || 'moderate',
+      dietaryPreferences: profile.dietary_preferences || [],
+      allergies: profile.allergies || [],
       joinedDate: profile.created_at,
       location: profile.location,
       website: profile.website,
-      socialLinks: profile.social_links,
-      isVerified: profile.is_verified,
-      isPremium: profile.is_premium,
-      isInfluencer: profile.is_influencer,
-      privacySettings: profile.privacy_settings,
-      notificationSettings: profile.notification_settings
+      socialLinks: profile.social_links || {},
+      isVerified: profile.is_verified || false,
+      isPremium: profile.is_premium || false,
+      isInfluencer: profile.is_influencer || false,
+      privacySettings: profile.privacy_settings || {
+        profileVisibility: 'public',
+        mealVisibility: 'public',
+        showWeight: true,
+        showGoals: true,
+        allowMessages: true,
+        showOnLeaderboard: true,
+        allowTagging: true,
+        allowSharing: true,
+        showActivity: true,
+        allowStoryViews: true
+      },
+      notificationSettings: profile.notification_settings || {
+        likes: true,
+        comments: true,
+        follows: true,
+        challenges: true,
+        achievements: true,
+        reminders: true,
+        groups: true,
+        mentions: true,
+        shares: true,
+        stories: true,
+        email: true,
+        push: true
+      }
     };
   }
 

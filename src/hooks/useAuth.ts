@@ -9,60 +9,78 @@ export const useAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isGuest, setIsGuest] = useState(true);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    checkAuthStatus();
-    
+    let mounted = true;
+
+    const initAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (mounted) {
+          if (session?.user) {
+            setIsAuthenticated(true);
+            setIsGuest(false);
+            // Try to get user profile, but don't block on it
+            try {
+              const user = await AuthService.getCurrentUser();
+              if (mounted && user) {
+                setCurrentUser(user);
+              }
+            } catch (profileError) {
+              console.log('Profile not found, user needs to complete setup');
+            }
+          } else {
+            setIsAuthenticated(false);
+            setIsGuest(true);
+            setCurrentUser(null);
+          }
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+        if (mounted) {
+          setIsAuthenticated(false);
+          setIsGuest(true);
+          setCurrentUser(null);
+          setLoading(false);
+        }
+      }
+    };
+
+    initAuth();
+
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        if (!mounted) return;
+
         if (event === 'SIGNED_IN' && session?.user) {
-          const user = await AuthService.getCurrentUser();
-          setCurrentUser(user);
           setIsAuthenticated(true);
           setIsGuest(false);
+          try {
+            const user = await AuthService.getCurrentUser();
+            if (mounted && user) {
+              setCurrentUser(user);
+            }
+          } catch (error) {
+            console.log('Profile setup needed');
+          }
         } else if (event === 'SIGNED_OUT') {
           setCurrentUser(null);
           setIsAuthenticated(false);
           setIsGuest(true);
-          setLoading(false);
         }
         setLoading(false);
       }
     );
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
-
-  const checkAuthStatus = async () => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session?.user) {
-        try {
-          const user = await AuthService.getCurrentUser();
-          setCurrentUser(user);
-        } catch (profileError) {
-          console.error('Failed to load user profile:', profileError);
-          // If profile doesn't exist, user is still authenticated but needs profile setup
-          setCurrentUser(null);
-        }
-        setIsAuthenticated(true);
-        setIsGuest(false);
-      } else {
-        setIsGuest(true);
-        setIsAuthenticated(false);
-        setCurrentUser(null);
-      }
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      setIsGuest(true);
-      setIsAuthenticated(false);
-      setCurrentUser(null);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const login = async (email: string, password: string) => {
     try {
@@ -70,14 +88,11 @@ export const useAuth = () => {
       const result = await AuthService.signIn(email, password);
       
       if (result.user) {
-        const userData = await AuthService.getCurrentUser();
-        setCurrentUser(userData);
-        setIsAuthenticated(true);
-        setIsGuest(false);
         showSuccessToast('Welcome back!');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login failed:', error);
+      showErrorToast(error);
       throw error;
     } finally {
       setLoading(false);
@@ -97,8 +112,9 @@ export const useAuth = () => {
         showSuccessToast('Account created! Please check your email to verify.');
         return { success: true, message: 'Account created successfully! Please check your email to verify your account.' };
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Signup failed:', error);
+      showErrorToast(error);
       throw error;
     } finally {
       setLoading(false);
@@ -112,23 +128,26 @@ export const useAuth = () => {
       setIsAuthenticated(false);
       setIsGuest(true);
       showSuccessToast('Signed out successfully');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Logout failed:', error);
+      showErrorToast(error);
     }
   };
 
-  const updateUser = (updates: Partial<User>) => {
+  const updateUser = async (updates: Partial<User>) => {
     if (currentUser) {
       const updatedUser = { ...currentUser, ...updates };
       setCurrentUser(updatedUser);
       
-      // Update in database
-      AuthService.updateProfile(currentUser.id, updates)
-        .then(() => showSuccessToast('Profile updated successfully'))
-        .catch((error) => {
-          console.error('Profile update failed:', error);
-          showErrorToast(error);
-        });
+      try {
+        await AuthService.updateProfile(currentUser.id, updates);
+        showSuccessToast('Profile updated successfully');
+      } catch (error: any) {
+        console.error('Profile update failed:', error);
+        showErrorToast(error);
+        // Revert the optimistic update
+        setCurrentUser(currentUser);
+      }
     }
   };
 
@@ -137,11 +156,13 @@ export const useAuth = () => {
       throw new Error('Authentication required');
     }
   };
+
   return {
     currentUser,
     isAuthenticated,
     isGuest,
     loading,
+    error,
     login,
     signUp,
     logout,
