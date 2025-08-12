@@ -173,7 +173,5 @@ export function useAuth() {
   };
   return {
     ...state,
-    signOut
-  };
-}
-    signUp,
+    signOut,
+    signUp
