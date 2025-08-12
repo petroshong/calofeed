@@ -204,7 +204,6 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, currentUser, isG
                   {isFollowing ? <UserCheck className="w-5 h-5" /> : <UserPlus className="w-5 h-5" />}
                   <span>{isGuest ? 'Sign up to Follow' : isFollowing ? 'Following' : 'Follow'}</span>
                 </button>
-                <button className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center space-x-2">
                 <button 
                   onClick={() => {
                     if (isGuest) {
@@ -214,11 +213,12 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, currentUser, isG
                     }
                   }}
                   disabled={isGuest}
-                  className={`px-6 py-2 border border-gray-300 rounded-lg font-medium transition-colors ${
+                  className={`px-6 py-2 border border-gray-300 rounded-lg font-medium transition-colors flex items-center space-x-2 ${
                     isGuest ? 'text-gray-500 cursor-not-allowed' : 'text-gray-700 hover:bg-gray-50'
                   }`}
                   title={isGuest ? 'Sign up to message users' : ''}
                 >
+                  <MessageCircle className="w-4 h-4" />
                   <span>Message</span>
                 </button>
               </div>
