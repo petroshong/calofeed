@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TrendingUp, Hash, MapPin, Clock, Heart, MessageCircle, Bookmark, Star, Filter, Users, Flame } from 'lucide-react';
+import { TrendingUp, Hash, MapPin, Clock, Heart, MessageCircle, Bookmark, Star, Filter, Users, Flame, Eye } from 'lucide-react';
 import type { Meal, User } from '../types';
 
 interface DiscoverProps {
