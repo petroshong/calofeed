@@ -561,8 +561,8 @@ function App() {
 
       {/* Auth Prompt Modal */}
       {showAuthPrompt && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center">
-          <div className="bg-white rounded-t-3xl lg:rounded-2xl max-w-md w-full p-6">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center p-4 lg:p-0">
+          <div className="bg-white rounded-t-3xl lg:rounded-2xl max-w-md w-full p-6 modal-mobile">
             <div className="text-center">
               <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <Flame className="w-8 h-8 text-white" />
@@ -576,7 +576,7 @@ function App() {
               </div>
               <button
                 onClick={() => setShowAuthPrompt(false)}
-                className="mt-4 text-gray-500 hover:text-gray-700 text-sm"
+                className="mt-4 text-gray-500 hover:text-gray-700 text-sm touch-target"
               >
                 Continue browsing as guest
               </button>

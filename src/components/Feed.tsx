@@ -271,7 +271,7 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
         </div>
 
         {/* Feed Posts */}
-        <div className={viewMode === 'grid' ? 'p-3 lg:p-4' : 'space-y-4 lg:space-y-6 p-3 lg:p-4'}>
+        <div className={viewMode === 'grid' ? 'p-2 sm:p-3 lg:p-4' : 'space-y-3 sm:space-y-4 lg:space-y-6 p-2 sm:p-3 lg:p-4'}>
           {filteredMeals.length === 0 ? (
             <div className="text-center py-12">
               <Filter className="w-16 h-16 text-gray-400 mx-auto mb-4" />
@@ -293,19 +293,19 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
             </div>
           ) : (
             viewMode === 'grid' ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-2 lg:gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-1 sm:gap-2 lg:gap-4">
                 {filteredMeals.map((meal) => (
                   <div key={meal.id} className="aspect-square relative group cursor-pointer">
                     <img 
                       src={meal.image} 
                       alt="Meal"
-                      className="w-full h-full object-cover rounded-xl"
+                      className="w-full h-full object-cover rounded-lg sm:rounded-xl"
                       onClick={() => setSelectedMeal(meal)}
                     />
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 rounded-xl flex items-center justify-center">
                       <div className="text-white opacity-0 group-hover:opacity-100 text-center">
-                        <div className="font-bold text-sm lg:text-lg mb-1">{meal.calories} cal</div>
-                        <div className="text-xs lg:text-sm flex items-center justify-center space-x-2 lg:space-x-3">
+                        <div className="font-bold text-xs sm:text-sm lg:text-lg mb-1">{meal.calories} cal</div>
+                        <div className="text-xs flex items-center justify-center space-x-2">
                           <span className="flex items-center space-x-1">
                             <Heart className="w-3 h-3" />
                             <span>{meal.likes}</span>
@@ -323,11 +323,11 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                     </div>
                     
                     {/* User Avatar Overlay */}
-                    <div className="absolute top-2 lg:top-3 left-2 lg:left-3">
+                    <div className="absolute top-1 sm:top-2 lg:top-3 left-1 sm:left-2 lg:left-3">
                       <img 
                         src={meal.user.avatar} 
                         alt={meal.user.displayName}
-                        className="w-6 h-6 lg:w-8 lg:h-8 rounded-full object-cover border-2 border-white shadow-lg"
+                        className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 rounded-full object-cover border-2 border-white shadow-lg"
                       />
                       {meal.user.isPrivate && (
                         <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center">
@@ -337,7 +337,7 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                     </div>
                     
                     {/* Calorie Badge */}
-                    <div className="absolute top-2 lg:top-3 right-2 lg:right-3 bg-black bg-opacity-70 text-white px-2 py-1 rounded-full text-xs font-medium">
+                    <div className="absolute top-1 sm:top-2 lg:top-3 right-1 sm:right-2 lg:right-3 bg-black bg-opacity-70 text-white px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-xs font-medium">
                       {meal.calories} cal
                     </div>
                   </div>

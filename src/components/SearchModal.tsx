@@ -226,15 +226,15 @@ export const SearchModal: React.FC<SearchModalProps> = ({ onClose, onViewProfile
 
   return (
     <div 
-      className="fixed inset-0 bg-white z-50 flex flex-col"
+      className="fixed inset-0 bg-white z-50 flex flex-col mobile-text-size-adjust"
       onClick={onClose}
     >
       <div onClick={(e) => e.stopPropagation()}>
       {/* Header */}
-      <div className="flex items-center space-x-4 p-4 border-b border-gray-200">
+      <div className="flex items-center space-x-4 p-4 border-b border-gray-200 safe-area-pt">
         <button
           onClick={onClose}
-          className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+          className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors touch-target"
         >
           <X className="w-6 h-6" />
         </button>
@@ -245,7 +245,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ onClose, onViewProfile
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
             placeholder="Search users, foods, or places..."
-            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-base"
             autoFocus
           />
         </div>

@@ -16,11 +16,11 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChang
   const incomingRequests = !isGuest ? getIncomingRequests() : [];
 
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-pb z-50 px-2">
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 px-2 mobile-nav mobile-tap-highlight">
       <div className="flex items-center justify-around py-2">
         <button
           onClick={() => onViewChange('feed')}
-          className={`flex flex-col items-center space-y-1 py-1 px-2 rounded-lg transition-colors min-w-0 ${
+          className={`flex flex-col items-center space-y-1 py-2 px-3 rounded-lg transition-colors min-w-0 touch-target ${
             currentView === 'feed' 
               ? 'text-green-600 bg-green-50' 
               : 'text-gray-600 hover:text-gray-900'
@@ -32,7 +32,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChang
 
         <button
           onClick={() => onViewChange('discover')}
-          className={`flex flex-col items-center space-y-1 py-1 px-2 rounded-lg transition-colors min-w-0 ${
+          className={`flex flex-col items-center space-y-1 py-2 px-3 rounded-lg transition-colors min-w-0 touch-target ${
             currentView === 'discover' 
               ? 'text-pink-600 bg-pink-50' 
               : 'text-gray-600 hover:text-gray-900'
@@ -50,7 +50,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChang
               onViewChange('log');
             }
           }}
-          className="flex flex-col items-center space-y-1 py-1 px-1 rounded-lg bg-green-600 text-white min-w-0"
+          className="flex flex-col items-center space-y-1 py-2 px-2 rounded-lg bg-green-600 text-white min-w-0 touch-target"
         >
           <div className="w-6 h-6 bg-green-700 rounded-lg flex items-center justify-center">
             <Plus className="w-4 h-4" />
@@ -66,7 +66,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChang
               onViewChange('friend-requests');
             }
           }}
-          className={`flex flex-col items-center space-y-1 py-1 px-2 rounded-lg transition-colors min-w-0 ${
+          className={`flex flex-col items-center space-y-1 py-2 px-3 rounded-lg transition-colors min-w-0 touch-target ${
             currentView === 'friend-requests' 
               ? 'text-blue-600 bg-blue-50' 
               : 'text-gray-600 hover:text-gray-900'
@@ -86,7 +86,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChang
         {!isGuest ? (
           <button
             onClick={() => onViewChange('profile')}
-            className={`flex flex-col items-center space-y-1 py-1 px-2 rounded-lg transition-colors min-w-0 ${
+            className={`flex flex-col items-center space-y-1 py-2 px-3 rounded-lg transition-colors min-w-0 touch-target ${
               currentView === 'profile' 
                 ? 'text-blue-600 bg-blue-50' 
                 : 'text-gray-600 hover:text-gray-900'
@@ -102,7 +102,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChang
         ) : (
           <button
             onClick={() => onAuthRequired?.()}
-            className="flex flex-col items-center space-y-1 py-1 px-2 rounded-lg transition-colors min-w-0 text-blue-600"
+            className="flex flex-col items-center space-y-1 py-2 px-3 rounded-lg transition-colors min-w-0 text-blue-600 touch-target"
           >
             <User className="w-4 h-4" />
             <span className="text-xs font-medium truncate">Sign Up</span>

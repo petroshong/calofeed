@@ -122,15 +122,15 @@ export const MealDetail: React.FC<MealDetailProps> = ({ meal, isGuest = false, o
   return (
     <>
       <div 
-        className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center"
+        className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center p-0 lg:p-4"
         onClick={onClose}
       >
         <div 
           onClick={(e) => e.stopPropagation()}
-          className="bg-white rounded-t-3xl lg:rounded-2xl max-w-4xl w-full max-h-[95vh] lg:max-h-[90vh] overflow-y-auto"
+          className="bg-white rounded-t-3xl lg:rounded-2xl max-w-4xl w-full max-h-[100vh] lg:max-h-[90vh] overflow-y-auto modal-mobile mobile-scroll-smooth"
         >
           {/* Header */}
-          <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex items-center justify-between">
+          <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex items-center justify-between safe-area-pt">
             <div className="flex items-center space-x-3">
               <img 
                 src={meal.user.avatar} 
@@ -160,83 +160,83 @@ export const MealDetail: React.FC<MealDetailProps> = ({ meal, isGuest = false, o
                 <Eye className="w-4 h-4" />
                 <span>{viewsCount}</span>
               </div>
-              <button className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors">
+              <button className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors touch-target">
                 <MoreHorizontal className="w-5 h-5" />
               </button>
               <button
                 onClick={onClose}
-                className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+                className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors touch-target"
               >
                 <X className="w-6 h-6" />
               </button>
             </div>
           </div>
 
-          <div className="lg:flex">
+          <div className="flex flex-col lg:flex-row">
             {/* Image Section */}
-            <div className="lg:w-1/2">
+            <div className="w-full lg:w-1/2">
               <img 
                 src={meal.image} 
                 alt="Food"
-                className="w-full h-80 lg:h-full object-cover"
+                className="w-full h-64 sm:h-80 lg:h-full object-cover"
               />
             </div>
 
             {/* Content Section */}
-            <div className="lg:w-1/2 flex flex-col">
+            <div className="w-full lg:w-1/2 flex flex-col min-h-0">
               {/* Meal Info */}
               <div className="p-6 border-b border-gray-200">
                 {/* Nutrition Info */}
-                <div className="grid grid-cols-4 gap-4 mb-4 p-4 bg-gray-50 rounded-xl">
+                <div className="grid grid-cols-4 gap-2 sm:gap-4 mb-4 p-3 sm:p-4 bg-gray-50 rounded-xl">
                   <div className="text-center">
-                    <div className="text-xl font-bold text-green-600">{meal.protein}g</div>
+                    <div className="text-lg sm:text-xl font-bold text-green-600">{meal.protein}g</div>
                     <div className="text-xs text-gray-600">Protein</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-xl font-bold text-blue-600">{meal.carbs}g</div>
+                    <div className="text-lg sm:text-xl font-bold text-blue-600">{meal.carbs}g</div>
                     <div className="text-xs text-gray-600">Carbs</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-xl font-bold text-orange-600">{meal.fat}g</div>
+                    <div className="text-lg sm:text-xl font-bold text-orange-600">{meal.fat}g</div>
                     <div className="text-xs text-gray-600">Fat</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-xl font-bold text-purple-600">{meal.calories}</div>
+                    <div className="text-lg sm:text-xl font-bold text-purple-600">{meal.calories}</div>
                     <div className="text-xs text-gray-600">Calories</div>
                   </div>
                 </div>
 
                 {/* Actions */}
                 <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-3 sm:space-x-4">
                     <button 
                       onClick={toggleLike}
                       disabled={isGuest}
-                      className={`flex items-center space-x-2 ${
+                      className={`flex items-center space-x-2 touch-target ${
                         isGuest ? 'text-gray-400 cursor-not-allowed' :
                         isLiked ? 'text-red-600' : 'text-gray-600 hover:text-red-600'
                       } transition-colors`}
                       title={isGuest ? 'Sign up to like posts' : ''}
                     >
                       <Heart className={`w-6 h-6 ${isLiked ? 'fill-current' : ''}`} />
-                      <span className="font-medium">{likesCount}</span>
+                      <span className="font-medium text-sm sm:text-base">{likesCount}</span>
                     </button>
-                    <button className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors">
+                    <button className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors touch-target">
                       <MessageCircle className="w-6 h-6" />
-                      <span className="font-medium">{comments.length}</span>
+                      <span className="font-medium text-sm sm:text-base">{comments.length}</span>
                     </button>
                     <button 
                       onClick={() => setShowShareModal(true)}
-                      className="flex items-center space-x-2 text-gray-600 hover:text-green-600 transition-colors"
+                      className="flex items-center space-x-2 text-gray-600 hover:text-green-600 transition-colors touch-target"
                     >
                       <Send className="w-6 h-6" />
-                      <span className="font-medium">{meal.shares}</span>
+                      <span className="font-medium text-sm sm:text-base">{meal.shares}</span>
                     </button>
                   </div>
                   <button 
                     onClick={() => setIsBookmarked(!isBookmarked)}
                     disabled={isGuest}
-                    className={`${
+                    className={`touch-target ${
                       isGuest ? 'text-gray-400 cursor-not-allowed' :
                       isBookmarked ? 'text-yellow-600' : 'text-gray-600 hover:text-yellow-600'
                     } transition-colors`}
