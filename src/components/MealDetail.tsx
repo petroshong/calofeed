@@ -174,12 +174,37 @@ export const MealDetail: React.FC<MealDetailProps> = ({ meal, isGuest = false, o
 
           <div className="flex flex-col lg:flex-row">
             {/* Image Section */}
-            <div className="w-full lg:w-1/2">
+            <div className="w-full lg:w-1/2 relative group">
               <img 
                 src={meal.image} 
                 alt="Food"
-                className="w-full h-64 sm:h-80 lg:h-full object-cover"
+                className="w-full h-64 sm:h-80 lg:h-full object-cover cursor-zoom-in"
+                onClick={() => {
+                  // Create full-screen image viewer
+                  const imageViewer = document.createElement('div');
+                  imageViewer.className = 'fixed inset-0 bg-black bg-opacity-90 z-[60] flex items-center justify-center p-4';
+                  imageViewer.onclick = () => document.body.removeChild(imageViewer);
+                  
+                  const img = document.createElement('img');
+                  img.src = meal.image;
+                  img.className = 'max-w-full max-h-full object-contain rounded-lg';
+                  img.alt = 'Full size meal image';
+                  
+                  const closeBtn = document.createElement('button');
+                  closeBtn.innerHTML = '×';
+                  closeBtn.className = 'absolute top-4 right-4 text-white text-3xl font-bold hover:bg-white hover:bg-opacity-20 rounded-full w-12 h-12 flex items-center justify-center transition-colors';
+                  closeBtn.onclick = () => document.body.removeChild(imageViewer);
+                  
+                  imageViewer.appendChild(img);
+                  imageViewer.appendChild(closeBtn);
+                  document.body.appendChild(imageViewer);
+                }}
               />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-200 flex items-center justify-center">
+                <div className="opacity-0 group-hover:opacity-100 bg-black bg-opacity-50 text-white px-3 py-2 rounded-lg text-sm font-medium transition-opacity">
+                  Click to view full size
+                </div>
+              </div>
             </div>
 
             {/* Content Section */}

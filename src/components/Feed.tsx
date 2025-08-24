@@ -294,7 +294,11 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
           ) : (
             viewMode === 'grid' ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-1 sm:gap-2 lg:gap-4">
-                {filteredMeals.map((meal) => (
+                <div 
+                  key={meal.id} 
+                  className="aspect-square relative group cursor-pointer"
+                  onClick={() => setSelectedMeal(meal)}
+                >
                   <div key={meal.id} className="aspect-square relative group cursor-pointer">
                     <img 
                       src={meal.image} 
@@ -442,7 +446,6 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                     </div>
 
                     {/* Description */}
-                    <div className="text-gray-900 mb-3">
                       <span className="font-semibold">{meal.user.displayName}</span>
                       <span className="ml-2">
                         {meal.description.split(/(\s|^)(#\w+)/g).map((part, index) => {
@@ -465,11 +468,17 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                     {/* Tags */}
                     {meal.tags && meal.tags.length > 0 && (
                       <div className="flex flex-wrap gap-2 mb-3">
-                        {meal.tags.map((tag) => (
+                  <button 
+                    className="absolute top-1 sm:top-2 lg:top-3 left-1 sm:left-2 lg:left-3"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onViewProfile && onViewProfile(meal.user);
+                    }}
+                  >
                           <button 
                             key={tag} 
                             onClick={() => setShowHashtagFeed(tag)}
-                            className="px-2 lg:px-3 py-1 bg-blue-50 text-blue-700 text-xs lg:text-sm rounded-full cursor-pointer hover:bg-blue-100 hover:scale-105 transition-all duration-200 font-medium"
+                      className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 rounded-full object-cover border-2 border-white shadow-lg hover:ring-2 hover:ring-blue-500 transition-all"
                           >
                             #{tag}
                           </button>
@@ -486,7 +495,7 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                         View all {meal.comments.length} comments
                       </button>
                     )}
-                  </div>
+                  </button>
                 </article>
               ))
             )
