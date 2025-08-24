@@ -294,17 +294,16 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
           ) : (
             viewMode === 'grid' ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-1 sm:gap-2 lg:gap-4">
-                <div 
-                  key={meal.id} 
-                  className="aspect-square relative group cursor-pointer"
-                  onClick={() => setSelectedMeal(meal)}
-                >
-                  <div key={meal.id} className="aspect-square relative group cursor-pointer">
+                {filteredMeals.map((meal) => (
+                  <div 
+                    key={meal.id} 
+                    className="aspect-square relative group cursor-pointer"
+                    onClick={() => setSelectedMeal(meal)}
+                  >
                     <img 
                       src={meal.image} 
                       alt="Meal"
                       className="w-full h-full object-cover rounded-lg sm:rounded-xl"
-                      onClick={() => setSelectedMeal(meal)}
                     />
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 rounded-xl flex items-center justify-center">
                       <div className="text-white opacity-0 group-hover:opacity-100 text-center">
@@ -446,6 +445,7 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                     </div>
 
                     {/* Description */}
+                    <div className="text-sm lg:text-base text-gray-900 mb-3">
                       <span className="font-semibold">{meal.user.displayName}</span>
                       <span className="ml-2">
                         {meal.description.split(/(\s|^)(#\w+)/g).map((part, index) => {
@@ -468,17 +468,11 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                     {/* Tags */}
                     {meal.tags && meal.tags.length > 0 && (
                       <div className="flex flex-wrap gap-2 mb-3">
-                  <button 
-                    className="absolute top-1 sm:top-2 lg:top-3 left-1 sm:left-2 lg:left-3"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onViewProfile && onViewProfile(meal.user);
-                    }}
-                  >
+                        {meal.tags.map((tag) => (
                           <button 
                             key={tag} 
                             onClick={() => setShowHashtagFeed(tag)}
-                      className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 rounded-full object-cover border-2 border-white shadow-lg hover:ring-2 hover:ring-blue-500 transition-all"
+                            className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded-full transition-colors"
                           >
                             #{tag}
                           </button>
@@ -495,7 +489,7 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                         View all {meal.comments.length} comments
                       </button>
                     )}
-                  </button>
+                  </div>
                 </article>
               ))
             )
