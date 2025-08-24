@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, Heart, MessageCircle, Share, Bookmark, MoreHorizontal, MapPin, Clock, User, Flag, Copy, Send, Eye, Star } from 'lucide-react';
 import { MentionInput } from './MentionInput';
 import { SocialShare } from './SocialShare';
+import { ImageViewer } from './ImageViewer';
 import type { Meal, Comment } from '../types';
 
 interface MealDetailProps {
@@ -55,6 +56,7 @@ export const MealDetail: React.FC<MealDetailProps> = ({ meal, isGuest = false, o
   const [likesCount, setLikesCount] = useState(meal.likes);
   const [showShareModal, setShowShareModal] = useState(false);
   const [viewsCount, setViewsCount] = useState(meal.views);
+  const [showImageViewer, setShowImageViewer] = useState(false);
 
   // Increment views when modal opens
   React.useEffect(() => {
@@ -179,26 +181,7 @@ export const MealDetail: React.FC<MealDetailProps> = ({ meal, isGuest = false, o
                 src={meal.image} 
                 alt="Food"
                 className="w-full h-64 sm:h-80 lg:h-full object-cover cursor-zoom-in"
-                onClick={() => {
-                  // Create full-screen image viewer
-                  const imageViewer = document.createElement('div');
-                  imageViewer.className = 'fixed inset-0 bg-black bg-opacity-90 z-[60] flex items-center justify-center p-4';
-                  imageViewer.onclick = () => document.body.removeChild(imageViewer);
-                  
-                  const img = document.createElement('img');
-                  img.src = meal.image;
-                  img.className = 'max-w-full max-h-full object-contain rounded-lg';
-                  img.alt = 'Full size meal image';
-                  
-                  const closeBtn = document.createElement('button');
-                  closeBtn.innerHTML = '×';
-                  closeBtn.className = 'absolute top-4 right-4 text-white text-3xl font-bold hover:bg-white hover:bg-opacity-20 rounded-full w-12 h-12 flex items-center justify-center transition-colors';
-                  closeBtn.onclick = () => document.body.removeChild(imageViewer);
-                  
-                  imageViewer.appendChild(img);
-                  imageViewer.appendChild(closeBtn);
-                  document.body.appendChild(imageViewer);
-                }}
+                onClick={() => setShowImageViewer(true)}
               />
               <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-200 flex items-center justify-center">
                 <div className="opacity-0 group-hover:opacity-100 bg-black bg-opacity-50 text-white px-3 py-2 rounded-lg text-sm font-medium transition-opacity">
@@ -420,6 +403,15 @@ export const MealDetail: React.FC<MealDetailProps> = ({ meal, isGuest = false, o
         <SocialShare 
           meal={meal} 
           onClose={() => setShowShareModal(false)} 
+        />
+      )}
+      
+      {/* Image Viewer */}
+      {showImageViewer && (
+        <ImageViewer
+          imageUrl={meal.image}
+          alt={`${meal.user.displayName}'s meal`}
+          onClose={() => setShowImageViewer(false)}
         />
       )}
     </>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Hash, TrendingUp, Clock, Heart, MessageCircle, Share2, Eye, Filter, X } from 'lucide-react';
 import type { Meal, User } from '../types';
+import { ImageViewer } from './ImageViewer';
 
 interface HashtagFeedProps {
   hashtag: string;
@@ -17,6 +18,7 @@ export const HashtagFeed: React.FC<HashtagFeedProps> = ({ hashtag, onClose, allM
   
   const [meals, setMeals] = useState<Meal[]>(hashtagMeals);
   const [sortBy, setSortBy] = useState<'recent' | 'popular' | 'trending'>('recent');
+  const [imageViewer, setImageViewer] = useState<{ url: string; alt: string } | null>(null);
 
   const hashtagStats = {
     totalPosts: hashtagMeals.length,
@@ -121,6 +123,7 @@ export const HashtagFeed: React.FC<HashtagFeedProps> = ({ hashtag, onClose, allM
                     src={meal.image} 
                     alt="Meal"
                     className="w-full h-full object-cover rounded-lg"
+                    onClick={() => setImageViewer({ url: meal.image, alt: `Meal tagged with #${hashtag}` })}
                   />
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 rounded-lg flex items-center justify-center">
                     <div className="text-white opacity-0 group-hover:opacity-100 text-center">
@@ -161,6 +164,15 @@ export const HashtagFeed: React.FC<HashtagFeedProps> = ({ hashtag, onClose, allM
           )}
         </div>
       </div>
+      
+      {/* Image Viewer */}
+      {imageViewer && (
+        <ImageViewer
+          imageUrl={imageViewer.url}
+          alt={imageViewer.alt}
+          onClose={() => setImageViewer(null)}
+        />
+      )}
       </div>
     </div>
   );

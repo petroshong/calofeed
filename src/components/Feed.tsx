@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, MessageCircle, Share, MoreHorizontal, MapPin, Clock, User as UserIcon, Flag, Copy, Send, Eye, Star, Grid, List, Lock, Filter, ChevronDown, Bookmark, Zap, TrendingUp, Calendar } from 'lucide-react';
+import { Heart, MessageCircle, Share, MoreHorizontal, MapPin, Clock, User as UserIcon, Flag, Copy, Send, Eye, Star, Grid, List, Lock, Filter, ChevronDown, Bookmark, Zap, TrendingUp, Calendar, ZoomIn } from 'lucide-react';
 import { Stories } from './Stories';
 import { SuggestedUsers } from './SuggestedUsers';
 import { ActivityFeed } from './ActivityFeed';
@@ -11,6 +11,7 @@ import { HashtagFeed } from './HashtagFeed';
 import { AllSuggestions } from './AllSuggestions';
 import { MealActions } from './MealActions';
 import { GuestBanner } from './GuestBanner';
+import { ImageViewer } from './ImageViewer';
 import { useMeals } from '../hooks/useMeals';
 import { useFriendRequests } from '../hooks/useFriendRequests';
 import { useFollowing } from '../hooks/useFollowing';
@@ -99,6 +100,7 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
   const [showHashtagFeed, setShowHashtagFeed] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const { isFollowing } = useFollowing(currentUser || {} as User);
+  const [imageViewer, setImageViewer] = useState<{ url: string; alt: string } | null>(null);
 
   // Combine user meals with mock feed meals
   const publicUserMeals = userMeals ? userMeals.filter(meal => meal.visibility === 'public') : [];
@@ -298,15 +300,24 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                   <div 
                     key={meal.id} 
                     className="aspect-square relative group cursor-pointer"
-                    onClick={() => setSelectedMeal(meal)}
                   >
                     <img 
                       src={meal.image} 
                       alt="Meal"
                       className="w-full h-full object-cover rounded-lg sm:rounded-xl"
+                      onClick={() => setSelectedMeal(meal)}
                     />
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 rounded-xl flex items-center justify-center">
                       <div className="text-white opacity-0 group-hover:opacity-100 text-center">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setImageViewer({ url: meal.image, alt: `${meal.user.displayName}'s meal` });
+                          }}
+                          className="mb-2 p-2 bg-black bg-opacity-50 rounded-full hover:bg-opacity-70 transition-colors"
+                        >
+                          <ZoomIn className="w-4 h-4" />
+                        </button>
                         <div className="font-bold text-xs sm:text-sm lg:text-lg mb-1">{meal.calories} cal</div>
                         <div className="text-xs flex items-center justify-center space-x-2">
                           <span className="flex items-center space-x-1">
@@ -395,7 +406,7 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                       src={meal.image} 
                       alt="Food"
                       className="w-full h-64 lg:h-80 object-cover cursor-pointer"
-                      onClick={() => setSelectedMeal(meal)}
+                      onClick={() => setImageViewer({ url: meal.image, alt: `${meal.user.displayName}'s meal` })}
                     />
                     <div className="absolute top-3 lg:top-4 right-3 lg:right-4 bg-black bg-opacity-50 text-white px-2 lg:px-3 py-1 rounded-full text-xs lg:text-sm font-medium">
                       {meal.calories} cal
@@ -404,6 +415,15 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
                       <Eye className="w-4 h-4" />
                       <span>{meal.views}</span>
                     </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedMeal(meal);
+                      }}
+                      className="absolute bottom-3 lg:bottom-4 right-3 lg:right-4 p-2 bg-black bg-opacity-50 text-white rounded-full hover:bg-opacity-70 transition-colors"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                    </button>
                   </div>
                   
                   <div className="p-3 lg:p-4">
@@ -604,6 +624,15 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
           hashtag={showHashtagFeed}
           onClose={() => setShowHashtagFeed(null)}
           allMeals={filteredMeals}
+        />
+      )}
+      
+      {/* Image Viewer */}
+      {imageViewer && (
+        <ImageViewer
+          imageUrl={imageViewer.url}
+          alt={imageViewer.alt}
+          onClose={() => setImageViewer(null)}
         />
       )}
     </div>

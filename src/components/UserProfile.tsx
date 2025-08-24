@@ -5,6 +5,7 @@ import { SocialShare } from './SocialShare';
 import { HashtagFeed } from './HashtagFeed';
 import { useMeals } from '../hooks/useMeals';
 import type { User, Meal } from '../types';
+import { ImageViewer } from './ImageViewer';
 
 interface UserProfileProps {
   user: User;
@@ -54,6 +55,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, currentUser, isG
   const [showShareProfile, setShowShareProfile] = useState(false);
   const [showHashtagFeed, setShowHashtagFeed] = useState<string | null>(null);
   const [followerCount, setFollowerCount] = useState(user.followers);
+  const [imageViewer, setImageViewer] = useState<{ url: string; alt: string } | null>(null);
 
   const userMeals = !isGuest ? getUserMeals(user.id) : [];
 
@@ -274,6 +276,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, currentUser, isG
                     src={meal.image} 
                     alt="Meal"
                     className="w-full h-full object-cover rounded-lg"
+                    onClick={() => setImageViewer({ url: meal.image, alt: `${meal.description}` })}
                   />
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 rounded-lg flex items-center justify-center">
                     <div className="text-white opacity-0 group-hover:opacity-100 text-center">
@@ -399,6 +402,15 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, currentUser, isG
           hashtag={showHashtagFeed}
           onClose={() => setShowHashtagFeed(null)}
           allMeals={userMeals}
+        />
+      )}
+      
+      {/* Image Viewer */}
+      {imageViewer && (
+        <ImageViewer
+          imageUrl={imageViewer.url}
+          alt={imageViewer.alt}
+          onClose={() => setImageViewer(null)}
         />
       )}
     </div>

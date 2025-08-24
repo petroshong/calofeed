@@ -10,6 +10,7 @@ import { WeightTracker } from './WeightTracker';
 import { useMeals } from '../hooks/useMeals';
 import type { User, Meal, WeightEntry } from '../types';
 import { Scale } from 'lucide-react';
+import { ImageViewer } from './ImageViewer';
 
 interface ProfileProps {
   user: User;
@@ -49,6 +50,7 @@ export const Profile: React.FC<ProfileProps> = ({ user, onUpdateUser }) => {
   const [showCalorieTracker, setShowCalorieTracker] = useState(false);
   const [showWeightTracker, setShowWeightTracker] = useState(false);
   const [showHashtagFeed, setShowHashtagFeed] = useState<string | null>(null);
+  const [imageViewer, setImageViewer] = useState<{ url: string; alt: string } | null>(null);
 
   const userMeals = getUserMeals(user.id);
 
@@ -399,9 +401,20 @@ export const Profile: React.FC<ProfileProps> = ({ user, onUpdateUser }) => {
                     src={meal.image} 
                     alt="Meal"
                     className="w-full h-full object-cover rounded-lg"
+                    onClick={() => setImageViewer({ url: meal.image, alt: `${meal.description}` })}
                   />
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 rounded-lg flex items-center justify-center">
                     <div className="text-white opacity-0 group-hover:opacity-100 text-center">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // Open meal detail instead of image viewer
+                          console.log('Open meal detail for:', meal.id);
+                        }}
+                        className="mb-2 p-2 bg-black bg-opacity-50 rounded-full hover:bg-opacity-70 transition-colors"
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                      </button>
                       <div className="font-bold">{meal.calories} cal</div>
                       <div className="text-sm flex items-center justify-center space-x-3">
                         <span className="flex items-center space-x-1">
@@ -569,6 +582,15 @@ export const Profile: React.FC<ProfileProps> = ({ user, onUpdateUser }) => {
           hashtag={showHashtagFeed}
           onClose={() => setShowHashtagFeed(null)}
           allMeals={userMeals}
+        />
+      )}
+      
+      {/* Image Viewer */}
+      {imageViewer && (
+        <ImageViewer
+          imageUrl={imageViewer.url}
+          alt={imageViewer.alt}
+          onClose={() => setImageViewer(null)}
         />
       )}
     </div>
