@@ -98,23 +98,23 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
   const [showAllSuggestions, setShowAllSuggestions] = useState(false);
   const [showHashtagFeed, setShowHashtagFeed] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
-  const { isFollowing } = useFollowing(currentUser);
+  const { isFollowing } = useFollowing(currentUser || {} as User);
 
   // Combine user meals with mock feed meals
-  const publicUserMeals = userMeals.filter(meal => meal.visibility === 'public');
+  const publicUserMeals = userMeals ? userMeals.filter(meal => meal.visibility === 'public') : [];
   
   // Filter meals based on privacy settings
   let visibleMeals = [...publicUserMeals, ...mockFeedMeals.map(meal => ({
     ...meal,
     user: {
       ...meal.user,
-      isFollowing: isFollowing(meal.user.id)
+      isFollowing: currentUser ? isFollowing(meal.user.id) : false
     }
   })).filter(meal => {
     // If the meal owner has a private account
     if (meal.user.isPrivate) {
       // Only show if they're friends or it's the current user
-      return areFriends(meal.user.id) || meal.user.id === currentUser.id;
+      return currentUser ? (areFriends(meal.user.id) || meal.user.id === currentUser.id) : false;
     }
     // Public accounts - show all public meals
     return meal.visibility === 'public';
@@ -123,7 +123,7 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
   // Apply feed filter
   if (feedFilter === 'following') {
     visibleMeals = visibleMeals.filter(meal => 
-      meal.userId === currentUser.id || isFollowing(meal.user.id)
+      (currentUser && meal.userId === currentUser.id) || (currentUser && isFollowing(meal.user.id))
     );
   } else if (feedFilter === 'trending') {
     // Sort by engagement score (likes + comments + shares)

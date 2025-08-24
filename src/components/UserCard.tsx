@@ -31,16 +31,6 @@ export const UserCard: React.FC<UserCardProps> = ({
     }
   };
 
-  const toggleFollow = () => {
-    const newFollowingState = !isFollowing;
-    setIsFollowing(newFollowingState);
-    
-    if (newFollowingState) {
-      followUser(user.id);
-    } else {
-      unfollowUser(user.id);
-    }
-  };
 
   if (variant === 'compact') {
     return (

@@ -132,6 +132,45 @@ export function useAuth() {
     }
   };
 
+  const login = async (email: string, password: string) => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
+  const updateUser = (updates: Partial<any>) => {
+    if (state.profile) {
+      setState(prev => ({
+        ...prev,
+        profile: { ...prev.profile, ...updates }
+      }));
+    }
+  };
+
+  const requireAuth = (action: string) => {
+    if (state.isGuest) {
+      return false;
+    }
+    return true;
+  };
+
   const signUp = async (email: string, password: string, userData: { username: string; displayName: string; bio?: string }) => {
     try {
       const { data, error } = await supabase.auth.signUp({
@@ -173,6 +212,12 @@ export function useAuth() {
   };
   return {
     ...state,
+    currentUser: state.profile,
+    isAuthenticated: !state.isGuest && !!state.user,
+    login,
+    logout,
+    updateUser,
+    requireAuth,
     signOut,
     signUp
   }

@@ -361,7 +361,7 @@ export const MealDetail: React.FC<MealDetailProps> = ({ meal, isGuest = false, o
                   ) : (
                     <form onSubmit={handleAddComment} className="flex space-x-3">
                       <img 
-                        src={currentUser?.avatar || "https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=50"}
+                        src="https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=50"
                         alt="Your avatar"
                         className="w-8 h-8 rounded-full object-cover flex-shrink-0"
                       />

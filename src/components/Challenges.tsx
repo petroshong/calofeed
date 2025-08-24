@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Trophy, Users, Calendar, Target, Flame, Star, Clock, Medal, Gift, Zap, Crown, Filter } from 'lucide-react';
-import { useAuth } from '../hooks/useAuth';
 import type { Challenge } from '../types';
 
 const mockChallenges: Challenge[] = [
@@ -80,13 +79,6 @@ export const Challenges: React.FC = () => {
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
 
   const joinChallenge = (challengeId: string) => {
-    // Check if user is authenticated
-    const { isAuthenticated } = useAuth();
-    if (!isAuthenticated) {
-      setShowAuthPrompt(true);
-      return;
-    }
-
     setChallenges(prev => prev.map(challenge => 
       challenge.id === challengeId 
         ? { ...challenge, isJoined: !challenge.isJoined, participants: challenge.isJoined ? challenge.participants - 1 : challenge.participants + 1 }

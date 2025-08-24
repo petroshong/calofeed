@@ -133,7 +133,6 @@ export const Leaderboard: React.FC = () => {
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
 
   const currentData = mockLeaderboardData[activeTab];
-  const { isAuthenticated } = useAuth();
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -365,9 +364,7 @@ export const Leaderboard: React.FC = () => {
                     : 'bg-blue-600 text-white hover:bg-blue-700'
                 }`}>
                   onClick={() => {
-                    if (!isAuthenticated) {
-                      setShowAuthPrompt(true);
-                    }
+                    setShowAuthPrompt(true);
                   }}
                   {user.isFollowing ? 'Following' : 'Follow'}
                 </button>

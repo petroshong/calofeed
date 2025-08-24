@@ -9,6 +9,7 @@ import { CalorieTracker } from './CalorieTracker';
 import { WeightTracker } from './WeightTracker';
 import { useMeals } from '../hooks/useMeals';
 import type { User, Meal, WeightEntry } from '../types';
+import { Scale } from 'lucide-react';
 
 interface ProfileProps {
   user: User;

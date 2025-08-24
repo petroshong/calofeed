@@ -47,6 +47,40 @@ export interface User {
   notificationSettings: NotificationSettings;
 }
 
+export interface Profile {
+  id: string;
+  username: string;
+  display_name: string;
+  bio: string;
+  avatar_url: string | null;
+  cover_image_url: string | null;
+  location: string | null;
+  website: string | null;
+  social_links: Record<string, any>;
+  dietary_preferences: string[];
+  allergies: string[];
+  activity_level: string;
+  daily_calorie_goal: number;
+  daily_protein_goal: number;
+  daily_carb_goal: number;
+  daily_fat_goal: number;
+  current_weight: number | null;
+  goal_weight: number | null;
+  height: number | null;
+  age: number | null;
+  is_private: boolean;
+  is_verified: boolean;
+  is_premium: boolean;
+  is_influencer: boolean;
+  level: number;
+  xp: number;
+  streak: number;
+  privacy_settings: Record<string, any>;
+  notification_settings: Record<string, any>;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface SocialLinks {
   instagram?: string;
   tiktok?: string;
