@@ -131,6 +131,7 @@ export const Leaderboard: React.FC = () => {
   const [timeframe, setTimeframe] = useState<'week' | 'month' | 'all'>('week');
   const [region, setRegion] = useState<'global' | 'local' | 'friends'>('global');
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   const currentData = mockLeaderboardData[activeTab];
 
