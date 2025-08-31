@@ -22,7 +22,7 @@ const trendingData: TrendingItem[] = [
   {
     id: '1',
     type: 'hashtag',
-    name: 'mealprep',
+    name: 'salmon',
     count: 2847,
     trend: 23,
     engagement: 89
@@ -30,7 +30,7 @@ const trendingData: TrendingItem[] = [
   {
     id: '2',
     type: 'hashtag',
-    name: 'proteinpacked',
+    name: 'avocado',
     count: 1923,
     trend: 45,
     engagement: 92
@@ -47,29 +47,58 @@ const trendingData: TrendingItem[] = [
   {
     id: '4',
     type: 'hashtag',
-    name: 'plantbased',
+    name: 'chicken',
     count: 1654,
     trend: 18,
     engagement: 85
   },
   {
     id: '5',
-    type: 'location',
-    name: 'Protein Palace',
-    count: 89,
+    type: 'hashtag',
+    name: 'quinoa',
+    count: 1543,
     trend: 34,
-    description: 'Midtown • 4.6★',
     engagement: 82
   },
   {
     id: '6',
-    type: 'meal',
-    name: 'Viral Salmon Bowl',
-    count: 1247,
-    trend: 156,
-    image: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=100',
-    description: 'Everyone is making this!',
-    engagement: 94
+    type: 'hashtag',
+    name: 'smoothie',
+    count: 1432,
+    trend: 67,
+    engagement: 88
+  },
+  {
+    id: '7',
+    type: 'hashtag',
+    name: 'eggs',
+    count: 1298,
+    trend: 29,
+    engagement: 91
+  },
+  {
+    id: '8',
+    type: 'hashtag',
+    name: 'pasta',
+    count: 1234,
+    trend: 41,
+    engagement: 86
+  },
+  {
+    id: '9',
+    type: 'hashtag',
+    name: 'salad',
+    count: 1187,
+    trend: 15,
+    engagement: 83
+  },
+  {
+    id: '10',
+    type: 'hashtag',
+    name: 'broccoli',
+    count: 1098,
+    trend: 52,
+    engagement: 79
   }
 ];
 

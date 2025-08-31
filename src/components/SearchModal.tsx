@@ -10,7 +10,20 @@ interface SearchModalProps {
 
 const trendingHashtags = [
   '#mealprep', '#keto', '#plantbased', '#proteinpacked', 
-  '#healthyeating', '#weightloss', '#bulking', '#vegan'
+  '#healthyeating', '#weightloss', '#bulking', '#vegan',
+  '#salmon', '#chicken', '#beef', '#pork', '#turkey',
+  '#avocado', '#quinoa', '#rice', '#pasta', '#bread',
+  '#broccoli', '#spinach', '#kale', '#carrots', '#tomatoes',
+  '#eggs', '#cheese', '#yogurt', '#milk', '#nuts',
+  '#almonds', '#walnuts', '#cashews', '#peanuts', '#seeds',
+  '#berries', '#banana', '#apple', '#orange', '#grapes',
+  '#smoothie', '#salad', '#soup', '#stir-fry', '#grilled',
+  '#baked', '#roasted', '#steamed', '#raw', '#fermented',
+  '#breakfast', '#lunch', '#dinner', '#snack', '#dessert',
+  '#italian', '#mexican', '#asian', '#mediterranean', '#indian',
+  '#thai', '#chinese', '#japanese', '#korean', '#greek',
+  '#lowcarb', '#highprotein', '#glutenfree', '#dairyfree', '#paleo',
+  '#whole30', '#intermittentfasting', '#cleaneating', '#organic', '#local'
 ];
 
 const recentSearches = [

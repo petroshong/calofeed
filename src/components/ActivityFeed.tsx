@@ -31,7 +31,7 @@ const mockActivities: Activity[] = [
       calories: 520,
       mealId: 'mock-1',
       image: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=400',
-      description: 'Perfect post-workout meal! #protein #postworkout'
+      description: 'Perfect post-workout meal! #salmon #quinoa #protein #postworkout #seafood'
     }
   },
   {
@@ -48,7 +48,7 @@ const mockActivities: Activity[] = [
       goalType: 'protein',
       target: 150,
       achieved: 152,
-      description: 'Crushed my protein goal today! #proteingoals #fitness'
+      description: 'Crushed my protein goal today! #protein #chicken #eggs #greek-yogurt #fitness'
     }
   },
   {
@@ -65,7 +65,7 @@ const mockActivities: Activity[] = [
       location: 'Green Bowl Cafe',
       address: 'Downtown',
       rating: 4.8,
-      description: 'Amazing healthy options here! #greenbowl #healthy'
+      description: 'Amazing healthy options here! #salad #quinoa #avocado #kale #healthy'
     }
   },
   {
@@ -84,7 +84,7 @@ const mockActivities: Activity[] = [
         emoji: '🥬',
         description: 'Logged 100 vegetable servings'
       },
-      description: 'Just earned the Veggie Master badge! #plantbased #veggies'
+      description: 'Just earned the Veggie Master badge! #vegetables #broccoli #spinach #kale #carrots #plantbased'
     }
   },
   {
@@ -100,7 +100,7 @@ const mockActivities: Activity[] = [
     data: {
       streak: 30,
       milestone: '30-day streak',
-      description: '30 days of consistent logging! #streak #consistency #keto'
+      description: '30 days of consistent logging! #streak #consistency #keto #avocado #cheese #bacon'
     }
   },
   {
@@ -116,7 +116,7 @@ const mockActivities: Activity[] = [
     data: {
       weightLost: 10,
       timeframe: '2 months',
-      description: 'Down 10 pounds in 2 months! Feeling amazing! #weightloss #transformation'
+      description: 'Down 10 pounds in 2 months! Feeling amazing! #weightloss #transformation #salad #lean-protein #vegetables'
     }
   }
 ];

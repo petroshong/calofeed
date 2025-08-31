@@ -32,7 +32,7 @@ const mockFeedMeals: Meal[] = [
       isInfluencer: false
     } as User,
     image: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=800',
-    description: 'Perfect post-workout meal! Grilled salmon with quinoa and roasted vegetables 🐟🥗 #postworkout #protein #healthyeating',
+    description: 'Perfect post-workout meal! Grilled salmon with quinoa and roasted vegetables 🐟🥗 #salmon #quinoa #postworkout #protein #healthyeating #seafood #wholegrains',
     calories: 520,
     protein: 42,
     carbs: 35,
@@ -45,7 +45,7 @@ const mockFeedMeals: Meal[] = [
     isBookmarked: false,
     shares: 23,
     views: 892,
-    tags: ['postworkout', 'protein', 'healthyeating'],
+    tags: ['salmon', 'quinoa', 'postworkout', 'protein', 'healthyeating', 'seafood', 'wholegrains'],
     visibility: 'public'
   },
   {
@@ -61,7 +61,7 @@ const mockFeedMeals: Meal[] = [
       isInfluencer: false
     } as User,
     image: 'https://images.pexels.com/photos/1211887/pexels-photo-1211887.jpeg?auto=compress&cs=tinysrgb&w=800',
-    description: 'Meal prep Sunday! Buddha bowl with chickpeas, avocado, and tahini dressing 🌱 #mealprep #plantbased #vegan',
+    description: 'Meal prep Sunday! Buddha bowl with chickpeas, avocado, and tahini dressing 🌱 #buddhabowl #chickpeas #avocado #mealprep #plantbased #vegan #tahini #legumes',
     calories: 420,
     protein: 18,
     carbs: 52,
@@ -74,7 +74,7 @@ const mockFeedMeals: Meal[] = [
     isBookmarked: true,
     shares: 45,
     views: 1247,
-    tags: ['mealprep', 'plantbased', 'vegan'],
+    tags: ['buddhabowl', 'chickpeas', 'avocado', 'mealprep', 'plantbased', 'vegan', 'tahini', 'legumes'],
     visibility: 'public'
   }
 ];
