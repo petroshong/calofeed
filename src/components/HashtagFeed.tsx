@@ -113,7 +113,21 @@ export const HashtagFeed: React.FC<HashtagFeedProps> = ({ hashtag, onClose, allM
             <div className="text-center py-12">
               <Hash className="w-16 h-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">No posts found</h3>
-              <p className="text-gray-600">No meals have been tagged with #{hashtag} yet</p>
+              <p className="text-gray-600 mb-4">No meals have been tagged with #{hashtag} yet</p>
+              <div className="text-sm text-gray-500">
+                <p className="mb-2">Try these popular food hashtags:</p>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {['salmon', 'chicken', 'avocado', 'quinoa', 'eggs', 'smoothie', 'salad', 'pasta'].map((tag) => (
+                    <button
+                      key={tag}
+                      onClick={() => window.location.hash = `#${tag}`}
+                      className="px-2 py-1 bg-blue-50 text-blue-600 rounded-full text-xs hover:bg-blue-100 transition-colors"
+                    >
+                      #{tag}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           ) : (
             <div className="grid grid-cols-3 gap-1 lg:gap-4">

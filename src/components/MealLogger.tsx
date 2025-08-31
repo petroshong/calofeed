@@ -432,6 +432,28 @@ export const MealLogger: React.FC<MealLoggerProps> = ({ user, onClose, onUpdateU
                   Add
                 </button>
               </div>
+              <div className="mt-3">
+                <p className="text-xs text-gray-600 mb-2">Popular food tags:</p>
+                <div className="flex flex-wrap gap-1">
+                  {['salmon', 'chicken', 'beef', 'eggs', 'avocado', 'quinoa', 'rice', 'pasta', 'broccoli', 'spinach', 'kale', 'berries', 'nuts', 'yogurt', 'cheese', 'smoothie', 'salad', 'soup', 'grilled', 'baked', 'italian', 'mexican', 'asian', 'keto', 'vegan', 'protein', 'healthy'].map((tag) => (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => {
+                        if (!formData.tags.includes(tag)) {
+                          setFormData(prev => ({
+                            ...prev,
+                            tags: [...prev.tags, tag]
+                          }));
+                        }
+                      }}
+                      className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full hover:bg-blue-100 hover:text-blue-700 transition-colors"
+                    >
+                      #{tag}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
 
             {/* Privacy Settings */}
