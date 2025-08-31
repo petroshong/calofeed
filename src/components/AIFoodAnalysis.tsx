@@ -105,15 +105,19 @@ export const AIFoodAnalysis: React.FC<AIFoodAnalysisProps> = ({ onAnalysisComple
 
   return (
     <div 
-      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center"
+      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center mobile-modal-overlay"
       onClick={onClose}
     >
       <div 
         onClick={(e) => e.stopPropagation()}
-        className="bg-white rounded-t-3xl lg:rounded-2xl max-w-4xl w-full max-h-[95vh] overflow-y-auto"
+        className="bg-white rounded-t-3xl lg:rounded-2xl max-w-4xl w-full max-h-[95vh] overflow-y-auto mobile-modal-content"
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="sticky top-0 bg-white border-b border-gray-200 p-4 lg:p-6">
+          {/* Mobile drag handle */}
+          <div className="lg:hidden absolute top-2 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-gray-300 rounded-full"></div>
+          
+          <div className="flex items-center justify-between pt-4 lg:pt-0">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
               <Brain className="w-6 h-6 text-white" />
@@ -125,10 +129,11 @@ export const AIFoodAnalysis: React.FC<AIFoodAnalysisProps> = ({ onAnalysisComple
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+            className="p-3 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors enhanced-touch-target"
           >
             <X className="w-6 h-6" />
           </button>
+          </div>
         </div>
 
         <div className="p-6">

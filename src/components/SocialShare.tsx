@@ -88,22 +88,27 @@ export const SocialShare: React.FC<SocialShareProps> = ({ meal, onClose }) => {
 
   return (
     <div 
-      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center"
+      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center mobile-modal-overlay"
       onClick={onClose}
     >
       <div 
         onClick={(e) => e.stopPropagation()}
-        className="bg-white rounded-t-3xl lg:rounded-2xl max-w-md w-full max-h-[80vh] overflow-y-auto"
+        className="bg-white rounded-t-3xl lg:rounded-2xl max-w-md w-full max-h-[80vh] overflow-y-auto mobile-modal-content"
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="sticky top-0 bg-white border-b border-gray-200 p-4 lg:p-6">
+          {/* Mobile drag handle */}
+          <div className="lg:hidden absolute top-2 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-gray-300 rounded-full"></div>
+          
+          <div className="flex items-center justify-between pt-4 lg:pt-0">
           <h2 className="text-xl font-bold text-gray-900">Share Meal</h2>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+            className="p-3 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors enhanced-touch-target"
           >
             <X className="w-6 h-6" />
           </button>
+          </div>
         </div>
 
         <div className="p-6 space-y-6">

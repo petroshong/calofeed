@@ -45,17 +45,21 @@ export const HashtagFeed: React.FC<HashtagFeedProps> = ({ hashtag, onClose, allM
 
   return (
     <div 
-      className="fixed inset-0 bg-white z-50 flex flex-col"
+      className="fixed inset-0 bg-white z-50 flex flex-col mobile-modal-overlay"
       onClick={onClose}
     >
       <div onClick={(e) => e.stopPropagation()}>
       {/* Header */}
-      <div className="bg-gradient-to-r from-pink-500 to-purple-600 text-white p-6">
+      <div className="sticky top-0 bg-gradient-to-r from-pink-500 to-purple-600 text-white p-4 lg:p-6">
+        {/* Mobile drag handle */}
+        <div className="lg:hidden absolute top-2 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-white bg-opacity-30 rounded-full"></div>
+        
+        <div className="pt-4 lg:pt-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <button
               onClick={onClose}
-              className="p-2 text-white/80 hover:text-white rounded-full hover:bg-white/20 transition-colors active:scale-95"
+              className="p-3 text-white/80 hover:text-white rounded-full hover:bg-white/20 transition-colors enhanced-touch-target"
             >
               <X className="w-6 h-6" />
             </button>
@@ -70,6 +74,7 @@ export const HashtagFeed: React.FC<HashtagFeedProps> = ({ hashtag, onClose, allM
               <span className="text-sm">+{hashtagStats.weeklyGrowth}% this week</span>
             </div>
           </div>
+        </div>
         </div>
       </div>
 

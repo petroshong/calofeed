@@ -204,22 +204,27 @@ export const AllSuggestions: React.FC<AllSuggestionsProps> = ({ onClose, onViewP
 
   return (
     <div 
-      className="fixed inset-0 bg-white z-50 flex flex-col"
+      className="fixed inset-0 bg-white z-50 flex flex-col mobile-modal-overlay"
       onClick={onClose}
     >
       <div onClick={(e) => e.stopPropagation()}>
       {/* Header */}
-      <div className="flex items-center justify-between p-6 border-b border-gray-200">
+      <div className="sticky top-0 bg-white border-b border-gray-200 p-4">
+        {/* Mobile drag handle */}
+        <div className="lg:hidden absolute top-2 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-gray-300 rounded-full"></div>
+        
+        <div className="flex items-center justify-between pt-4 lg:pt-0">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Suggested for You</h1>
           <p className="text-gray-600">{filteredAndSortedUsers.length} users found</p>
         </div>
         <button
           onClick={onClose}
-          className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+          className="p-3 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors enhanced-touch-target"
         >
           <X className="w-6 h-6" />
         </button>
+        </div>
       </div>
 
       {/* Search and Filters */}

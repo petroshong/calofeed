@@ -124,15 +124,18 @@ export const MealDetail: React.FC<MealDetailProps> = ({ meal, isGuest = false, o
   return (
     <>
       <div 
-        className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-0 lg:p-4"
+        className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center mobile-modal-overlay"
         onClick={onClose}
       >
         <div 
           onClick={(e) => e.stopPropagation()}
-          className="bg-white rounded-t-3xl lg:rounded-2xl max-w-6xl w-full max-h-[100vh] lg:max-h-[90vh] overflow-y-auto modal-mobile mobile-scroll-smooth mx-auto"
+          className="bg-white rounded-t-3xl lg:rounded-2xl max-w-6xl w-full max-h-[100vh] lg:max-h-[90vh] overflow-y-auto mobile-modal-content mobile-scroll-smooth mx-auto"
         >
           {/* Header */}
           <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex items-center justify-between safe-area-pt">
+            {/* Mobile drag handle */}
+            <div className="lg:hidden absolute top-2 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-gray-300 rounded-full"></div>
+            
             <div className="flex items-center space-x-3">
               <img 
                 src={meal.user.avatar} 
@@ -167,7 +170,7 @@ export const MealDetail: React.FC<MealDetailProps> = ({ meal, isGuest = false, o
               </button>
               <button
                 onClick={onClose}
-                className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors touch-target"
+                className="p-3 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors enhanced-touch-target"
               >
                 <X className="w-6 h-6" />
               </button>

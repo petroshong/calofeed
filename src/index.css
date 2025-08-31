@@ -51,6 +51,58 @@
   .mobile-text-size-adjust {
     -webkit-text-size-adjust: 100%;
   }
+  
+  /* Enhanced mobile modal styles */
+  .mobile-modal-overlay {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  
+  .mobile-modal-content {
+    transform: translateY(100%);
+    animation: slideUp 0.3s ease-out forwards;
+  }
+  
+  @keyframes slideUp {
+    to {
+      transform: translateY(0);
+    }
+  }
+  
+  .mobile-modal-close {
+    animation: slideDown 0.3s ease-in forwards;
+  }
+  
+  @keyframes slideDown {
+    to {
+      transform: translateY(100%);
+    }
+  }
+  
+  /* Improved touch targets */
+  .enhanced-touch-target {
+    min-height: 48px;
+    min-width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Better mobile form styling */
+  .mobile-form-input {
+    font-size: 16px !important; /* Prevent zoom on iOS */
+    padding: 16px;
+    border-radius: 12px;
+  }
+  
+  /* Mobile-friendly buttons */
+  .mobile-button {
+    min-height: 48px;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    touch-action: manipulation;
+  }
 }
 
 /* Custom scrollbar for webkit browsers */

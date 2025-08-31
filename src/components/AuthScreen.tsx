@@ -108,8 +108,37 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
     }
     return true;
   };
+
+  // Handle mobile back gesture
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isModal) {
+        // Close modal on escape key
+        window.history.back();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isModal]);
+
   return (
-    <div className={`${isModal ? '' : 'min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 flex items-center justify-center p-4'}`}>
+    <div className={`${isModal ? 'relative' : 'min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 flex items-center justify-center p-4'}`}>
+      {/* Mobile Close Button for Modal */}
+      {isModal && (
+        <div className="lg:hidden sticky top-0 bg-white border-b border-gray-200 p-4 flex items-center justify-between z-10">
+          <h2 className="text-lg font-semibold text-gray-900">
+            {isLogin ? 'Sign In' : 'Create Account'}
+          </h2>
+          <button
+            onClick={() => window.history.back()}
+            className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors touch-target"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+      )}
+      
       <div className="max-w-md w-full">
         {!isModal && (
           <div className="text-center mb-8">
@@ -124,7 +153,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
         )}
 
         {/* Auth Form */}
-        <div className={`${isModal ? '' : 'bg-white rounded-2xl shadow-xl border border-gray-100 p-8'}`}>
+        <div className={`${isModal ? 'p-4 lg:p-6' : 'bg-white rounded-2xl shadow-xl border border-gray-100 p-8'}`}>
           {error && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
               <div className="flex items-start space-x-2">

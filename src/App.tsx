@@ -561,25 +561,54 @@ function App() {
 
       {/* Auth Prompt Modal */}
       {showAuthPrompt && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center p-4 lg:p-0">
-          <div className="bg-white rounded-t-3xl lg:rounded-2xl max-w-md w-full p-6 modal-mobile">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Flame className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Join CaloFeed</h2>
-              <p className="text-gray-600 mb-6">
-                Sign up to log meals, follow friends, and join the community!
-              </p>
-              <div className="space-y-3">
-                <AuthScreen onLogin={login} onSignUp={signUp} isModal={true} />
-              </div>
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center"
+          onClick={() => setShowAuthPrompt(false)}
+        >
+          <div 
+            className="bg-white rounded-t-3xl lg:rounded-2xl max-w-md w-full max-h-[95vh] overflow-y-auto modal-mobile"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="lg:hidden sticky top-0 bg-white border-b border-gray-200 p-4 flex items-center justify-between z-10">
+              <h2 className="text-lg font-semibold text-gray-900">Join CaloFeed</h2>
               <button
                 onClick={() => setShowAuthPrompt(false)}
-                className="mt-4 text-gray-500 hover:text-gray-700 text-sm touch-target"
+                className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors touch-target"
               >
-                Continue browsing as guest
+                <X className="w-6 h-6" />
               </button>
+            </div>
+            
+            <div className="p-4 lg:p-6">
+              <div className="text-center lg:hidden mb-6">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Flame className="w-8 h-8 text-white" />
+                </div>
+                <p className="text-gray-600">
+                  Sign up to track your nutrition and connect with friends!
+                </p>
+              </div>
+              
+              <div className="hidden lg:block text-center mb-6">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Flame className="w-8 h-8 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">Join CaloFeed</h2>
+                <p className="text-gray-600">
+                  Sign up to track your nutrition and connect with friends!
+                </p>
+              </div>
+              
+              <AuthScreen onLogin={login} onSignUp={signUp} isModal={true} />
+              
+              <div className="text-center mt-4">
+                <button
+                  onClick={() => setShowAuthPrompt(false)}
+                  className="text-gray-500 hover:text-gray-700 text-sm touch-target"
+                >
+                  Continue browsing as guest
+                </button>
+              </div>
             </div>
           </div>
         </div>
