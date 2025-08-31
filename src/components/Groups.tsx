@@ -82,9 +82,9 @@ export const Groups: React.FC = () => {
     : discoverGroups.filter(g => g.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   return (
-    <div className="max-w-4xl mx-auto pb-20 lg:pb-0">
+    <div className="w-full max-w-6xl mx-auto pb-20 lg:pb-0 px-4 lg:px-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 lg:p-8 rounded-b-3xl lg:rounded-none">
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 lg:p-8 rounded-b-3xl lg:rounded-xl lg:mt-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl lg:text-3xl font-bold mb-2">Groups</h1>

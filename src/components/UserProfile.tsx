@@ -93,7 +93,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, currentUser, isG
   };
 
   return (
-    <div className="max-w-4xl mx-auto pb-20 lg:pb-0">
+    <div className="w-full max-w-6xl mx-auto pb-20 lg:pb-0 px-4 lg:px-6">
       {/* Mobile Back Button */}
       <div className="lg:hidden bg-white border-b border-gray-200 p-4">
         <button
@@ -127,7 +127,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, currentUser, isG
           </div>
           
           {/* Profile Info */}
-          <div className="px-4 lg:px-8 pb-6">
+          <div className="px-0 lg:px-4 pb-6">
             <div className="relative -mt-16 lg:-mt-20">
               <img 
                 src={user.avatar} 

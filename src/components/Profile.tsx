@@ -72,7 +72,7 @@ export const Profile: React.FC<ProfileProps> = ({ user, onUpdateUser }) => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto pb-20 lg:pb-0">
+    <div className="w-full max-w-6xl mx-auto pb-20 lg:pb-0 px-4 lg:px-6">
       {/* Profile Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="relative">
@@ -101,7 +101,7 @@ export const Profile: React.FC<ProfileProps> = ({ user, onUpdateUser }) => {
           </div>
           
           {/* Profile Info */}
-          <div className="px-4 lg:px-8 pb-6">
+          <div className="px-0 lg:px-4 pb-6">
             <div className="relative -mt-16 lg:-mt-20">
               <img 
                 src={user.avatar} 
@@ -254,7 +254,7 @@ export const Profile: React.FC<ProfileProps> = ({ user, onUpdateUser }) => {
       </div>
 
       {/* Achievement Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 p-4 lg:p-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 p-0 lg:p-4 mt-6">
         <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-xl border border-green-100">
           <div className="flex items-center justify-between mb-2">
             <Target className="w-8 h-8 text-green-600" />

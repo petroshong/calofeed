@@ -343,7 +343,7 @@ function App() {
 
       <div className="flex">
         {/* Desktop Sidebar */}
-        <aside className="hidden lg:block w-64 xl:w-72 bg-white border-r border-gray-200 min-h-screen">
+        <aside className="hidden lg:block w-64 xl:w-72 bg-white border-r border-gray-200 min-h-screen flex-shrink-0">
           {isAuthenticated && currentUser ? (
             <div className="p-6">
               <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 mb-6">
@@ -472,7 +472,7 @@ function App() {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 min-w-0">
+        <main className="flex-1 min-w-0 max-w-none">
           {currentView === 'feed' && (
             <Feed 
               onViewProfile={handleViewProfile} 

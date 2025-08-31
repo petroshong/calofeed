@@ -124,12 +124,12 @@ export const MealDetail: React.FC<MealDetailProps> = ({ meal, isGuest = false, o
   return (
     <>
       <div 
-        className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end lg:items-center justify-center p-0 lg:p-4"
+        className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-0 lg:p-4"
         onClick={onClose}
       >
         <div 
           onClick={(e) => e.stopPropagation()}
-          className="bg-white rounded-t-3xl lg:rounded-2xl max-w-4xl w-full max-h-[100vh] lg:max-h-[90vh] overflow-y-auto modal-mobile mobile-scroll-smooth"
+          className="bg-white rounded-t-3xl lg:rounded-2xl max-w-6xl w-full max-h-[100vh] lg:max-h-[90vh] overflow-y-auto modal-mobile mobile-scroll-smooth mx-auto"
         >
           {/* Header */}
           <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex items-center justify-between safe-area-pt">
@@ -176,11 +176,11 @@ export const MealDetail: React.FC<MealDetailProps> = ({ meal, isGuest = false, o
 
           <div className="flex flex-col lg:flex-row">
             {/* Image Section */}
-            <div className="w-full lg:w-1/2 relative group">
+            <div className="w-full lg:w-1/2 relative group flex-shrink-0">
               <img 
                 src={meal.image} 
                 alt="Food"
-                className="w-full h-64 sm:h-80 lg:h-full object-cover cursor-zoom-in"
+                className="w-full h-64 sm:h-80 lg:h-96 xl:h-[500px] object-cover cursor-zoom-in"
                 onClick={() => setShowImageViewer(true)}
               />
               <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-200 flex items-center justify-center">
@@ -191,7 +191,7 @@ export const MealDetail: React.FC<MealDetailProps> = ({ meal, isGuest = false, o
             </div>
 
             {/* Content Section */}
-            <div className="w-full lg:w-1/2 flex flex-col min-h-0">
+            <div className="w-full lg:w-1/2 flex flex-col min-h-0 lg:min-h-[500px]">
               {/* Meal Info */}
               <div className="p-6 border-b border-gray-200">
                 {/* Nutrition Info */}
