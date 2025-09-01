@@ -367,20 +367,6 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
                 {isLogin ? 'Sign up' : 'Sign in'}
               </button>
             </p>
-            {isLogin && (
-              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="text-center">
-                  <p className="text-sm text-blue-800 font-medium mb-2">New to CaloFeed?</p>
-                  <button
-                    type="button"
-                    onClick={() => setIsLogin(false)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm"
-                  >
-                    Create Free Account
-                  </button>
-                </div>
-              </div>
-            )}
             {!isLogin && (
               <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
                 <div className="text-center">
