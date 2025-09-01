@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Flame, Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
+import { Flame, Mail, Lock, User, Eye, EyeOff, X } from 'lucide-react';
 import { AuthService } from '../services/authService';
 import { handleError } from '../utils/errorHandler';
 
