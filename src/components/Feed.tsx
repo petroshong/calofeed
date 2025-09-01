@@ -528,23 +528,6 @@ export const Feed: React.FC<FeedProps> = ({ onViewProfile, currentUser, onUpdate
           onUpdateCurrentUser={onUpdateCurrentUser}
         />
         <TrendingSection onHashtagClick={setShowHashtagFeed} />
-        <TrendingSection
-          onHashtagClick={setShowHashtagFeed}
-          onLocationClick={(location) => {
-            // Show location-based content
-            alert(`Showing meals from ${location}! 📍\n\nThis would normally show all meals logged at this location.`);
-          }}
-          onTrendingClick={(item) => {
-            if (item.type === 'meal') {
-              alert(`Trending meal: ${item.name}! 🔥\n\nThis viral meal has ${item.count} likes and is trending +${item.trend}% this week!`);
-            } else if (item.type === 'location') {
-              alert(`Popular location: ${item.name}! 📍\n\n${item.count} check-ins this week with ${item.engagement}% engagement rate.`);
-            }
-          }}
-          onViewAllTrending={() => {
-            alert('View All Trending! 📈\n\nThis would show a comprehensive trending page with:\n• Top hashtags\n• Popular locations\n• Viral meals\n• Rising creators\n• Weekly challenges');
-          }}
-        />
         <ActivityFeed 
           onHashtagClick={setShowHashtagFeed}
           onLocationClick={(location) => {
