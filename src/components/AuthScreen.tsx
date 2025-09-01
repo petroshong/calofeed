@@ -356,33 +356,6 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
           </form>
 
 
-          <div className="mt-6 text-center">
-            <p className="text-gray-600">
-              {isLogin ? "Don't have an account? " : "Already have an account? "}
-              <button
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-green-600 hover:text-green-700 font-medium"
-              >
-                  setSuccess('');
-                {isLogin ? 'Sign up' : 'Sign in'}
-              </button>
-            </p>
-            {!isLogin && (
-              <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-                <div className="text-center">
-                  <p className="text-sm text-green-800 font-medium mb-2">Account Creation Process:</p>
-                  <ol className="text-xs text-green-700 text-left space-y-1">
-                    <li>1. Fill out the form and click "Create Account"</li>
-                    <li>2. Check your email for a verification link</li>
-                    <li>3. Click the link to verify your account</li>
-                    <li>4. Return here and sign in with your credentials</li>
-                  </ol>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
         {!isModal && (
           <div className="mt-8 text-center">
             <p className="text-sm text-gray-500 mb-4">Join thousands of users sharing their food journey</p>
