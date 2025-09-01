@@ -355,6 +355,16 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onSignUp, isMod
             </button>
           </form>
 
+          <div className="mt-6 text-center">
+            <button
+              type="button"
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-green-600 hover:text-green-700 font-medium text-sm transition-colors"
+            >
+              {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
+            </button>
+          </div>
+        </div>
 
         {!isModal && (
           <div className="mt-8 text-center">
