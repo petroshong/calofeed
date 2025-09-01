@@ -69,7 +69,7 @@ export class AuthService {
 
         if (profileError) {
           console.error('Profile creation error:', profileError);
-          // Don't throw here, as the user account was created successfully
+          // Don't throw here, as the user account was created successfully (or in demo mode)
         }
       }
 

@@ -27,7 +27,7 @@ export function useAuth() {
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
-          console.error('Auth session error:', error);
+          console.warn('Auth session error (demo mode):', error.message);
         }
 
         if (mounted) {
@@ -47,7 +47,7 @@ export function useAuth() {
                 isGuest: false
               });
             } catch (profileError) {
-              console.error('Profile fetch error:', profileError);
+              console.warn('Profile fetch error (demo mode):', profileError);
               setState({
                 user: session.user,
                 profile: null,
@@ -65,7 +65,7 @@ export function useAuth() {
           }
         }
       } catch (error) {
-        console.error('Auth initialization error:', error);
+        console.warn('Auth initialization error (demo mode):', error);
         if (mounted) {
           setState({
             user: null,
